@@ -17,10 +17,15 @@ import com.bluespacetech.core.exceptions.ApplicationException;
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.core.utility.ViewUtil;
 import com.bluespacetech.notifications.email.worker.EmailUserAccountWorker;
+import com.bluespacetech.security.model.AccountApproval;
 import com.bluespacetech.security.model.UserAccount;
 import com.bluespacetech.security.model.UserAccountUserGroup;
+import com.bluespacetech.security.model.VerificationToken;
+import com.bluespacetech.security.repository.AccountApprovalRepository;
+import com.bluespacetech.security.repository.AccountApprovalRepositoryCustom;
 import com.bluespacetech.security.repository.UserAccountRepository;
 import com.bluespacetech.security.repository.UserAccountRepositoryCustom;
+import com.bluespacetech.security.repository.VerificationTokenRepository;
 import com.bluespacetech.security.searchcriterias.UserAccountSearchCriteria;
 
 @Service
@@ -31,9 +36,15 @@ public class BlueSpaceTechUserAccountServiceImpl implements BlueSpaceTechUserAcc
 
 	@Autowired
 	UserAccountRepository userAccountRepository;
+	
+	@Autowired
+	AccountApprovalRepository accountApprovalRepository;
 
 	@Autowired
 	UserAccountRepositoryCustom userAccountRepositoryCustom;
+	
+	@Autowired
+	VerificationTokenRepository tokenRepository;
 
 	@Autowired
 	EmailUserAccountWorker emailUserAccountWorker;
@@ -75,11 +86,6 @@ public class BlueSpaceTechUserAccountServiceImpl implements BlueSpaceTechUserAcc
 			userAccountUserGroup.setUserAccount(userAccount);
 		}
 		final UserAccount newUserAccount = userAccountRepository.save(userAccount);
-		/*try {
-			emailUserAccountWorker.sendEmail(newUserAccount, randomPassword);
-		} catch (MailException | InterruptedException | MessagingException e) {
-			throw new BusinessException(e);
-		}*/
 		return newUserAccount;
 	}
 
@@ -96,6 +102,10 @@ public class BlueSpaceTechUserAccountServiceImpl implements BlueSpaceTechUserAcc
 	@Override
 	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('DELETE_USERS')")
 	public void deleteUserAccount(final Long userAccountId) {
+		AccountApproval record = accountApprovalRepository.findAccountApprovalByIdPendingApproval(userAccountId);
+		accountApprovalRepository.delete(record.getId());
+		VerificationToken token = tokenRepository.findVerificationTokenByUserId(userAccountId);
+		tokenRepository.delete(token.getId());
 		userAccountRepository.delete(userAccountId);
 	}
 

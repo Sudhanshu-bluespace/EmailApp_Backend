@@ -44,6 +44,9 @@ public class UserAccount extends BaseEntity implements Serializable {
 
 	@Column(name = "ACTIVE", nullable = false)
 	private boolean active;
+	
+	@Column(name="VERIFIED_BY_ADMIN", nullable=false)
+	private boolean verifiedByAdmin;
 
 	@Column(name = "ACC_EXPIRED", nullable = false)
 	private boolean accountExpired;
@@ -53,6 +56,12 @@ public class UserAccount extends BaseEntity implements Serializable {
 
 	@Column(name = "ACC_LOCKED", nullable = false)
 	private boolean accountLocked;
+	
+	@Column(name = "COMPANY_NAME", nullable = false)
+	private String companyName;
+	
+	@Column(name = "PHONE_NUMBER", nullable = false)
+	private String phoneNumber;
 
 	@Column(name = "USER_ACCOUNT_TYPE")
 	@Enumerated(EnumType.STRING)
@@ -64,12 +73,40 @@ public class UserAccount extends BaseEntity implements Serializable {
 	@Column(name = "EMAIL", nullable = false, unique = true)
 	private String email;
 
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	public void setUsername(final String username) {
 		this.username = username;
 	}
 
 	public String getUsername() {
 		return username;
+	}
+
+	public boolean isVerifiedByAdmin() {
+		return verifiedByAdmin;
+	}
+
+	public void setVerifiedByAdmin(boolean verifiedByAdmin) {
+		this.verifiedByAdmin = verifiedByAdmin;
 	}
 
 	public void setPassword(final String password) {
@@ -150,5 +187,16 @@ public class UserAccount extends BaseEntity implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	@Override
+	public String toString() {
+		return "UserAccount [username=" + username + ", active=" + active
+				+ ", verifiedByAdmin=" + verifiedByAdmin + ", accountExpired=" + accountExpired
+				+ ", credentialsExpired=" + credentialsExpired + ", accountLocked=" + accountLocked
+				+ ", userAccountType=" + userAccountType + ", userAccountUserGroups=" + userAccountUserGroups
+				+ ", email=" + email + "]";
+	}
+	
+	
 
 }

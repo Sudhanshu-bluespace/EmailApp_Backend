@@ -3,6 +3,8 @@ package com.bluespacetech.notifications.email.util;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +14,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.ui.velocity.VelocityEngineFactory;
+
+import com.bluespacetech.notifications.email.batch.ContactGroupMailMessageItemWriter;
 
 @Configuration
 //@PropertySource("classpath:mail.properties")
@@ -36,6 +40,8 @@ public class MailConfiguration {
 	private String password;
 	@Value("${mail.smtp.ssl.trust}")
 	private String sslTrust;
+	
+	private static final Logger LOGGER = LogManager.getLogger(MailConfiguration.class);
 
 	@Bean(name = "javaMailSender")
 	public JavaMailSender javaMailSender() {
@@ -53,7 +59,7 @@ public class MailConfiguration {
 		mailSender.setUsername(username);
 		mailSender.setPassword(password);
 		
-		System.out.println("Configuration : "+toString());
+		LOGGER.info("Configuration : "+toString());
 		return mailSender;
 	}
 	

@@ -45,7 +45,11 @@ public enum GrantConstant implements Labeled {
 	ACCESS_USERS("access_users","UI_USERS_ACCESS"),
 	CREATE_USERS("create_users","UI_USERS_CREATE"),
 	UPDATE_USERS("update_users","UI_USERS_UPDATE"),
-	DELETE_USERS("delete_users", "UI_USERS_DELETE");
+	DELETE_USERS("delete_users", "UI_USERS_DELETE"),
+	
+	ACCOUNT_APPROVAL("account_approval","UI_ACCESS_ACCOUNT_APPROVAL"),
+	ANALYTICS("analytics","UI_ACCESS_ANAlYTICS"),
+	BULK_UPLOAD("bulk_upload","UI_ACCESS_BULK_UPLOAD");
 
 	// User Authorities
 	private String label;

@@ -2,7 +2,6 @@ package com.bluespacetech.notifications.email.batch;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.LogManager;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -93,6 +92,7 @@ public class ContactGroupEmailBatchConfiguration {
 
 	@Bean(name = "groupEmailJob")
 	public Job groupEmailJob() {
+		LOGGER.debug("Triggering Job (groupEmailJob)");
 		return jobBuilderFactory.get("groupEmailJob").incrementer(new RunIdIncrementer()).flow(step1()).end().build();
 	}
 
@@ -102,7 +102,8 @@ public class ContactGroupEmailBatchConfiguration {
 		return stepBuilderFactory.get("step1").<EmailContactGroupVO, ContactGroupMailMessage> chunk(10)
 				.reader(databaseItemReader(dataSource, null, null, null, null))
 				.processor(processor(null))
-				.writer(simpleEmailWriter(emailContactGroupService)).build();
+				.writer(simpleEmailWriter(emailContactGroupService)
+						).build();
 	}
 
 }

@@ -20,6 +20,7 @@ import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 public interface EmailContactGroupService {
 
 	EmailContactGroup createEmailContactGroup(final EmailContactGroup emailContactGroup) throws BusinessException;
+	void deleteEmailContactGroup(final List<EmailContactGroup> emailContactGroups) throws BusinessException;
 
 	List<EmailContactGroup> createEmailContactGroups(final List<EmailContactGroup> emailContactGroups)
 			throws BusinessException;

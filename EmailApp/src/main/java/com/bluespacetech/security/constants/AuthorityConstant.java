@@ -21,12 +21,17 @@ public enum AuthorityConstant {
 	REPORTS(GrantConstant.ACCESS_REPORTS, null, null, null, "Reports"),
 	SEND_EMAIL(GrantConstant.ACCESS_SEND_EMAIL, null, null, null, "Email"),
 	GROUPS(GrantConstant.ACCESS_GROUPS, GrantConstant.CREATE_GROUPS, GrantConstant.UPDATE_GROUPS, GrantConstant.DELETE_GROUPS,"Email"),
-	CONTACTS(GrantConstant.ACCESS_CONTACTS, GrantConstant.CREATE_CONTACTS, GrantConstant.UPDATE_CONTACTS, GrantConstant.DELETE_CONTACTS,"Email"),
+	CONTACTS(GrantConstant.ACCESS_CONTACTS, GrantConstant.CREATE_CONTACTS, GrantConstant.UPDATE_CONTACTS, GrantConstant.DELETE_CONTACTS,"Contacts"),
 
 	USERS(GrantConstant.ACCESS_USERS, GrantConstant.CREATE_USERS, GrantConstant.UPDATE_USERS, GrantConstant.DELETE_USERS,"User Management"),
 	USER_ROLES(GrantConstant.ACCESS_USER_ROLES, GrantConstant.CREATE_USER_ROLES, GrantConstant.UPDATE_USER_ROLES, GrantConstant.DELETE_USER_ROLES,"User Management"),
-	USER_GROUPS(GrantConstant.ACCESS_USER_GROUPS, GrantConstant.CREATE_USER_GROUPS, GrantConstant.UPDATE_USER_GROUPS, GrantConstant.DELETE_USER_GROUPS,"User Management");
+	USER_GROUPS(GrantConstant.ACCESS_USER_GROUPS, GrantConstant.CREATE_USER_GROUPS, GrantConstant.UPDATE_USER_GROUPS, GrantConstant.DELETE_USER_GROUPS,"User Management"),
 
+	ACCOUNT_APPROVAL(GrantConstant.ACCOUNT_APPROVAL,null,null,null,"Account Approvals"),
+	ANALYTICS(GrantConstant.ANALYTICS,null,null,null,"Analytics"),
+	BULK_UPLOAD(GrantConstant.BULK_UPLOAD,null,null,null,"Bulk Upload Contacts"),
+	
+	SERVERS(GrantConstant.ACCESS_SERVERS,GrantConstant.CREATE_SERVERS,GrantConstant.UPDATE_SERVERS,GrantConstant.DELETE_SERVERS,"Servers");
 
 	// User Authorities
 	private GrantConstant viewGrant;

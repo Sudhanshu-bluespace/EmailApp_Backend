@@ -10,7 +10,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -58,6 +61,8 @@ public class EmailController {
 
 	@Autowired
 	private EmailContactGroupService emailContactGroupService;
+	
+	private static final Logger LOGGER = LogManager.getLogger(EmailController.class);
 
 	@Autowired
 	@Qualifier("groupEmailJob")
@@ -65,13 +70,14 @@ public class EmailController {
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void job(@RequestBody final EmailVO emailVO, HttpServletRequest request) {
+		Email email = null;
 		try {
 			final Map<String, JobParameter> jobParametersMap = new HashMap<String, JobParameter>();
-			Email email = null;
 			if (!emailVO.isPersonalizedEmail()) {
 				email = emailService.createEmail(emailVO);
 			}
 			if (emailVO.getGroupId() != null) {
+				LOGGER.info("Running job for single group..");
 				jobParametersMap.put("groupId", new JobParameter(emailVO.getGroupId()));
 				if (email != null) {
 					jobParametersMap.put("emailId", new JobParameter(email.getId()));
@@ -91,10 +97,23 @@ public class EmailController {
 					jobParametersMap.put("message", new JobParameter(emailVO.getMessage()));
 					jobParametersMap.put("subject", new JobParameter(emailVO.getSubject()));
 					jobParametersMap.put("emailRequestURL", new JobParameter(request.getRequestURL().toString()));
-					jobLauncher.run(job, new JobParameters(jobParametersMap));
+					JobExecution execution = jobLauncher.run(job, new JobParameters(jobParametersMap));
+					
+					LOGGER.info("Job status : "+execution.getExitStatus());
+					if(execution.getExitStatus().getExitCode().contains("FAILED"))
+					{
+						throw new BusinessException("Failed to execute Job");
+					}
 				}
 			}
 		} catch (final Exception e) {
+			LOGGER.error("Error caught in controller : "+e.getMessage()+" Rolling back email creation entry");
+			try {
+				emailService.deleteEmail(email);
+				LOGGER.info("Email record rolled back successfully");
+			} catch (BusinessException e1) {
+				LOGGER.error("Failed to rollback transaction, reason : ["+e1.getMessage()+"]");
+			}
 			throw new RuntimeException(e);
 
 		}

@@ -40,6 +40,12 @@ public class EmailServiceImpl implements EmailService {
 		final Email newEmail = emailRepository.save(email);
 		return newEmail;
 	}
+	
+	@Override
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+	public void deleteEmail(final Email email) throws BusinessException {
+		emailRepository.delete(email);
+	}
 
 	@Override
 	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")

@@ -124,7 +124,7 @@ public class UserService implements UserDetailsService {
 		final boolean isCredentialsNotExpired = !userAccount
 				.isCredentialsExpired();
 
-		final boolean isAccountNotLocked = !userAccount.isAccountLocked();
+		final boolean isAccountNotLocked = !userAccount.isAccountLocked() && userAccount.isVerifiedByAdmin();
 
 		final UserDetails userDetails = new org.springframework.security.core.userdetails.User(
 				username, password, isActive, isAccountNotExpried,

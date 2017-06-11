@@ -23,6 +23,8 @@ public interface EmailService {
 	Email createEmail(final Email email) throws BusinessException;
 
 	Email createEmail(final EmailVO emailVO) throws BusinessException;
+	
+	void deleteEmail(final Email email) throws BusinessException;
 
 	List<Email> findAll();
 

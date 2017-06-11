@@ -14,6 +14,7 @@ public class LoginController extends AbstractBaseController {
 
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void login(@RequestBody final Credentials credentials) {
+		System.out.println("Inside authenticate");
 	}
 }
 

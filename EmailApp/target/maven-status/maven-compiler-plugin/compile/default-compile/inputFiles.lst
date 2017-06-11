@@ -18,6 +18,7 @@ D:\emailapp_backend\EmailApp\src\main\java\com\bluespacetech\security\service\Bl
 D:\emailapp_backend\EmailApp\src\main\java\com\bluespacetech\notifications\email\service\EmailServerPropertiesService.java
 D:\emailapp_backend\EmailApp\src\main\java\com\bluespacetech\notifications\email\valueobjects\EmailVO.java
 D:\emailapp_backend\EmailApp\src\main\java\com\bluespacetech\security\model\UserGroup.java
+D:\emailapp_backend\EmailApp\src\main\java\com\bluespacetech\security\controller\AboutController.java
 D:\emailapp_backend\EmailApp\src\main\java\com\bluespacetech\notifications\email\service\EmailContactGroupServiceImpl.java
 D:\emailapp_backend\EmailApp\src\main\java\com\bluespacetech\server\analytics\repository\RepositoryResponseDTO.java
 D:\emailapp_backend\EmailApp\src\main\java\com\bluespacetech\security\service\UserRoleServiceImpl.java

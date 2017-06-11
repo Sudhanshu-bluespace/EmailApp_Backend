@@ -1,39 +1,40 @@
 package com.bluespacetech.notifications.email.batch;
 
+import java.io.StringWriter;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.ui.velocity.VelocityEngineUtils;
-
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 import com.bluespacetech.notifications.email.util.ContactGroupMailMessage;
 import com.bluespacetech.notifications.email.util.EmailUtils;
+import com.bluespacetech.notifications.email.util.MailTemplateConfiguration;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
 
 public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContactGroupVO, ContactGroupMailMessage> {
 
-	// private static final Logger log =
-	// LoggerFactory.getLogger(EmailGroupContactItemProcessor.class);
-
 	private String emailRequestURL;
 
-	private static final Logger LOGGER = LogManager.getLogger(ContactGroupMailMessageItemWriter.class);
+	private static final Logger LOGGER = LogManager.getLogger(GroupContactEmailItemProcessor.class);
 
 	private JavaMailSender mailSender;
 
+	@Autowired
 	private VelocityEngine velocityEngine;
+	
+	@Autowired
+	private MailTemplateConfiguration templateConfiguration;
 
 	@Override
 	public ContactGroupMailMessage process(final EmailContactGroupVO emailContactGroupVO) throws Exception {
@@ -45,22 +46,28 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
 		final String unscribeLink = EmailUtils.generateUnscribeLink(emailContactGroupVO, emailRequestURL);
 		final String readMailImageSRC = EmailUtils.generateReadMailImageSRC(emailContactGroupVO, emailRequestURL,
 				value);
+		
+		LOGGER.info("footerLightText : "+templateConfiguration.getFooterLightText());
+		LOGGER.info("footerDarkText : "+templateConfiguration.getFooterDarkText());
 
-		final Map<String, Object> model = new HashMap<String, Object>();
-		model.put("userName", emailContactGroupVO.getContactFirstName());
-		model.put("emailText", emailContactGroupVO.getMessage());
-		model.put("unsubscribe", unscribeLink);
-		model.put("readMailImageSRC", readMailImageSRC);
-		final String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine,
-				"velocityTemplates/SimpleEmail.vm", model);
+		VelocityContext context = new VelocityContext();
+		context.put("userName", emailContactGroupVO.getContactFirstName());
+		context.put("emailText", emailContactGroupVO.getMessage());
+		context.put("unsubscribe", unscribeLink);
+		context.put("readMailImageSRC", readMailImageSRC);
+		context.put("footerLightText", templateConfiguration.getFooterLightText());
+		context.put("footerDarkText", templateConfiguration.getFooterDarkText());
+		
+		StringWriter writer = new StringWriter();
+		velocityEngine.mergeTemplate("velocityTemplates/SimpleEmail.vm","UTF-8", context,writer);
+		final String text = writer.toString();
 
 		final ContactGroupMailMessage contactGroupMailMessage = new ContactGroupMailMessage();
 		final MimeMessage mimeMessage = mailSender.createMimeMessage();
 		final MimeMessageHelper simpleMailMessage = new MimeMessageHelper(mimeMessage, true);
 		simpleMailMessage.setTo(emailContactGroupVO.getContactEmail());
 		if(mailSender instanceof JavaMailSenderImpl){
-			System.out.println("mail sender found.. : " +mailSender);
-			System.out.println(((JavaMailSenderImpl) mailSender).getHost()+" | "+((JavaMailSenderImpl) mailSender).getJavaMailProperties());
+			LOGGER.info(((JavaMailSenderImpl) mailSender).getHost()+" | "+((JavaMailSenderImpl) mailSender).getJavaMailProperties());
 			String fromAddress = ((JavaMailSenderImpl) mailSender).getJavaMailProperties().getProperty("mail.from");
 			simpleMailMessage.setFrom(fromAddress);
 		}

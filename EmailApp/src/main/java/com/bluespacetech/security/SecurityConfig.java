@@ -7,8 +7,11 @@
  */
 package com.bluespacetech.security;
 
+import java.util.Properties;
+
 import javax.servlet.MultipartConfigElement;
 
+import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.web.multipart.MultipartResolver;
@@ -58,10 +62,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 	
-	@Bean 
+	/*@Bean 
 	 public BCryptPasswordEncoder bCryptPasswordEncoder(){
 		 return new BCryptPasswordEncoder();
-	 }
+	 }*/
 	
 	@Bean
 	public MultipartResolver multiPartResolver()
@@ -88,21 +92,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    messageSource.setCacheSeconds(0);
 	    return messageSource;
 	}*/
+	 
+	 @Bean
+	 public VelocityEngine velocityEngine() throws Exception {
+	     Properties properties = new Properties();
+	     properties.setProperty("input.encoding", "UTF-8");
+	     properties.setProperty("output.encoding", "UTF-8");
+	     properties.setProperty("resource.loader", "class");
+	     properties.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+	     VelocityEngine velocityEngine = new VelocityEngine(properties);
+	     return velocityEngine;
+	 } 
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
+		
 		http
-		//.csrf().csrfTokenRepository(this.csrfTokenRepository()).and()
+		.csrf().csrfTokenRepository(this.csrfTokenRepository()).and()
 		.exceptionHandling()
 		.authenticationEntryPoint(unauthorizedHandler).and().formLogin().successHandler(authenticationSuccess)
 		.failureHandler(authenticationFailure).and().logout().permitAll().and().authorizeRequests()
 		.antMatchers("/app/resources/**","/index.html", "/**/*.js", "/**/app/resources/css/**.css", "/**/app/resources/js/**.js",
-						"/**/app/resources/fonts/*.*", "/**/app/resources/css/fonts/*.*", "/","/analytics/recentSummary","/new","/new/register","/new/**","/about/**")//.authenticated().
+						"/**/app/resources/fonts/*.*", "/**/app/resources/css/fonts/*.*", "/","/analytics/recentSummary","/new",
+						"/new/register","/new/**","/about/**","/emails/unsubscribe?**","/emails/readMail?**")//.authenticated().
 		.permitAll().anyRequest().authenticated()
 		.and()
-		.csrf().disable();
-		//.addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class);
+		//.csrf().disable();
+		.addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class);
 
 		// http.antMatcher("/*/**").authorizeRequests().antMatchers("/*/**").authenticated().and().formLogin().and().csrf()
 		// .disable();

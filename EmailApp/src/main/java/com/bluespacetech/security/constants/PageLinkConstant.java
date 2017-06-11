@@ -21,11 +21,13 @@ public enum PageLinkConstant implements Labeled {
 	SEND_EMAILS("Send Emails",1,"send_emails", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_SEND_EMAIL)),
 	CONTACTS("Contacts",2,"contacts", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_CONTACTS)),
 	SERVERS("Servers",5,"servers", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_SERVERS)),
-	USER_ROLES("User Roles",6,"user_roles", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_USER_ROLES)),
-	USER_GROUPS("User Groups",7,"user_groups", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_USER_GROUPS)),
-	USER_ACCOUNTS("User Accounts",8,"user_accounts", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_USER_GROUPS)),
-	GROUPS("Groups",3, "groups", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_GROUPS));
-
+	USER_ROLES("User Roles",9,"user_roles", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_USER_ROLES)),
+	USER_GROUPS("User Groups",10,"user_groups", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_USER_GROUPS)),
+	USER_ACCOUNTS("User Accounts",11,"user_accounts", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_USER_GROUPS)),
+	GROUPS("Groups",3, "groups", PageLinkTypeConstant.LINK, false,  EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ACCESS_GROUPS)),
+    ANALYTICS("Analytics",6,"analytics",PageLinkTypeConstant.LINK,false,EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN,UserAccountTypeConstant.ACC_TYPE_ADMIN,UserAccountTypeConstant.ACC_TYPE_EMPLOYEE), EnumSet.of(GrantConstant.ANALYTICS)),
+    ACCOUNT_APPROVAL("Account Approval",7,"account_approval",PageLinkTypeConstant.LINK,false,EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN),EnumSet.of(GrantConstant.ACCOUNT_APPROVAL)),
+    BULK_UPLOAD("Bulk Upload",8,"bulk_upload",PageLinkTypeConstant.LINK,false,EnumSet.of(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN),EnumSet.of(GrantConstant.BULK_UPLOAD));
 
 	private   String label;
 	private final int displayOrder;

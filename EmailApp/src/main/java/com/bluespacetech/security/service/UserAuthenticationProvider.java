@@ -17,11 +17,13 @@ public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticatio
 	UserService userService;
 
 	@Autowired
-	BCryptPasswordEncoder passwordEncoder;
+	PasswordEncoder passwordEncoder;
 
 	@Override
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+		System.out.println("Authentication check additional"); 
+		
 		if (authentication.getCredentials() == null || userDetails.getPassword() == null) {
 			throw new BadCredentialsException("Credentials may not be null.");
 		}

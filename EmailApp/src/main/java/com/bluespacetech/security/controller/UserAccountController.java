@@ -173,6 +173,7 @@ public class UserAccountController extends AbstractBaseController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable final Long id) {
+		System.out.println("deleting user account");
 		blueSpaceTechUserAccountService.deleteUserAccount(id);
 		return new ResponseEntity<Void>(HttpStatus.OK);
 	}

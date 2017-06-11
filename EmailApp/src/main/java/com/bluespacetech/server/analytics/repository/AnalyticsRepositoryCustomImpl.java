@@ -4,25 +4,20 @@
 package com.bluespacetech.server.analytics.repository;
 
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.bluespacetech.notifications.email.entity.Email;
-import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 import com.bluespacetech.server.analytics.query.QueryStringConstants;
+import com.sun.media.jfxmedia.logging.Logger;
 
 /**
  * @author sudhanshu
@@ -40,25 +35,34 @@ public class AnalyticsRepositoryCustomImpl implements AnalyticsRepositoryCustom 
 
 	@Override
 	public RepositoryResponseDTO findRecentCampaignStats(String userName) {
-		// TODO Auto-generated method stub
+
 		String queryString = QueryStringConstants.getQuery_RecentCampaignSummaryStats(userName);
 		Query query = em.createNativeQuery(queryString);
-		Object[] response = (Object[])query.getSingleResult();
-		RepositoryResponseDTO dto = new RepositoryResponseDTO();
-		dto.setEmail_id(Long.parseLong(response[2].toString()));
-		dto.setCreated_user(response[0].toString());
-		dto.setContent(response[4].toString());
-		dto.setSubject(response[3].toString());
-		dto.setReach(Integer.parseInt(response[7].toString()));
-		dto.setClicks(Integer.parseInt(response[6].toString()));
-		dto.setUnsubscribes(Integer.parseInt(response[1].toString()));
-		dto.setSentOn(response[5].toString());
-		dto.setClickPercentage(
-				(Integer.parseInt(response[6].toString())/Integer.parseInt(response[7].toString()))*100
-				);
-		dto.setUnsubscribePercentage(
-				(Integer.parseInt(response[1].toString())/Integer.parseInt(response[7].toString()))*100
-				);
+		RepositoryResponseDTO dto = null;
+		try
+		{
+			Object[] response = (Object[])query.getSingleResult();
+			
+			dto = new RepositoryResponseDTO();
+			dto.setEmail_id(Long.parseLong(response[2].toString()));
+			dto.setCreated_user(response[0].toString());
+			dto.setContent(response[4].toString());
+			dto.setSubject(response[3].toString());
+			dto.setReach(Integer.parseInt(response[7].toString()));
+			dto.setClicks(Integer.parseInt(response[6].toString()));
+			dto.setUnsubscribes(Integer.parseInt(response[1].toString()));
+			dto.setSentOn(response[5].toString());
+			dto.setClickPercentage(
+					(Integer.parseInt(response[6].toString())/Integer.parseInt(response[7].toString()))*100
+					);
+			dto.setUnsubscribePercentage(
+					(Integer.parseInt(response[1].toString())/Integer.parseInt(response[7].toString()))*100
+					);
+		}
+		catch(NoResultException ex)
+		{
+			dto = new RepositoryResponseDTO();
+		}
 		
 		return dto;
 	}
