@@ -20,50 +20,77 @@ import com.bluespacetech.notifications.email.entity.Email;
 import com.bluespacetech.notifications.email.repository.EmailRepository;
 import com.bluespacetech.notifications.email.valueobjects.EmailVO;
 
+// TODO: Auto-generated Javadoc
 /**
- * class for EmailService
+ * class for EmailService.
  *
  * @author pradeep created date 25-June-2015
+ * @author Sudhanshu Tripathy
  */
 @Service
 @Transactional(rollbackFor = { Exception.class, RuntimeException.class, BusinessException.class,
-		ApplicationException.class })
+        ApplicationException.class })
 @PreAuthorize("hasAuthority('EXCLUDE_ALL')")
-public class EmailServiceImpl implements EmailService {
+public class EmailServiceImpl implements EmailService
+{
 
-	@Autowired
-	private EmailRepository emailRepository;
+    /** The email repository. */
+    @Autowired
+    private EmailRepository emailRepository;
 
-	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-	public Email createEmail(final Email email) throws BusinessException {
-		final Email newEmail = emailRepository.save(email);
-		return newEmail;
-	}
-	
-	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-	public void deleteEmail(final Email email) throws BusinessException {
-		emailRepository.delete(email);
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.bluespacetech.notifications.email.service.EmailService#createEmail(
+     * com.bluespacetech.notifications.email.entity.Email)
+     */
+    @Override
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+    public Email createEmail(final Email email) throws BusinessException
+    {
+        final Email newEmail = emailRepository.save(email);
+        return newEmail;
+    }
 
-	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-	public Email createEmail(final EmailVO emailVO) throws BusinessException {
-		Email email = new Email();
-		email.setMessage(emailVO.getMessage());
-		email.setSubject(emailVO.getSubject());
-		email = createEmail(email);
-		return email;
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.bluespacetech.notifications.email.service.EmailService#deleteEmail(
+     * com.bluespacetech.notifications.email.entity.Email)
+     */
+    @Override
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+    public void deleteEmail(final Email email) throws BusinessException
+    {
+        emailRepository.delete(email);
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see
+     * com.bluespacetech.notifications.email.service.EmailService#createEmail(
+     * com.bluespacetech.notifications.email.valueobjects.EmailVO)
+     */
+    @Override
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+    public Email createEmail(final EmailVO emailVO) throws BusinessException
+    {
+        Email email = new Email();
+        email.setMessage(emailVO.getMessage());
+        email.setSubject(emailVO.getSubject());
+        email = createEmail(email);
+        return email;
+    }
 
-	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-	public List<Email> findAll() {
-		return emailRepository.findAll();
-	}
-
-
+    /*
+     * (non-Javadoc)
+     * @see com.bluespacetech.notifications.email.service.EmailService#findAll()
+     */
+    @Override
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+    public List<Email> findAll()
+    {
+        return emailRepository.findAll();
+    }
 
 }

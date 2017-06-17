@@ -18,15 +18,25 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 /**
- * @author pradeep
+ * The Class EntryPointUnauthorizedHandler.
  *
+ * @author pradeep
  */
 @Component
-public class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint {
-	@Override
-	public void commence(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse, final AuthenticationException e) throws IOException, ServletException {
-		httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+public class EntryPointUnauthorizedHandler implements AuthenticationEntryPoint
+{
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.security.web.AuthenticationEntryPoint#commence(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+     * org.springframework.security.core.AuthenticationException)
+     */
+    @Override
+    public void commence(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse,
+            final AuthenticationException e) throws IOException, ServletException
+    {
+        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-	}
+    }
 }

@@ -12,64 +12,125 @@ import javax.persistence.Table;
 
 import com.bluespacetech.core.model.BaseEntity;
 
+/**
+ * The Class AccountApproval.
+ * @author Sudhanshu Tripathy
+ */
 @Entity
 @Table(name = "ACCOUNT_APPROVAL")
-public class AccountApproval extends BaseEntity implements Serializable {
-	
-	/**
-	 * Universal serial version id for this class.
-	 */
-	private static final long serialVersionUID = -927045001321641282L;
-	
-	@OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE, CascadeType.REFRESH })
-	@JoinColumn(name = "USER_ACCOUNT_ID", nullable = false)
-	private UserAccount userAccount;
-	
-	@Column(name="ID_PENDING_APPROVAL", nullable=false)
-	private Long idPendingApproval;
-	
-	@Column(name="STATUS",nullable=false)
-	private String status;
-	
-	@Column(name="email",nullable=false)
-	private String email;
+public class AccountApproval extends BaseEntity implements Serializable
+{
 
-	public String getEmail() {
-		return email;
-	}
+    /**
+     * Universal serial version id for this class.
+     */
+    private static final long serialVersionUID = -927045001321641282L;
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    /** The user account. */
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    @JoinColumn(name = "USER_ACCOUNT_ID", nullable = false)
+    private UserAccount userAccount;
 
-	public UserAccount getUserAccount() {
-		return userAccount;
-	}
+    /** The id pending approval. */
+    @Column(name = "ID_PENDING_APPROVAL", nullable = false)
+    private Long idPendingApproval;
 
-	public void setUserAccount(UserAccount userAccount) {
-		this.userAccount = userAccount;
-	}
+    /** The status. */
+    @Column(name = "STATUS", nullable = false)
+    private String status;
 
-	public Long getIdPendingApproval() {
-		return idPendingApproval;
-	}
+    /** The email. */
+    @Column(name = "email", nullable = false)
+    private String email;
 
-	public void setIdPendingApproval(Long idPendingApproval) {
-		this.idPendingApproval = idPendingApproval;
-	}
+    /**
+     * Gets the email.
+     *
+     * @return the email
+     */
+    public String getEmail()
+    {
+        return email;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    /**
+     * Sets the email.
+     *
+     * @param email the new email
+     */
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    /**
+     * Gets the user account.
+     *
+     * @return the user account
+     */
+    public UserAccount getUserAccount()
+    {
+        return userAccount;
+    }
 
-	@Override
-	public String toString() {
-		return "AccountApproval [userAccount=" + userAccount + ", idPendingApproval=" + idPendingApproval + ", status="
-				+ status + ", email=" + email + "]";
-	}
+    /**
+     * Sets the user account.
+     *
+     * @param userAccount the new user account
+     */
+    public void setUserAccount(UserAccount userAccount)
+    {
+        this.userAccount = userAccount;
+    }
+
+    /**
+     * Gets the id pending approval.
+     *
+     * @return the id pending approval
+     */
+    public Long getIdPendingApproval()
+    {
+        return idPendingApproval;
+    }
+
+    /**
+     * Sets the id pending approval.
+     *
+     * @param idPendingApproval the new id pending approval
+     */
+    public void setIdPendingApproval(Long idPendingApproval)
+    {
+        this.idPendingApproval = idPendingApproval;
+    }
+
+    /**
+     * Gets the status.
+     *
+     * @return the status
+     */
+    public String getStatus()
+    {
+        return status;
+    }
+
+    /**
+     * Sets the status.
+     *
+     * @param status the new status
+     */
+    public void setStatus(String status)
+    {
+        this.status = status;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return "AccountApproval [userAccount=" + userAccount + ", idPendingApproval=" + idPendingApproval + ", status="
+                + status + ", email=" + email + "]";
+    }
 }

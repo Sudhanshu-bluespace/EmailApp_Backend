@@ -24,86 +24,132 @@ import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+/**
+ * The Class ContactGroupEmailBatchConfiguration.
+ * @author Sudhanshu Tripathy
+ */
 @Configuration
 @EnableBatchProcessing
-public class ContactGroupEmailBatchConfiguration {
+public class ContactGroupEmailBatchConfiguration
+{
 
-	@Autowired
-	public JobBuilderFactory jobBuilderFactory;
+    /** The job builder factory. */
+    @Autowired
+    public JobBuilderFactory jobBuilderFactory;
 
-	@Autowired
-	public StepBuilderFactory stepBuilderFactory;
+    /** The step builder factory. */
+    @Autowired
+    public StepBuilderFactory stepBuilderFactory;
 
-	@Autowired
-	public EmailContactGroupService emailContactGroupService;
+    /** The email contact group service. */
+    @Autowired
+    public EmailContactGroupService emailContactGroupService;
 
-	@Autowired
-	public JavaMailSender javaMailSender;
-	
-	private static final Logger LOGGER = LogManager.getLogger(ContactGroupEmailBatchConfiguration.class);
+    /** The java mail sender. */
+    @Autowired
+    public JavaMailSender javaMailSender;
 
-	@Autowired
-	public DataSource dataSource;
+    /** The Constant LOGGER. */
+    private static final Logger LOGGER = LogManager.getLogger(ContactGroupEmailBatchConfiguration.class);
 
-	private static String QUERY_FIND_CONTACTS = "SELECT FIRST_NAME, LAST_NAME, EMAIL, GROUP_ID, CONTACT_ID FROM CONTACTS "
-			+ "C, CONTACT_GROUP CG WHERE CG.CONTACT_ID = C.ID AND CG.UNSUBSCRIBED = 0";
+    /** The data source. */
+    @Autowired
+    public DataSource dataSource;
 
-	@Bean
-	@StepScope
-	JdbcCursorItemReader<EmailContactGroupVO> databaseItemReader(DataSource dataSource,
-			@Value("#{jobParameters[groupId]}") Long groupId,@Value("#{jobParameters[emailId]}") Long emailId, @Value("#{jobParameters[message]}") String message,
-			@Value("#{jobParameters[subject]}") String subject) {
-		final JdbcCursorItemReader<EmailContactGroupVO> databaseReader = new JdbcCursorItemReader<EmailContactGroupVO>();
-		databaseReader.setDataSource(dataSource);
-		final ContactGroupEmailRowMapper emailContactGroupRowMapper = new ContactGroupEmailRowMapper();
-		emailContactGroupRowMapper.setMessage(message);
-		emailContactGroupRowMapper.setSubject(subject);
-		if (emailId != null) {
-			emailContactGroupRowMapper.setEmailId(emailId);
-		}
-		databaseReader.setRowMapper(emailContactGroupRowMapper);
-		databaseReader.setSql(QUERY_FIND_CONTACTS);
-		QUERY_FIND_CONTACTS = QUERY_FIND_CONTACTS + " AND CG.GROUP_ID = " + groupId;
-		
-		LOGGER.info("Returning read object from : "+QUERY_FIND_CONTACTS);
-		return databaseReader;
-	}
+    /** The query find contacts. */
+    private static String QUERY_FIND_CONTACTS = "SELECT FIRST_NAME, LAST_NAME, EMAIL, GROUP_ID, CONTACT_ID FROM CONTACTS "
+            + "C, CONTACT_GROUP CG WHERE CG.CONTACT_ID = C.ID AND CG.UNSUBSCRIBED = 0";
 
-	@Bean
-	public ItemWriter<ContactGroupMailMessage> simpleEmailWriter(
-			final EmailContactGroupService emailContactGroupService) {
-		final ContactGroupMailMessageItemWriter writer = new ContactGroupMailMessageItemWriter();
+    /**
+     * Database item reader.
+     *
+     * @param dataSource the data source
+     * @param groupId the group id
+     * @param emailId the email id
+     * @param message the message
+     * @param subject the subject
+     * @return the jdbc cursor item reader
+     */
+    @Bean
+    @StepScope
+    JdbcCursorItemReader<EmailContactGroupVO> databaseItemReader(DataSource dataSource,
+            @Value("#{jobParameters[groupId]}") Long groupId, @Value("#{jobParameters[emailId]}") Long emailId,
+            @Value("#{jobParameters[message]}") String message, @Value("#{jobParameters[subject]}") String subject)
+    {
+        final JdbcCursorItemReader<EmailContactGroupVO> databaseReader = new JdbcCursorItemReader<EmailContactGroupVO>();
+        databaseReader.setDataSource(dataSource);
+        final ContactGroupEmailRowMapper emailContactGroupRowMapper = new ContactGroupEmailRowMapper();
+        emailContactGroupRowMapper.setMessage(message);
+        emailContactGroupRowMapper.setSubject(subject);
+        if (emailId != null)
+        {
+            emailContactGroupRowMapper.setEmailId(emailId);
+        }
+        databaseReader.setRowMapper(emailContactGroupRowMapper);
+        databaseReader.setSql(QUERY_FIND_CONTACTS);
+        QUERY_FIND_CONTACTS = QUERY_FIND_CONTACTS + " AND CG.GROUP_ID = " + groupId;
 
-		writer.setMailSender(javaMailSender);
-		writer.setEmailContactGroupService(emailContactGroupService);
-		return writer;
-	}
+        LOGGER.info("Returning read object from : " + QUERY_FIND_CONTACTS);
+        return databaseReader;
+    }
 
-	@Bean
-	@StepScope
-	public GroupContactEmailItemProcessor processor(
-			@Value("#{jobParameters[emailRequestURL]}") String emailRequestURL) {
-		final GroupContactEmailItemProcessor processor = new GroupContactEmailItemProcessor();
-		processor.setEmailRequestURL(emailRequestURL);
-		processor.setMailSender(javaMailSender);
-		return processor;
-	}
+    /**
+     * Simple email writer.
+     *
+     * @param emailContactGroupService the email contact group service
+     * @return the item writer
+     */
+    @Bean
+    public ItemWriter<ContactGroupMailMessage> simpleEmailWriter(
+            final EmailContactGroupService emailContactGroupService)
+    {
+        final ContactGroupMailMessageItemWriter writer = new ContactGroupMailMessageItemWriter();
 
+        writer.setMailSender(javaMailSender);
+        writer.setEmailContactGroupService(emailContactGroupService);
+        return writer;
+    }
 
-	@Bean(name = "groupEmailJob")
-	public Job groupEmailJob() {
-		LOGGER.debug("Triggering Job (groupEmailJob)");
-		return jobBuilderFactory.get("groupEmailJob").incrementer(new RunIdIncrementer()).flow(step1()).end().build();
-	}
+    /**
+     * Processor.
+     *
+     * @param emailRequestURL the email request URL
+     * @return the group contact email item processor
+     */
+    @Bean
+    @StepScope
+    public GroupContactEmailItemProcessor processor(@Value("#{jobParameters[emailRequestURL]}") String emailRequestURL)
+    {
+        final GroupContactEmailItemProcessor processor = new GroupContactEmailItemProcessor();
+        processor.setEmailRequestURL(emailRequestURL);
+        processor.setMailSender(javaMailSender);
+        return processor;
+    }
 
-	@Bean
-	public Step step1() {
-		LOGGER.info("Executing Batch Job for email processing");
-		return stepBuilderFactory.get("step1").<EmailContactGroupVO, ContactGroupMailMessage> chunk(10)
-				.reader(databaseItemReader(dataSource, null, null, null, null))
-				.processor(processor(null))
-				.writer(simpleEmailWriter(emailContactGroupService)
-						).build();
-	}
+    /**
+     * Group email job.
+     *
+     * @return the job
+     */
+    @Bean(name = "groupEmailJob")
+    public Job groupEmailJob()
+    {
+        LOGGER.debug("Triggering Job (groupEmailJob)");
+        return jobBuilderFactory.get("groupEmailJob").incrementer(new RunIdIncrementer()).flow(step1()).end().build();
+    }
+
+    /**
+     * Step 1.
+     *
+     * @return the step
+     */
+    @Bean
+    public Step step1()
+    {
+        LOGGER.info("Executing Batch Job for email processing");
+        return stepBuilderFactory.get("step1").<EmailContactGroupVO, ContactGroupMailMessage> chunk(10)
+                .reader(databaseItemReader(dataSource, null, null, null, null)).processor(processor(null))
+                .writer(simpleEmailWriter(emailContactGroupService)).build();
+    }
 
 }

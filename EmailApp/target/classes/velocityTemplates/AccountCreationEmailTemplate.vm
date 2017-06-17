@@ -1,0 +1,21 @@
+<html>
+ 
+<head>
+	<link rel="stylesheet" type="text/css" href="${style}">
+</head>
+ 
+<body>
+<img src='${image}'/>
+    <div class="mainMessageDiv">
+    <p>Welcome ${userName}, your account for Bluespacemailer has been created successfully and is pending self-verification and approval. The activation process mandates that you verify your email by clicking on the ‘Verify my account’ link given beloe. Upon your acount verification, the account will be reviewed by our team and you will be granted access to hthe feaures accordingly.</p>
+    <p>Thanks</p>
+    <p>${signature}</p>
+    </div>
+    
+    <div class="verifyAccountDiv">
+    	<a href="${verificationUrl}">Verify your Account</a>
+    </div>
+    <p class="unsubscribe">Go to Bluespacemailer.com | <a href="unsubscribe">Unsubscribe</a></p>
+</body>
+ 
+</html>

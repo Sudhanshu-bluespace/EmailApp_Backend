@@ -18,200 +18,309 @@ import org.springframework.hateoas.ResourceSupport;
 
 import com.bluespacetech.security.constants.UserAccountTypeConstant;
 
-public class UserAccountResource  extends ResourceSupport  {
+/**
+ * The Class UserAccountResource.
+ */
+public class UserAccountResource extends ResourceSupport
+{
 
-	private Long objectId;
+    /** The object id. */
+    private Long objectId;
 
-	private Long version;
+    /** The version. */
+    private Long version;
 
-	private Collection<UserAccountUserGroupResource> userAccountUserGroups;
+    /** The user account user groups. */
+    private Collection<UserAccountUserGroupResource> userAccountUserGroups;
 
-	private String username;
+    /** The username. */
+    private String username;
 
-	private boolean active;
+    /** The active. */
+    private boolean active;
 
-	private boolean accountExpired;
+    /** The account expired. */
+    private boolean accountExpired;
 
-	private boolean credentialsExpired;
+    /** The credentials expired. */
+    private boolean credentialsExpired;
 
-	private boolean accountLocked;
+    /** The account locked. */
+    private boolean accountLocked;
 
-	private UserAccountTypeConstant userAccountType;
+    /** The user account type. */
+    private UserAccountTypeConstant userAccountType;
 
-	private String employeeNumber;
+    /** The employee number. */
+    private String employeeNumber;
 
-	private String password;
+    /** The password. */
+    private String password;
 
-	private String email;
+    /** The email. */
+    private String email;
 
-	/**
-	 * @return the objectId
-	 */
-	public Long getObjectId() {
-		return objectId;
-	}
+    /** The company name. */
+    private String companyName;
 
-	/**
-	 * @param objectId the objectId to set
-	 */
-	public void setObjectId(final Long objectId) {
-		this.objectId = objectId;
-	}
+    /**
+     * Gets the company name.
+     *
+     * @return the company name
+     */
+    public String getCompanyName()
+    {
+        return companyName;
+    }
 
-	/**
-	 * @return the version
-	 */
-	public Long getVersion() {
-		return version;
-	}
+    /**
+     * Sets the company name.
+     *
+     * @param companyName the new company name
+     */
+    public void setCompanyName(String companyName)
+    {
+        this.companyName = companyName;
+    }
 
-	/**
-	 * @param version the version to set
-	 */
-	public void setVersion(final Long version) {
-		this.version = version;
-	}
+    /**
+     * Gets the object id.
+     *
+     * @return the objectId
+     */
+    public Long getObjectId()
+    {
+        return objectId;
+    }
 
-	/**
-	 * @return the username
-	 */
-	public String getUsername() {
-		return username;
-	}
+    /**
+     * Sets the object id.
+     *
+     * @param objectId the objectId to set
+     */
+    public void setObjectId(final Long objectId)
+    {
+        this.objectId = objectId;
+    }
 
-	/**
-	 * @param username the username to set
-	 */
-	public void setUsername(final String username) {
-		this.username = username;
-	}
+    /**
+     * Gets the version.
+     *
+     * @return the version
+     */
+    public Long getVersion()
+    {
+        return version;
+    }
 
-	/**
-	 * @return the active
-	 */
-	public boolean isActive() {
-		return active;
-	}
+    /**
+     * Sets the version.
+     *
+     * @param version the version to set
+     */
+    public void setVersion(final Long version)
+    {
+        this.version = version;
+    }
 
-	/**
-	 * @param active the active to set
-	 */
-	public void setActive(final boolean active) {
-		this.active = active;
-	}
+    /**
+     * Gets the username.
+     *
+     * @return the username
+     */
+    public String getUsername()
+    {
+        return username;
+    }
 
-	/**
-	 * @return the accountExpired
-	 */
-	public boolean isAccountExpired() {
-		return accountExpired;
-	}
+    /**
+     * Sets the username.
+     *
+     * @param username the username to set
+     */
+    public void setUsername(final String username)
+    {
+        this.username = username;
+    }
 
-	/**
-	 * @param accountExpired the accountExpired to set
-	 */
-	public void setAccountExpired(final boolean accountExpired) {
-		this.accountExpired = accountExpired;
-	}
+    /**
+     * Checks if is active.
+     *
+     * @return the active
+     */
+    public boolean isActive()
+    {
+        return active;
+    }
 
-	/**
-	 * @return the credentialsExpired
-	 */
-	public boolean isCredentialsExpired() {
-		return credentialsExpired;
-	}
+    /**
+     * Sets the active.
+     *
+     * @param active the active to set
+     */
+    public void setActive(final boolean active)
+    {
+        this.active = active;
+    }
 
-	/**
-	 * @param credentialsExpired the credentialsExpired to set
-	 */
-	public void setCredentialsExpired(final boolean credentialsExpired) {
-		this.credentialsExpired = credentialsExpired;
-	}
+    /**
+     * Checks if is account expired.
+     *
+     * @return the accountExpired
+     */
+    public boolean isAccountExpired()
+    {
+        return accountExpired;
+    }
 
-	/**
-	 * @return the accountLocked
-	 */
-	public boolean isAccountLocked() {
-		return accountLocked;
-	}
+    /**
+     * Sets the account expired.
+     *
+     * @param accountExpired the accountExpired to set
+     */
+    public void setAccountExpired(final boolean accountExpired)
+    {
+        this.accountExpired = accountExpired;
+    }
 
-	/**
-	 * @param accountLocked the accountLocked to set
-	 */
-	public void setAccountLocked(final boolean accountLocked) {
-		this.accountLocked = accountLocked;
-	}
+    /**
+     * Checks if is credentials expired.
+     *
+     * @return the credentialsExpired
+     */
+    public boolean isCredentialsExpired()
+    {
+        return credentialsExpired;
+    }
 
-	/**
-	 * @return the userAccountType
-	 */
-	public UserAccountTypeConstant getUserAccountType() {
-		return userAccountType;
-	}
+    /**
+     * Sets the credentials expired.
+     *
+     * @param credentialsExpired the credentialsExpired to set
+     */
+    public void setCredentialsExpired(final boolean credentialsExpired)
+    {
+        this.credentialsExpired = credentialsExpired;
+    }
 
-	/**
-	 * @param userAccountType the userAccountType to set
-	 */
-	public void setUserAccountType(final UserAccountTypeConstant userAccountType) {
-		this.userAccountType = userAccountType;
-	}
+    /**
+     * Checks if is account locked.
+     *
+     * @return the accountLocked
+     */
+    public boolean isAccountLocked()
+    {
+        return accountLocked;
+    }
 
-	/**
-	 * @return the userAccountUserGroups
-	 */
-	public Collection<UserAccountUserGroupResource> getUserAccountUserGroups() {
-		return userAccountUserGroups;
-	}
+    /**
+     * Sets the account locked.
+     *
+     * @param accountLocked the accountLocked to set
+     */
+    public void setAccountLocked(final boolean accountLocked)
+    {
+        this.accountLocked = accountLocked;
+    }
 
-	/**
-	 * @param userAccountUserGroups the userAccountUserGroups to set
-	 */
-	public void setUserAccountUserGroups(
-			final Collection<UserAccountUserGroupResource> userAccountUserGroups) {
-		this.userAccountUserGroups = userAccountUserGroups;
-	}
+    /**
+     * Gets the user account type.
+     *
+     * @return the userAccountType
+     */
+    public UserAccountTypeConstant getUserAccountType()
+    {
+        return userAccountType;
+    }
 
-	/**
-	 * @return the employeeNumber
-	 */
-	public String getEmployeeNumber() {
-		return employeeNumber;
-	}
+    /**
+     * Sets the user account type.
+     *
+     * @param userAccountType the userAccountType to set
+     */
+    public void setUserAccountType(final UserAccountTypeConstant userAccountType)
+    {
+        this.userAccountType = userAccountType;
+    }
 
-	/**
-	 * @param employeeNumber the employeeNumber to set
-	 */
-	public void setEmployeeNumber(final String employeeNumber) {
-		this.employeeNumber = employeeNumber;
-	}
+    /**
+     * Gets the user account user groups.
+     *
+     * @return the userAccountUserGroups
+     */
+    public Collection<UserAccountUserGroupResource> getUserAccountUserGroups()
+    {
+        return userAccountUserGroups;
+    }
 
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
-	}
+    /**
+     * Sets the user account user groups.
+     *
+     * @param userAccountUserGroups the userAccountUserGroups to set
+     */
+    public void setUserAccountUserGroups(final Collection<UserAccountUserGroupResource> userAccountUserGroups)
+    {
+        this.userAccountUserGroups = userAccountUserGroups;
+    }
 
-	/**
-	 * @param password the password to set
-	 */
-	public void setPassword(final String password) {
-		this.password = password;
-	}
+    /**
+     * Gets the employee number.
+     *
+     * @return the employeeNumber
+     */
+    public String getEmployeeNumber()
+    {
+        return employeeNumber;
+    }
 
-	/**
-	 * @return the email
-	 */
-	public String getEmail() {
-		return email;
-	}
+    /**
+     * Sets the employee number.
+     *
+     * @param employeeNumber the employeeNumber to set
+     */
+    public void setEmployeeNumber(final String employeeNumber)
+    {
+        this.employeeNumber = employeeNumber;
+    }
 
-	/**
-	 * @param email
-	 *            the email to set
-	 */
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    /**
+     * Gets the password.
+     *
+     * @return the password
+     */
+    public String getPassword()
+    {
+        return password;
+    }
+
+    /**
+     * Sets the password.
+     *
+     * @param password the password to set
+     */
+    public void setPassword(final String password)
+    {
+        this.password = password;
+    }
+
+    /**
+     * Gets the email.
+     *
+     * @return the email
+     */
+    public String getEmail()
+    {
+        return email;
+    }
+
+    /**
+     * Sets the email.
+     *
+     * @param email the email to set
+     */
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
 
 }

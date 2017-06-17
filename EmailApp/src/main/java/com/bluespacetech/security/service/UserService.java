@@ -29,122 +29,144 @@ import com.bluespacetech.security.model.UserRoleAuthority;
 import com.bluespacetech.security.repository.UserGroupRepository;
 import com.bluespacetech.security.repository.UserRoleRepository;
 
+/**
+ * The Class UserService.
+ * 
+ * @author Sudhanshu Tripathy
+ */
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService
+{
 
-	@Autowired
-	UserAccountService userAccountService;
+    /** The user account service. */
+    @Autowired
+    UserAccountService userAccountService;
 
-	// @Autowired
-	// PageLinksService pageLinksService;
+    // @Autowired
+    // PageLinksService pageLinksService;
 
-	@Autowired
-	UserGroupRepository userGroupRepository;
+    /** The user group repository. */
+    @Autowired
+    UserGroupRepository userGroupRepository;
 
-	@Autowired
-	UserRoleRepository userRoleRepository;
+    /** The user role repository. */
+    @Autowired
+    UserRoleRepository userRoleRepository;
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException
+    {
+        UserAccount userAccount = null;
+        System.out.println("inside user details service");
 
-	/**
-	 *
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public UserDetails loadUserByUsername(final String username)
-			throws UsernameNotFoundException {
-		UserAccount userAccount = null;
-		System.out.println("inside user details service");
+        try
+        {
+            userAccount = userAccountService.findUserAccountByUsername(username);
+        }
+        catch (final RuntimeException exception)
+        {
+            throw new UsernameNotFoundException(exception.getMessage());
+        }
 
-		try {
-			userAccount = userAccountService
-					.findUserAccountByUsername(username);
-		} catch (final RuntimeException exception) {
-			throw new UsernameNotFoundException(exception.getMessage());
-		}
+        if (userAccount == null)
+        {
+            throw new UsernameNotFoundException("User not found by username");
+        }
 
-		if (userAccount == null) {
-			throw new UsernameNotFoundException("User not found by username");
-		}
+        final List<Long> userGroupIds = new ArrayList<Long>();
+        final Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 
+        for (final UserAccountUserGroup userAccountUserGroup : userAccount.getUserAccountUserGroups())
+        {
+            userGroupIds.add(userAccountUserGroup.getUserGroupId());
+        }
+        if (userGroupIds.size() > 0)
+        {
+            final List<Long> userRoleIds = new ArrayList<Long>();
+            final List<UserGroup> userGroups = userGroupRepository.findAll(userGroupIds);
+            for (final UserGroup userGroup : userGroups)
+            {
+                for (final UserGroupUserRole userGroupUserRole : userGroup.getUserGroupUserRoles())
+                {
+                    userRoleIds.add(userGroupUserRole.getUserRoleId());
+                }
+            }
+            if (userRoleIds.size() > 0)
+            {
+                final List<UserRole> userRoles = userRoleRepository.findAll(userRoleIds);
+                for (final UserRole userRole : userRoles)
+                {
+                    for (final UserRoleAuthority userRoleAuthority : userRole.getUserRoleAuthorities())
+                    {
+                        grantedAuthorities.add(new SimpleGrantedAuthority(
+                                userRoleAuthority.getAuthorityGrant().getLabel().toUpperCase()));
+                    }
+                }
+            }
+        }
 
-		final List<Long> userGroupIds = new ArrayList<Long>();
-		final Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+        if (UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.equals(userAccount.getUserAccountType()))
+        {
+            grantedAuthorities
+                    .add(new SimpleGrantedAuthority(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.getAccountType()));
+        }
+        else if (UserAccountTypeConstant.ACC_TYPE_ADMIN.equals(userAccount.getUserAccountType()))
+        {
+            grantedAuthorities.add(new SimpleGrantedAuthority(UserAccountTypeConstant.ACC_TYPE_ADMIN.getAccountType()));
+        }
+        else if (UserAccountTypeConstant.ACC_TYPE_EMPLOYEE.equals(userAccount.getUserAccountType()))
+        {
+            grantedAuthorities
+                    .add(new SimpleGrantedAuthority(UserAccountTypeConstant.ACC_TYPE_EMPLOYEE.getAccountType()));
+        }
+        else if (UserAccountTypeConstant.ACC_TYPE_USER.equals(userAccount.getUserAccountType()))
+        {
+            grantedAuthorities.add(new SimpleGrantedAuthority(UserAccountTypeConstant.ACC_TYPE_USER.getAccountType()));
+        }
+        // System.out.println("inside loadUserByUsername() :grantedAuthorities "
+        // + grantedAuthorities);
+        if (grantedAuthorities.isEmpty())
+        {
+            throw new UsernameNotFoundException("User does not have granted authorities");
+        }
 
-		for(final UserAccountUserGroup userAccountUserGroup : userAccount.getUserAccountUserGroups()){
-			userGroupIds.add(userAccountUserGroup.getUserGroupId());
-		}
-		if(userGroupIds.size()>0){
-			final List<Long> userRoleIds = new ArrayList<Long>();
-			final List<UserGroup> userGroups = userGroupRepository.findAll(userGroupIds);
-			for(final UserGroup userGroup : userGroups){
-				for(final UserGroupUserRole userGroupUserRole : userGroup.getUserGroupUserRoles()){
-					userRoleIds.add(userGroupUserRole.getUserRoleId());
-				}
-			}
-			if(userRoleIds.size()>0){
-				final List<UserRole> userRoles = userRoleRepository.findAll(userRoleIds);
-				for(final UserRole userRole : userRoles){
-					for(final UserRoleAuthority userRoleAuthority : userRole.getUserRoleAuthorities()){
-						grantedAuthorities.add(new SimpleGrantedAuthority(userRoleAuthority.getAuthorityGrant().getLabel().toUpperCase()));
-					}
-				}
-			}
-		}
+        final String password = userAccount.getPassword();
 
-		if (UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.equals(userAccount
-				.getUserAccountType())) {
-			grantedAuthorities.add(new SimpleGrantedAuthority(
-					UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN
-					.getAccountType()));
-		} else if (UserAccountTypeConstant.ACC_TYPE_ADMIN.equals(userAccount
-				.getUserAccountType())) {
-			grantedAuthorities.add(new SimpleGrantedAuthority(
-					UserAccountTypeConstant.ACC_TYPE_ADMIN.getAccountType()));
-		} else if (UserAccountTypeConstant.ACC_TYPE_EMPLOYEE.equals(userAccount
-				.getUserAccountType())) {
-			grantedAuthorities.add(new SimpleGrantedAuthority(
-					UserAccountTypeConstant.ACC_TYPE_EMPLOYEE.getAccountType()));
-		} else if (UserAccountTypeConstant.ACC_TYPE_USER.equals(userAccount.getUserAccountType())) {
-			grantedAuthorities.add(new SimpleGrantedAuthority(UserAccountTypeConstant.ACC_TYPE_USER.getAccountType()));
-		}
-		// System.out.println("inside loadUserByUsername() :grantedAuthorities "
-		// + grantedAuthorities);
-		if (grantedAuthorities.isEmpty()) {
-			throw new UsernameNotFoundException(
-					"User does not have granted authorities");
-		}
+        final boolean isActive = userAccount.isActive();
 
-		final String password = userAccount.getPassword();
+        final boolean isAccountNotExpried = !userAccount.isAccountExpired();
 
-		final boolean isActive = userAccount.isActive();
+        final boolean isCredentialsNotExpired = !userAccount.isCredentialsExpired();
 
-		final boolean isAccountNotExpried = !userAccount.isAccountExpired();
+        final boolean isAccountNotLocked = !userAccount.isAccountLocked() && userAccount.isVerifiedByAdmin();
 
-		final boolean isCredentialsNotExpired = !userAccount
-				.isCredentialsExpired();
+        final UserDetails userDetails = new org.springframework.security.core.userdetails.User(username, password,
+                isActive, isAccountNotExpried, isCredentialsNotExpired, isAccountNotLocked, grantedAuthorities);
+        System.out.println("User returned : " + userDetails.getUsername() + "|" + userDetails.getPassword());
+        // pageLinksService.getPageLinksAllowedForUser();
+        return userDetails;
+    }
 
-		final boolean isAccountNotLocked = !userAccount.isAccountLocked() && userAccount.isVerifiedByAdmin();
+    /**
+     * Update password for user account.
+     *
+     * @param username the username
+     * @param password the password
+     */
+    public void updatePasswordForUserAccount(final String username, final String password)
+    {
 
-		final UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-				username, password, isActive, isAccountNotExpried,
-				isCredentialsNotExpired, isAccountNotLocked, grantedAuthorities);
-		System.out.println("User returned : "+userDetails.getUsername()+"|"+userDetails.getPassword());
-		//pageLinksService.getPageLinksAllowedForUser();
-		return userDetails;
-	}
+        /*
+         * final UserAccount userAccount = findUserAccountByUsername(username); final PasswordEncoder encoder = new PasswordEncoder(); final String encodedPassword = encoder.encodePassword(password,
+         * null); userAccount.setPassword(encodedPassword); updateUserAccount(userAccount);
+         */
 
-	public void updatePasswordForUserAccount(final String username,
-			final String password) {
-
-		/*
-		 * final UserAccount userAccount = findUserAccountByUsername(username);
-		 * final PasswordEncoder encoder = new PasswordEncoder(); final String
-		 * encodedPassword = encoder.encodePassword(password, null);
-		 * userAccount.setPassword(encodedPassword);
-		 * updateUserAccount(userAccount);
-		 */
-
-	}
+    }
 
 }

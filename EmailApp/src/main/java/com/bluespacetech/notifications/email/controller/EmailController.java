@@ -40,153 +40,214 @@ import com.bluespacetech.notifications.email.service.EmailService;
 import com.bluespacetech.notifications.email.valueobjects.EmailVO;
 
 /**
+ * The Class EmailController.
+ *
  * @author pradeep created date 30-Jan-2015
+ * @author Sudhanshu Tripathy modified 17-April-2017
  */
 @RestController
 @RequestMapping("/emails")
 @CrossOrigin
-public class EmailController {
+public class EmailController
+{
 
-	@Autowired
-	private JobLauncher jobLauncher;
+    /** The job launcher. */
+    @Autowired
+    private JobLauncher jobLauncher;
 
-	@Autowired
-	private EmailService emailService;
+    /** The email service. */
+    @Autowired
+    private EmailService emailService;
 
-	@Autowired
-	private ContactService contactService;
+    /** The contact service. */
+    @Autowired
+    private ContactService contactService;
 
-	@Autowired
-	private ContactGroupService contactGroupService;
+    /** The contact group service. */
+    @Autowired
+    private ContactGroupService contactGroupService;
 
-	@Autowired
-	private EmailContactGroupService emailContactGroupService;
-	
-	private static final Logger LOGGER = LogManager.getLogger(EmailController.class);
+    /** The email contact group service. */
+    @Autowired
+    private EmailContactGroupService emailContactGroupService;
 
-	@Autowired
-	@Qualifier("groupEmailJob")
-	private Job job;
+    /** The Constant LOGGER. */
+    private static final Logger LOGGER = LogManager.getLogger(EmailController.class);
 
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void job(@RequestBody final EmailVO emailVO, HttpServletRequest request) {
-		Email email = null;
-		try {
-			final Map<String, JobParameter> jobParametersMap = new HashMap<String, JobParameter>();
-			if (!emailVO.isPersonalizedEmail()) {
-				email = emailService.createEmail(emailVO);
-			}
-			if (emailVO.getGroupId() != null) {
-				LOGGER.info("Running job for single group..");
-				jobParametersMap.put("groupId", new JobParameter(emailVO.getGroupId()));
-				if (email != null) {
-					jobParametersMap.put("emailId", new JobParameter(email.getId()));
-				}
-				jobParametersMap.put("dateAndTime", new JobParameter(new Date()));
-				jobParametersMap.put("message", new JobParameter(emailVO.getMessage()));
-				jobParametersMap.put("subject", new JobParameter(emailVO.getSubject()));
-				jobParametersMap.put("emailRequestURL", new JobParameter(request.getRequestURL().toString()));
-				jobLauncher.run(job, new JobParameters(jobParametersMap));
-			} else if (emailVO.getGroupIdList() != null && !emailVO.getGroupIdList().isEmpty()) {
-				for (final Long groupId : emailVO.getGroupIdList()) {
-					if (email != null) {
-						jobParametersMap.put("emailId", new JobParameter(email.getId()));
-					}
-					jobParametersMap.put("groupId", new JobParameter(groupId));
-					jobParametersMap.put("dateAndTime", new JobParameter(new Date()));
-					jobParametersMap.put("message", new JobParameter(emailVO.getMessage()));
-					jobParametersMap.put("subject", new JobParameter(emailVO.getSubject()));
-					jobParametersMap.put("emailRequestURL", new JobParameter(request.getRequestURL().toString()));
-					JobExecution execution = jobLauncher.run(job, new JobParameters(jobParametersMap));
-					
-					LOGGER.info("Job status : "+execution.getExitStatus());
-					if(execution.getExitStatus().getExitCode().contains("FAILED"))
-					{
-						throw new BusinessException("Failed to execute Job");
-					}
-				}
-			}
-		} catch (final Exception e) {
-			LOGGER.error("Error caught in controller : "+e.getMessage()+" Rolling back email creation entry");
-			try {
-				emailService.deleteEmail(email);
-				LOGGER.info("Email record rolled back successfully");
-			} catch (BusinessException e1) {
-				LOGGER.error("Failed to rollback transaction, reason : ["+e1.getMessage()+"]");
-			}
-			throw new RuntimeException(e);
+    /** The job. */
+    @Autowired
+    @Qualifier("groupEmailJob")
+    private Job job;
 
-		}
-	}
+    /**
+     * Job.
+     *
+     * @param emailVO the email VO
+     * @param request the request
+     */
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void job(@RequestBody final EmailVO emailVO, HttpServletRequest request)
+    {
+        Email email = null;
+        try
+        {
+            final Map<String, JobParameter> jobParametersMap = new HashMap<String, JobParameter>();
+            if (!emailVO.isPersonalizedEmail())
+            {
+                email = emailService.createEmail(emailVO);
+            }
+            if (emailVO.getGroupId() != null)
+            {
+                LOGGER.info("Running job for single group..");
+                jobParametersMap.put("groupId", new JobParameter(emailVO.getGroupId()));
+                if (email != null)
+                {
+                    jobParametersMap.put("emailId", new JobParameter(email.getId()));
+                }
+                jobParametersMap.put("dateAndTime", new JobParameter(new Date()));
+                jobParametersMap.put("message", new JobParameter(emailVO.getMessage()));
+                jobParametersMap.put("subject", new JobParameter(emailVO.getSubject()));
+                jobParametersMap.put("emailRequestURL", new JobParameter(request.getRequestURL().toString()));
+                jobLauncher.run(job, new JobParameters(jobParametersMap));
+            }
+            else if (emailVO.getGroupIdList() != null && !emailVO.getGroupIdList().isEmpty())
+            {
+                for (final Long groupId : emailVO.getGroupIdList())
+                {
+                    if (email != null)
+                    {
+                        jobParametersMap.put("emailId", new JobParameter(email.getId()));
+                    }
+                    jobParametersMap.put("groupId", new JobParameter(groupId));
+                    jobParametersMap.put("dateAndTime", new JobParameter(new Date()));
+                    jobParametersMap.put("message", new JobParameter(emailVO.getMessage()));
+                    jobParametersMap.put("subject", new JobParameter(emailVO.getSubject()));
+                    jobParametersMap.put("emailRequestURL", new JobParameter(request.getRequestURL().toString()));
+                    JobExecution execution = jobLauncher.run(job, new JobParameters(jobParametersMap));
 
-	@RequestMapping(value = "/unsubscribe", method = RequestMethod.GET)
-	public void unsubscribeToGroup(HttpServletRequest request) {
-		/*
-		 * String reqContactId = null; try { reqContactId =
-		 * URLDecoder.decode(request.getParameter("contactId"), "UTF-8"); }
-		 * catch (final UnsupportedEncodingException e1) { // TODO
-		 * Auto-generated catch block e1.printStackTrace(); } String reqGroupId
-		 * = null; try { reqGroupId =
-		 * URLDecoder.decode(request.getParameter("groupId"), "UTF-8"); } catch
-		 * (final UnsupportedEncodingException e1) { // TODO Auto-generated
-		 * catch block e1.printStackTrace(); } final String contactEmail =
-		 * request.getParameter("contactEmail"); final CryptoUtil cryptoUtil =
-		 * new CryptoUtil(); Long contactId = null; Long groupId = null; try {
-		 * contactId =
-		 * Long.valueOf(cryptoUtil.decrypt(EmailUtils.EMAIL_SECRET_KEY,
-		 * reqContactId)); groupId =
-		 * Long.valueOf(cryptoUtil.decrypt(EmailUtils.EMAIL_SECRET_KEY,
-		 * reqGroupId)); } catch (InvalidKeyException | NoSuchAlgorithmException
-		 * | InvalidKeySpecException | NoSuchPaddingException |
-		 * InvalidAlgorithmParameterException | IllegalBlockSizeException |
-		 * BadPaddingException | IOException e) { // TODO Auto-generated catch
-		 * block e.printStackTrace(); }
-		 */
-		final String reqContactId = request.getParameter("contactId");
-		final String reqGroupId = request.getParameter("groupId");
-		final String contactEmail = request.getParameter("contactEmail");
-		Long groupId, contactId = null;
-		contactId = Long.valueOf(reqContactId);
-		groupId = Long.valueOf(reqGroupId);
-		if (contactId != null && groupId != null) {
-			final Contact contact = contactService.getContactById(contactId);
-			if (!contact.getEmail().equals(contactEmail)) {
+                    LOGGER.info("Job status : " + execution.getExitStatus());
+                    if (execution.getExitStatus().getExitCode().contains("FAILED"))
+                    {
+                        throw new BusinessException("Failed to execute Job");
+                    }
+                }
+            }
+        }
+        catch (final Exception e)
+        {
+            LOGGER.error("Error caught in controller : " + e.getMessage() + " Rolling back email creation entry");
+            try
+            {
+                emailService.deleteEmail(email);
+                LOGGER.info("Email record rolled back successfully");
+            }
+            catch (BusinessException e1)
+            {
+                LOGGER.error("Failed to rollback transaction, reason : [" + e1.getMessage() + "]");
+            }
+            throw new RuntimeException(e);
 
-			} else {
-				try {
-					contactGroupService.unsubscribeContactGroup(contactId, groupId);
-				} catch (final BusinessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+        }
+    }
 
-	}
+    /**
+     * Unsubscribe to group.
+     *
+     * @param request the request
+     */
+    @RequestMapping(value = "/unsubscribe", method = RequestMethod.GET)
+    public void unsubscribeToGroup(HttpServletRequest request)
+    {
+        /*
+         * String reqContactId = null; try { reqContactId =
+         * URLDecoder.decode(request.getParameter("contactId"), "UTF-8"); }
+         * catch (final UnsupportedEncodingException e1) { // TODO
+         * Auto-generated catch block e1.printStackTrace(); } String reqGroupId
+         * = null; try { reqGroupId =
+         * URLDecoder.decode(request.getParameter("groupId"), "UTF-8"); } catch
+         * (final UnsupportedEncodingException e1) { // TODO Auto-generated
+         * catch block e1.printStackTrace(); } final String contactEmail =
+         * request.getParameter("contactEmail"); final CryptoUtil cryptoUtil =
+         * new CryptoUtil(); Long contactId = null; Long groupId = null; try {
+         * contactId =
+         * Long.valueOf(cryptoUtil.decrypt(EmailUtils.EMAIL_SECRET_KEY,
+         * reqContactId)); groupId =
+         * Long.valueOf(cryptoUtil.decrypt(EmailUtils.EMAIL_SECRET_KEY,
+         * reqGroupId)); } catch (InvalidKeyException | NoSuchAlgorithmException
+         * | InvalidKeySpecException | NoSuchPaddingException |
+         * InvalidAlgorithmParameterException | IllegalBlockSizeException |
+         * BadPaddingException | IOException e) { // TODO Auto-generated catch
+         * block e.printStackTrace(); }
+         */
+        final String reqContactId = request.getParameter("contactId");
+        final String reqGroupId = request.getParameter("groupId");
+        final String contactEmail = request.getParameter("contactEmail");
+        Long groupId, contactId = null;
+        contactId = Long.valueOf(reqContactId);
+        groupId = Long.valueOf(reqGroupId);
+        if (contactId != null && groupId != null)
+        {
+            final Contact contact = contactService.getContactById(contactId);
+            if (!contact.getEmail().equals(contactEmail))
+            {
 
-	@RequestMapping(value = "/readMail", method = RequestMethod.GET)
-	public void readMail(HttpServletRequest request) throws BusinessException {
-		final String reqContactId = request.getParameter("contactId");
-		final String reqGroupId = request.getParameter("groupId");
-		final String reqEmailRandomNumber = request.getParameter("emailRandomNumber");
+            }
+            else
+            {
+                try
+                {
+                    contactGroupService.unsubscribeContactGroup(contactId, groupId);
+                }
+                catch (final BusinessException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
 
-		Long groupId, contactId,emailRandomNumber = null;
-		contactId = Long.valueOf(reqContactId);
-		groupId = Long.valueOf(reqGroupId);
-		emailRandomNumber = Long.valueOf(reqEmailRandomNumber);
-		if (contactId != null && groupId != null) {
-			final EmailContactGroup emailContactGroup = emailContactGroupService
-					.findByContactIdAndGroupIdAndRandomNumber(contactId, groupId, emailRandomNumber);
-			if (emailContactGroup != null) {
-				Integer readCount = emailContactGroup.getReadCount();
-				readCount = readCount != null ? ++readCount : 1;
-				emailContactGroup.setReadCount(readCount);
-				emailContactGroupService.updateEmailContactGroup(emailContactGroup);
-			}
-		}
+    }
 
-	}
-	@ExceptionHandler(BusinessException.class)
-	ResponseEntity<String> handleContactNotFoundException(final Exception e) {
-		return new ResponseEntity<String>(String.format("{\"reason\":\"%s\"}", e.getMessage()), HttpStatus.NOT_FOUND);
-	}
+    /**
+     * Read mail.
+     *
+     * @param request the request
+     * @throws BusinessException the business exception
+     */
+    @RequestMapping(value = "/readMail", method = RequestMethod.GET)
+    public void readMail(HttpServletRequest request) throws BusinessException
+    {
+        final String reqContactId = request.getParameter("contactId");
+        final String reqGroupId = request.getParameter("groupId");
+        final String reqEmailRandomNumber = request.getParameter("emailRandomNumber");
+
+        Long groupId, contactId, emailRandomNumber = null;
+        contactId = Long.valueOf(reqContactId);
+        groupId = Long.valueOf(reqGroupId);
+        emailRandomNumber = Long.valueOf(reqEmailRandomNumber);
+        if (contactId != null && groupId != null)
+        {
+            final EmailContactGroup emailContactGroup = emailContactGroupService
+                    .findByContactIdAndGroupIdAndRandomNumber(contactId, groupId, emailRandomNumber);
+            if (emailContactGroup != null)
+            {
+                Integer readCount = emailContactGroup.getReadCount();
+                readCount = readCount != null ? ++readCount : 1;
+                emailContactGroup.setReadCount(readCount);
+                emailContactGroupService.updateEmailContactGroup(emailContactGroup);
+            }
+        }
+
+    }
+
+    /**
+     * Handle contact not found exception.
+     *
+     * @param e the e
+     * @return the response entity
+     */
+    @ExceptionHandler(BusinessException.class)
+    ResponseEntity<String> handleContactNotFoundException(final Exception e)
+    {
+        return new ResponseEntity<String>(String.format("{\"reason\":\"%s\"}", e.getMessage()), HttpStatus.NOT_FOUND);
+    }
 }

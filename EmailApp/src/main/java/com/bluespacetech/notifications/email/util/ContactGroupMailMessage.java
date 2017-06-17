@@ -6,47 +6,60 @@ import javax.mail.internet.MimeMessage;
 
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 
-public class ContactGroupMailMessage implements Serializable {
+/**
+ * The Class ContactGroupMailMessage.
+ * @author Sudhanshu Tripathy
+ */
+public class ContactGroupMailMessage implements Serializable
+{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6064992838049760633L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 6064992838049760633L;
 
-	private EmailContactGroup emailContactGroup;
+    /** The email contact group. */
+    private EmailContactGroup emailContactGroup;
 
-	private MimeMessage mimeMessage;
+    /** The mime message. */
+    private MimeMessage mimeMessage;
 
-	/**
-	 * @return the mimeMessage
-	 */
-	public MimeMessage getMimeMessage() {
-		return mimeMessage;
-	}
+    /**
+     * Gets the mime message.
+     *
+     * @return the mimeMessage
+     */
+    public MimeMessage getMimeMessage()
+    {
+        return mimeMessage;
+    }
 
-	/**
-	 * @param mimeMessage
-	 *            the mimeMessage to set
-	 */
-	public void setMimeMessage(MimeMessage mimeMessage) {
-		this.mimeMessage = mimeMessage;
-	}
+    /**
+     * Sets the mime message.
+     *
+     * @param mimeMessage            the mimeMessage to set
+     */
+    public void setMimeMessage(MimeMessage mimeMessage)
+    {
+        this.mimeMessage = mimeMessage;
+    }
 
-	/**
-	 * @return the emailContactGroup
-	 */
-	public EmailContactGroup getEmailContactGroup() {
-		return emailContactGroup;
-	}
+    /**
+     * Gets the email contact group.
+     *
+     * @return the emailContactGroup
+     */
+    public EmailContactGroup getEmailContactGroup()
+    {
+        return emailContactGroup;
+    }
 
-	/**
-	 * @param emailContactGroup
-	 *            the emailContactGroup to set
-	 */
-	public void setEmailContactGroup(EmailContactGroup emailContactGroup) {
-		this.emailContactGroup = emailContactGroup;
-	}
-
-
+    /**
+     * Sets the email contact group.
+     *
+     * @param emailContactGroup            the emailContactGroup to set
+     */
+    public void setEmailContactGroup(EmailContactGroup emailContactGroup)
+    {
+        this.emailContactGroup = emailContactGroup;
+    }
 
 }

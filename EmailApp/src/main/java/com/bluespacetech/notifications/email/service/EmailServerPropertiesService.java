@@ -14,24 +14,74 @@ import com.bluespacetech.notifications.email.entity.EmailServer;
 import com.bluespacetech.notifications.email.entity.EmailServerProperties;
 
 /**
- * class for EmailServerService
+ * class for EmailServerService.
  *
  * @author pradeep created date 25-June-2015
  */
-public interface EmailServerPropertiesService {
+public interface EmailServerPropertiesService
+{
 
-	EmailServerProperties createEmailServerProperty(final EmailServerProperties emailServerProperties)
-			throws BusinessException;
+    /**
+     * Creates the email server property.
+     *
+     * @param emailServerProperties
+     *            the email server properties
+     * @return the email server properties
+     * @throws BusinessException
+     *             the business exception
+     */
+    EmailServerProperties createEmailServerProperty(final EmailServerProperties emailServerProperties)
+            throws BusinessException;
 
-	void deleteEmailServerProperty(final Long emailServerPropertiesId) throws BusinessException;
+    /**
+     * Delete email server property.
+     *
+     * @param emailServerPropertiesId
+     *            the email server properties id
+     * @throws BusinessException
+     *             the business exception
+     */
+    void deleteEmailServerProperty(final Long emailServerPropertiesId) throws BusinessException;
 
-	EmailServerProperties updateEmailServerProperty(final EmailServerProperties emailServerProperties)
-			throws BusinessException;
+    /**
+     * Update email server property.
+     *
+     * @param emailServerProperties
+     *            the email server properties
+     * @return the email server properties
+     * @throws BusinessException
+     *             the business exception
+     */
+    EmailServerProperties updateEmailServerProperty(final EmailServerProperties emailServerProperties)
+            throws BusinessException;
 
-	List<EmailServerProperties> findByEmailServer(final EmailServer emailServer);
+    /**
+     * Find by email server.
+     *
+     * @param emailServer
+     *            the email server
+     * @return the list
+     */
+    List<EmailServerProperties> findByEmailServer(final EmailServer emailServer);
 
-	EmailServerProperties getEmailServerPropertiesById(final Long id) throws BusinessException;
+    /**
+     * Gets the email server properties by id.
+     *
+     * @param id
+     *            the id
+     * @return the email server properties by id
+     * @throws BusinessException
+     *             the business exception
+     */
+    EmailServerProperties getEmailServerPropertiesById(final Long id) throws BusinessException;
 
-	List<EmailServerProperties> findByEmailServers(final List<EmailServer> emailServers);
+    /**
+     * Find by email servers.
+     *
+     * @param emailServers
+     *            the email servers
+     * @return the list
+     */
+    List<EmailServerProperties> findByEmailServers(final List<EmailServer> emailServers);
 
 }

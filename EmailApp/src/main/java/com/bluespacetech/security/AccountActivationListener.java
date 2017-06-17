@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
-import org.apache.velocity.VelocityContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -15,55 +14,86 @@ import com.bluespacetech.security.model.AccountCreationEmail;
 import com.bluespacetech.security.model.UserAccount;
 import com.bluespacetech.security.service.UserAccountService;
 
+/**
+ * The listener interface for receiving accountActivation events. The class that is interested in processing a accountActivation event implements this interface, and the object created with that class
+ * is registered with a component using the component's <code>addAccountActivationListener<code> method. When the accountActivation event occurs, that object's appropriate method is invoked.
+ *
+ * @see AccountActivationEvent
+ * @author Sudhanshu Tripathy
+ */
 @Component
-public class AccountActivationListener implements
-  ApplicationListener<OnRegistrationCompleteEvent> {
-  
+public class AccountActivationListener implements ApplicationListener<OnRegistrationCompleteEvent>
+{
+
+    /** The service. */
     @Autowired
     private UserAccountService service;
-    
+
+    /** The email handler. */
     @Autowired
     private EmailHandler emailHandler;
-    
-	private static final Logger LOGGER = Logger.getLogger(AccountActivationListener.class.getName());
- 
+
+    /** The Constant LOGGER. */
+    private static final Logger LOGGER = Logger.getLogger(AccountActivationListener.class.getName());
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.context.ApplicationListener#onApplicationEvent(org.springframework.context.ApplicationEvent)
+     */
     @Override
-    public void onApplicationEvent(OnRegistrationCompleteEvent event) {
-			this.confirmRegistration(event);
+    public void onApplicationEvent(OnRegistrationCompleteEvent event)
+    {
+        this.confirmRegistration(event);
     }
- 
-    private void confirmRegistration(OnRegistrationCompleteEvent event) {
+
+    /**
+     * Confirm registration.
+     *
+     * @param event the event
+     */
+    private void confirmRegistration(OnRegistrationCompleteEvent event)
+    {
         UserAccount user = event.getUser();
         LOGGER.debug("Listening to the publish token event...");
-        String token = UUID.randomUUID().toString();
-        service.createVerificationToken(user, token);
-         
-        String recipientAddress = user.getEmail();
 
+        String recipientAddress = user.getEmail();
         String subject = "Bluespace Mailer Registration | Account Created";
-        String confirmationUrl 
-          = event.getAppUrl() + "/new/regitrationConfirm?token=" + token;
+
         AccountCreationEmail mail = new AccountCreationEmail();
         mail.setMailTo(recipientAddress);
         mail.setMailFrom("bluespaceadmin@gmail.com");
         mail.setMailSubject(subject);
-        mail.setVerificationUrl(confirmationUrl);
-        mail.setUnsubscribeUrl(event.getAppUrl()+"/unsubscribe?email="+recipientAddress);
-        
-        Map < String, Object > model = new HashMap < String, Object > ();
+        if (!event.isAccountCreatedByAdmin())
+        {
+            LOGGER.info("INternal Account creation by Admin. Skiiping token creation and verification link");
+            String token = UUID.randomUUID().toString();
+            service.createVerificationToken(user, token);
+            String confirmationUrl = event.getAppUrl() + "/new/regitrationConfirm?token=" + token;
+            mail.setVerificationUrl(confirmationUrl);
+            mail.setUnsubscribeUrl(event.getAppUrl() + "/unsubscribe?email=" + recipientAddress);
+        }
+        Map<String, Object> model = new HashMap<String, Object>();
         model.put("userName", user.getUsername());
         model.put("signature", "www.bluespacemail.com");
         mail.setModel(model);
 
-        try 
+        try
         {
-			emailHandler.sendVerificationEmail(mail);
-		} 
-        catch (IOException e) 
+            if (event.isAccountCreatedByAdmin())
+            {
+                emailHandler.sendAccountCreationEmail(mail, event.getUser().getUsername(),
+                        event.getUser().getPassword());
+            }
+            else
+            {
+                emailHandler.sendVerificationEmail(mail);
+            }
+        }
+        catch (IOException e)
         {
-        	String message = "Failed to send verification email";
-			LOGGER.error(message+", reason: "+e.getMessage());
-			throw new RuntimeException(message);
-		}
+            String message = "Failed to send verification/account creation email";
+            LOGGER.error(message + ", reason: " + e.getMessage());
+            throw new RuntimeException(message);
+        }
     }
 }

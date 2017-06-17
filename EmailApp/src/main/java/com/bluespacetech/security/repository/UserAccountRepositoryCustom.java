@@ -5,12 +5,20 @@ import java.util.List;
 import com.bluespacetech.security.model.UserAccount;
 import com.bluespacetech.security.searchcriterias.UserAccountSearchCriteria;
 
-
 /**
+ * The Interface UserAccountRepositoryCustom.
+ *
  * @author pradeep created date 30-Jan-2015
  */
-public interface UserAccountRepositoryCustom {
+public interface UserAccountRepositoryCustom
+{
 
-	List<UserAccount> findUserAccountsBySearchCriteria(final UserAccountSearchCriteria userAccountSearchCriteria);
+    /**
+     * Find user accounts by search criteria.
+     *
+     * @param userAccountSearchCriteria the user account search criteria
+     * @return the list
+     */
+    List<UserAccount> findUserAccountsBySearchCriteria(final UserAccountSearchCriteria userAccountSearchCriteria);
 
 }

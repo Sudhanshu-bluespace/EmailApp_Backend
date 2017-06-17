@@ -13,34 +13,45 @@ import org.springframework.stereotype.Repository;
 import com.bluespacetech.security.constants.SecurityQueryStringConstants;
 import com.bluespacetech.security.dao.PendingAccountApprovalsDTO;
 
+/**
+ * The Class AccountApprovalRepositoryCustomImpl.
+ */
 @Repository
-public class AccountApprovalRepositoryCustomImpl implements AccountApprovalRepositoryCustom {
-	
-	@PersistenceContext 
-	@Autowired
-	EntityManager em;
+public class AccountApprovalRepositoryCustomImpl implements AccountApprovalRepositoryCustom
+{
 
-	@Override
-	public List<PendingAccountApprovalsDTO> getPendingApprovals(String userName) {
+    /** The em. */
+    @PersistenceContext
+    @Autowired
+    EntityManager em;
 
-		String queryString = SecurityQueryStringConstants.getQuery_PendingApprovals(userName);
-		List<PendingAccountApprovalsDTO> pendingApprovalList = new ArrayList<>();
-		Query query = em.createNativeQuery(queryString);
-		List<Object[]> responseList = query.getResultList();
-		int i=0;
-		for(Object[] response:responseList)
-		{
-			i++;
-			PendingAccountApprovalsDTO dto = new PendingAccountApprovalsDTO();
-			dto.setId(Long.valueOf(response[0].toString()));
-			dto.setName(response[1].toString());
-			dto.setEmail(response[2].toString());
-			dto.setRegistrationRequestDate(response[3].toString());
-			dto.setStatus(response[4].toString());
-			dto.setSerialNo(i);
-			pendingApprovalList.add(dto);
-		}
-		return pendingApprovalList;
-	}
+    /*
+     * (non-Javadoc)
+     * @see com.bluespacetech.security.repository.AccountApprovalRepositoryCustom#getPendingApprovals(java.lang.String)
+     */
+    @Override
+    public List<PendingAccountApprovalsDTO> getPendingApprovals(String userName)
+    {
+
+        String queryString = SecurityQueryStringConstants.getQuery_PendingApprovals(userName);
+        List<PendingAccountApprovalsDTO> pendingApprovalList = new ArrayList<>();
+        Query query = em.createNativeQuery(queryString);
+        List<Object[]> responseList = query.getResultList();
+        int i = 0;
+        for (Object[] response : responseList)
+        {
+            i++;
+            PendingAccountApprovalsDTO dto = new PendingAccountApprovalsDTO();
+            dto.setId(Long.valueOf(response[0].toString()));
+            dto.setName(response[1].toString());
+            dto.setEmail(response[2].toString());
+            dto.setCompanyName(response[3].toString());
+            dto.setRegistrationRequestDate(response[4].toString());
+            dto.setStatus(response[5].toString());
+            dto.setSerialNo(i);
+            pendingApprovalList.add(dto);
+        }
+        return pendingApprovalList;
+    }
 
 }

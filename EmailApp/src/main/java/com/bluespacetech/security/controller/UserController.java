@@ -24,51 +24,76 @@ import com.bluespacetech.security.constants.GrantConstant;
 import com.bluespacetech.security.constants.UserAccountTypeConstant;
 import com.bluespacetech.security.dao.UserDAO;
 
+/**
+ * The Class UserController.
+ */
 @RestController
 @RequestMapping("/user")
-public class UserController extends AbstractBaseController {
+public class UserController extends AbstractBaseController
+{
 
+    /**
+     * User.
+     *
+     * @return the response entity
+     */
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDAO> user()
+    {
+        final UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        final UserDAO user = new UserDAO();
+        user.setLoggedInUserName(userDetails.getUsername());
+        final Collection<String> roles = new ArrayList<String>();
+        final Collection<String> uiRoles = new ArrayList<String>();
+        final Map<String, String> uiGrantsByGrantsMap = GrantConstant.getUIGrantsByGrants();
+        for (final GrantedAuthority grantedAuthority : userDetails.getAuthorities())
+        {
 
-	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<UserDAO> user() {
-		final UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-				.getPrincipal();
-		final UserDAO user = new UserDAO();
-		user.setLoggedInUserName(userDetails.getUsername());
-		final Collection<String> roles = new ArrayList<String>();
-		final Collection<String> uiRoles = new ArrayList<String>();
-		final Map<String, String> uiGrantsByGrantsMap = GrantConstant.getUIGrantsByGrants();
-		for (final GrantedAuthority grantedAuthority : userDetails.getAuthorities()) {
+            if (UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.getAccountType().equals(grantedAuthority.getAuthority()))
+            {
+                user.setUserType(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.getAccountType());
+            }
+            else if (UserAccountTypeConstant.ACC_TYPE_ADMIN.getAccountType().equals(grantedAuthority.getAuthority()))
+            {
+                user.setUserType(UserAccountTypeConstant.ACC_TYPE_ADMIN.getAccountType());
+            }
+            else if (UserAccountTypeConstant.ACC_TYPE_EMPLOYEE.getAccountType().equals(grantedAuthority.getAuthority()))
+            {
+                user.setUserType(UserAccountTypeConstant.ACC_TYPE_EMPLOYEE.getAccountType());
+            }
+            else if (UserAccountTypeConstant.ACC_TYPE_USER.getAccountType().toString()
+                    .equals(grantedAuthority.getAuthority()))
+            {
+                user.setUserType(UserAccountTypeConstant.ACC_TYPE_USER.getAccountType());
+            }
 
-			if (UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.getAccountType().equals(grantedAuthority.getAuthority())) {
-				user.setUserType(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.getAccountType());
-			} else if (UserAccountTypeConstant.ACC_TYPE_ADMIN.getAccountType()
-					.equals(grantedAuthority.getAuthority())) {
-				user.setUserType(UserAccountTypeConstant.ACC_TYPE_ADMIN.getAccountType());
-			} else if (UserAccountTypeConstant.ACC_TYPE_EMPLOYEE.getAccountType()
-					.equals(grantedAuthority.getAuthority())) {
-				user.setUserType(UserAccountTypeConstant.ACC_TYPE_EMPLOYEE.getAccountType());
-			} else if (UserAccountTypeConstant.ACC_TYPE_USER.getAccountType().toString()
-					.equals(grantedAuthority.getAuthority())) {
-				user.setUserType(UserAccountTypeConstant.ACC_TYPE_USER.getAccountType());
-			}
+            roles.add(grantedAuthority.getAuthority());
+            if (uiGrantsByGrantsMap.get(grantedAuthority.getAuthority().toUpperCase()) != null)
+            {
+                uiRoles.add(uiGrantsByGrantsMap.get(grantedAuthority.getAuthority().toUpperCase()));
+            }
+        }
+        // user.setRoles(roles);
+        user.setUiRoles(uiRoles);
+        return new ResponseEntity<UserDAO>(user, HttpStatus.OK);
+    }
 
-			roles.add(grantedAuthority.getAuthority());
-			if (uiGrantsByGrantsMap.get(grantedAuthority.getAuthority().toUpperCase()) != null) {
-				uiRoles.add(uiGrantsByGrantsMap.get(grantedAuthority.getAuthority().toUpperCase()));
-			}
-		}
-		// user.setRoles(roles);
-		user.setUiRoles(uiRoles);
-		return new ResponseEntity<UserDAO>(user, HttpStatus.OK);
-	}
-
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	public ResponseEntity<Void> logoutPage(HttpServletRequest request, HttpServletResponse response) {
-		final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null) {
-			new SecurityContextLogoutHandler().logout(request, response, auth);
-		}
-		return new ResponseEntity<Void>(HttpStatus.OK);
-	}
+    /**
+     * Logout page.
+     *
+     * @param request the request
+     * @param response the response
+     * @return the response entity
+     */
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public ResponseEntity<Void> logoutPage(HttpServletRequest request, HttpServletResponse response)
+    {
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null)
+        {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
 }

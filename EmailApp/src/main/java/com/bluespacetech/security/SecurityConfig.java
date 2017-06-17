@@ -30,43 +30,62 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 import com.bluespacetech.security.service.UserService;
+
+
 /**
- * @author pradeep
+ * The Class SecurityConfig.
  *
+ * @author pradeep
+ * @author Sudhanshu Tripathy
  */
 @EnableWebSecurity
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+	/** The user service. */
 	@Autowired
 	private UserService userService;
 
+	/** The authentication failure. */
 	@Autowired
 	private AuthenticationFailure authenticationFailure;
 
+	/** The authentication success. */
 	@Autowired
 	private AuthenticationSuccess authenticationSuccess;
 
+	/** The unauthorized handler. */
 	@Autowired
 	private EntryPointUnauthorizedHandler unauthorizedHandler;
 
+	/**
+	 * Config auth builder.
+	 *
+	 * @param auth the auth
+	 * @throws Exception the exception
+	 */
 	@Autowired
 	public void configAuthBuilder(AuthenticationManagerBuilder auth) throws Exception {
 		//System.out.println("Inside Config Auth Builder");
 		auth.userDetailsService(userService).passwordEncoder(this.passwordEncoder());
 	}
 
+	/**
+	 * Password encoder.
+	 *
+	 * @return the password encoder
+	 */
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 	
-	/*@Bean 
-	 public BCryptPasswordEncoder bCryptPasswordEncoder(){
-		 return new BCryptPasswordEncoder();
-	 }*/
-	
+	/**
+	 * Multi part resolver.
+	 *
+	 * @return the multipart resolver
+	 */
 	@Bean
 	public MultipartResolver multiPartResolver()
 	{
@@ -74,7 +93,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new StandardServletMultipartResolver();
 	}
 	
-	 @Bean
+	 /**
+ 	 * Multipart config element.
+ 	 *
+ 	 * @return the multipart config element
+ 	 */
+ 	@Bean
 	    public MultipartConfigElement multipartConfigElement() {
 	        MultipartConfigFactory factory = new MultipartConfigFactory();
 	        factory.setMaxFileSize("128MB");
@@ -93,7 +117,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	    return messageSource;
 	}*/
 	 
-	 @Bean
+	 /**
+	 * Velocity engine.
+	 *
+	 * @return the velocity engine
+	 * @throws Exception the exception
+	 */
+	@Bean
 	 public VelocityEngine velocityEngine() throws Exception {
 	     Properties properties = new Properties();
 	     properties.setProperty("input.encoding", "UTF-8");
@@ -104,6 +134,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	     return velocityEngine;
 	 } 
 
+	/* (non-Javadoc)
+	 * @see org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter#configure(org.springframework.security.config.annotation.web.builders.HttpSecurity)
+	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
@@ -127,6 +160,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		
 	}
 
+	/**
+	 * Csrf token repository.
+	 *
+	 * @return the csrf token repository
+	 */
 	private CsrfTokenRepository csrfTokenRepository() {
 		final HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
 		repository.setHeaderName("X-XSRF-TOKEN");

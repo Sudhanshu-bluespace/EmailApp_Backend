@@ -14,18 +14,44 @@ import com.bluespacetech.notifications.email.entity.Email;
 import com.bluespacetech.notifications.email.valueobjects.EmailVO;
 
 /**
- * class for EmailService
+ * class for EmailService.
  *
  * @author pradeep created date 25-June-2015
  */
-public interface EmailService {
+public interface EmailService
+{
 
-	Email createEmail(final Email email) throws BusinessException;
+    /**
+     * Creates the email.
+     *
+     * @param email the email
+     * @return the email
+     * @throws BusinessException the business exception
+     */
+    Email createEmail(final Email email) throws BusinessException;
 
-	Email createEmail(final EmailVO emailVO) throws BusinessException;
-	
-	void deleteEmail(final Email email) throws BusinessException;
+    /**
+     * Creates the email.
+     *
+     * @param emailVO the email VO
+     * @return the email
+     * @throws BusinessException the business exception
+     */
+    Email createEmail(final EmailVO emailVO) throws BusinessException;
 
-	List<Email> findAll();
+    /**
+     * Delete email.
+     *
+     * @param email the email
+     * @throws BusinessException the business exception
+     */
+    void deleteEmail(final Email email) throws BusinessException;
+
+    /**
+     * Find all.
+     *
+     * @return the list
+     */
+    List<Email> findAll();
 
 }

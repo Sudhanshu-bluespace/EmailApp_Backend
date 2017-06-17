@@ -4,7 +4,17 @@ import java.util.List;
 
 import com.bluespacetech.security.dao.PendingAccountApprovalsDTO;
 
-public interface AccountApprovalRepositoryCustom {
+/**
+ * The Interface AccountApprovalRepositoryCustom.
+ */
+public interface AccountApprovalRepositoryCustom
+{
 
-	List<PendingAccountApprovalsDTO> getPendingApprovals(String userName);
+    /**
+     * Gets the pending approvals.
+     *
+     * @param userName the user name
+     * @return the pending approvals
+     */
+    List<PendingAccountApprovalsDTO> getPendingApprovals(String userName);
 }

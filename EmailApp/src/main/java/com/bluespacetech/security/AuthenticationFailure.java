@@ -19,25 +19,23 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author pradeep
- *
  */
 @Component
-public class AuthenticationFailure extends SimpleUrlAuthenticationFailureHandler{
+public class AuthenticationFailure extends SimpleUrlAuthenticationFailureHandler
+{
 
-	/* (non-Javadoc)
-	 * @see org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler#onAuthenticationFailure(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.security.core.AuthenticationException)
-	 */
-	@Override
-	public void onAuthenticationFailure(final HttpServletRequest request,
-			final HttpServletResponse response, final AuthenticationException exception)
-					throws IOException, ServletException {
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		System.out.println("Auth fail : "+exception.getMessage());
-		response.getOutputStream().println("{ \"error\": \"" + exception.getMessage() + "\" }");
-	}
-
-
-
-
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler#onAuthenticationFailure(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+     * org.springframework.security.core.AuthenticationException)
+     */
+    @Override
+    public void onAuthenticationFailure(final HttpServletRequest request, final HttpServletResponse response,
+            final AuthenticationException exception) throws IOException, ServletException
+    {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        System.out.println("Auth fail : " + exception.getMessage());
+        response.getOutputStream().println("{ \"error\": \"" + exception.getMessage() + "\" }");
+    }
 
 }
