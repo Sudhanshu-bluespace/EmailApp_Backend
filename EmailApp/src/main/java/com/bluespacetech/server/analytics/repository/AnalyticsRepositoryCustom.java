@@ -55,4 +55,8 @@ public interface AnalyticsRepositoryCustom
      */
     public List<CompanyWiseRegistrationDTO> getCompanyWiseRegistrationStats();
 
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(@Param("age")int age);
+
+    List<RecentlyUnsubscribedCountDTO> getRecentlyUnsubscribedCount(int numberOfDays);
+
 }

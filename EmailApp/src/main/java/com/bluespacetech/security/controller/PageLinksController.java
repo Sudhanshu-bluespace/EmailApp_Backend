@@ -27,6 +27,7 @@ public class PageLinksController extends AbstractBaseController {
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<PageLinkResource>> getPageLinksAllowedForUser() {
 
+	        //System.out.println("In PageLinks controller");
 		final Set<PageLinkConstant> pageLinks = pageLinksService.getPageLinksAllowedForUser();
 		final List<PageLinkResource> branchResources = new PageLinkResourceAssembler()
 				.toResources(pageLinks);

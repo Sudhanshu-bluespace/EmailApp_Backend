@@ -28,7 +28,7 @@ import com.bluespacetech.notifications.email.repository.EmailContactGroupReposit
 @Service
 @Transactional(rollbackFor = { Exception.class, RuntimeException.class, BusinessException.class,
         ApplicationException.class })
-@PreAuthorize("hasAuthority('EXCLUDE_ALL')")
+//@PreAuthorize("hasAuthority('EXCLUDE_ALL')")
 public class EmailContactGroupServiceImpl implements EmailContactGroupService
 {
 
@@ -87,7 +87,7 @@ public class EmailContactGroupServiceImpl implements EmailContactGroupService
      * java.lang.Long)
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+    //@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
     public EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(Long contactId, Long groupId, Long randomNumber)
     {
         return emailContactGroupRepository.findByContactIdAndGroupIdAndRandomNumber(contactId, groupId, randomNumber);
@@ -101,7 +101,7 @@ public class EmailContactGroupServiceImpl implements EmailContactGroupService
      * EmailContactGroup)
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+    //@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
     public EmailContactGroup updateEmailContactGroup(EmailContactGroup emailContactGroup) throws BusinessException
     {
         final EmailContactGroup newEmailContactGroup = emailContactGroupRepository.save(emailContactGroup);

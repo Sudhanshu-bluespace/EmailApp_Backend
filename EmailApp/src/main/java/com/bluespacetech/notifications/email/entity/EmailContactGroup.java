@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import com.bluespacetech.core.model.BaseEntity;
@@ -33,8 +34,9 @@ public class EmailContactGroup extends BaseEntity implements Serializable {
 	@Column(name = "GROUP_ID", nullable = false)
 	private Long groupId;
 
-	@Column(name = "TEXT")
-	private String message;
+	@Lob
+	@Column(name = "TEXT",length=300000)
+	private byte[] message;
 
 	@Column(name = "SUBJECT")
 	private String subject;
@@ -93,7 +95,7 @@ public class EmailContactGroup extends BaseEntity implements Serializable {
 	/**
 	 * @return the message
 	 */
-	public String getMessage() {
+	public byte[] getMessage() {
 		return message;
 	}
 
@@ -101,7 +103,7 @@ public class EmailContactGroup extends BaseEntity implements Serializable {
 	 * @param message
 	 *            the message to set
 	 */
-	public void setMessage(String message) {
+	public void setMessage(byte[] message) {
 		this.message = message;
 	}
 

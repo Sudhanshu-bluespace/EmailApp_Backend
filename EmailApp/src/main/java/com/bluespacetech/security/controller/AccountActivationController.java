@@ -8,7 +8,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
@@ -69,7 +70,7 @@ public class AccountActivationController
     VerificationTokenRepository verificationTokenRepository;
 
     /** The Constant LOGGER. */
-    private static final Logger LOGGER = Logger.getLogger(RegistrationController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(RegistrationController.class.getName());
 
     /**
      * Verify user account.
@@ -80,26 +81,43 @@ public class AccountActivationController
      * @throws IOException Signals that an I/O exception has occurred.
      */
     @PostMapping(value = "approveRequest")
-    public void verifyUserAccount(@RequestParam("id") String id, HttpServletRequest request,
-            HttpServletResponse response) throws IOException
+    public void verifyUserAccount(@RequestParam("id") String id,@RequestParam("type")String type, 
+            HttpServletRequest request,HttpServletResponse response) throws IOException
     {
         UserAccount retrievedUser = null;
         try
         {
 
             AccountApproval repo = accountApprovalRepo.findAccountApprovalByIdPendingApproval(Long.valueOf(id));
-            repo.setStatus("APPROVED");
+            
+            if("APPROVE".equalsIgnoreCase(type))
+            {
+                repo.setStatus("APPROVED");
+            }
+            else if("REJECT".equalsIgnoreCase(type))
+            {
+                repo.setStatus("REJECTED");
+            }
+            else if("HOLD".equalsIgnoreCase(type))
+            {
+                repo.setStatus("ON HOLD");
+            }
+            
             repo = accountApprovalRepo.save(repo);
             retrievedUser = userAccountRepository.findUserAccountById(repo.getIdPendingApproval().longValue());
-            retrievedUser.setVerifiedByAdmin(true);
-            String companyName = retrievedUser.getCompanyRegistration().getCompanyName();
-            CompanyRegistration company = companyRegistrationRepo
-                    .findCompanyRegistrationByCompanyNameIgnoreCase(companyName);
-            company.setApproved(true);
-            companyRegistrationRepo.save(company);
-            LOGGER.info("Approved Company Registration and updated records in DB successfully");
-
-            retrievedUser = userAccountRepository.save(retrievedUser);
+            
+            if("APPROVE".equalsIgnoreCase(type))
+            {
+                retrievedUser.setVerifiedByAdmin(true);
+                String companyName = retrievedUser.getCompanyRegistration().getCompanyName();
+                CompanyRegistration company = companyRegistrationRepo
+                        .findCompanyRegistrationByCompanyNameIgnoreCase(companyName);
+                company.setApproved(true);
+                companyRegistrationRepo.save(company);
+                LOGGER.info("Approved Company Registration and updated records in DB successfully");
+                retrievedUser = userAccountRepository.save(retrievedUser);
+                
+            }
 
             URL url = new URL(request.getRequestURL().toString());
             String host = url.getHost();
@@ -108,7 +126,7 @@ public class AccountActivationController
             URI uri = new URI(scheme, null, host, port, null, null, null);
             LOGGER.info("Captured Server Url : " + uri.toString());
             OnRegistrationCompleteEvent event = new OnRegistrationCompleteEvent(retrievedUser, request.getLocale(),
-                    uri.toString(), false);
+                    uri.toString(), false,type);
             LOGGER.debug("Event : " + event);
             eventPublisher.publishEvent(event);
             response.setStatus(HttpServletResponse.SC_OK);

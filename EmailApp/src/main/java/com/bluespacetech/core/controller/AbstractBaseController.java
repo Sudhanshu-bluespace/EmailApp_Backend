@@ -14,6 +14,7 @@ public abstract class AbstractBaseController {
 
 	@ExceptionHandler(AccessDeniedException.class)
 	ResponseEntity<ExceptionResource> handleAccessDeniedException(final Exception e) {
+	        System.out.println("Access Denied handler : "+e.getMessage());
 		final ExceptionResource exceptionResource = ExceptionResourceAssembler.toResource(e);
 		return new ResponseEntity<ExceptionResource>(exceptionResource, HttpStatus.FORBIDDEN);
 	}

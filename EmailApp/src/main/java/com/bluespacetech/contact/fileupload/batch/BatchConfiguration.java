@@ -39,7 +39,7 @@ public class BatchConfiguration {
     
     @Autowired
     public EntityManagerFactory entityManagerFactory;
-
+    
     @Bean
 	@StepScope
     public FlatFileItemReader<ContactUploadDTO> contactUploadReader(@Value("#{jobParameters[file]}") String path) {
@@ -58,7 +58,8 @@ public class BatchConfiguration {
 
     @Bean
     public ContactItemProcessor contactProcessor() {
-        return new ContactItemProcessor();
+        ContactItemProcessor processor = new ContactItemProcessor();
+        return processor;
     }
 
     @Bean

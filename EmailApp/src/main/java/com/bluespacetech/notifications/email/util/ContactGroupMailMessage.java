@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.mail.internet.MimeMessage;
 
+import org.springframework.mail.javamail.MimeMessagePreparator;
+
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 
 /**
@@ -21,6 +23,20 @@ public class ContactGroupMailMessage implements Serializable
 
     /** The mime message. */
     private MimeMessage mimeMessage;
+    
+    /** The Mime message preparator */
+    private MimeMessagePreparator preparator;
+    
+
+    public MimeMessagePreparator getPreparator()
+    {
+        return preparator;
+    }
+
+    public void setPreparator(MimeMessagePreparator preparator)
+    {
+        this.preparator = preparator;
+    }
 
     /**
      * Gets the mime message.

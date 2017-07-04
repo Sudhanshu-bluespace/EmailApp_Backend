@@ -6,12 +6,13 @@ package com.bluespacetech.notifications.email.controller;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
@@ -37,6 +38,8 @@ import com.bluespacetech.notifications.email.entity.Email;
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 import com.bluespacetech.notifications.email.service.EmailContactGroupService;
 import com.bluespacetech.notifications.email.service.EmailService;
+import com.bluespacetech.notifications.email.util.EmailUtils;
+import com.bluespacetech.notifications.email.validators.EmailMXRecordDNSValidator;
 import com.bluespacetech.notifications.email.valueobjects.EmailVO;
 
 /**
@@ -58,18 +61,6 @@ public class EmailController
     /** The email service. */
     @Autowired
     private EmailService emailService;
-
-    /** The contact service. */
-    @Autowired
-    private ContactService contactService;
-
-    /** The contact group service. */
-    @Autowired
-    private ContactGroupService contactGroupService;
-
-    /** The email contact group service. */
-    @Autowired
-    private EmailContactGroupService emailContactGroupService;
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(EmailController.class);
@@ -150,94 +141,6 @@ public class EmailController
         }
     }
 
-    /**
-     * Unsubscribe to group.
-     *
-     * @param request the request
-     */
-    @RequestMapping(value = "/unsubscribe", method = RequestMethod.GET)
-    public void unsubscribeToGroup(HttpServletRequest request)
-    {
-        /*
-         * String reqContactId = null; try { reqContactId =
-         * URLDecoder.decode(request.getParameter("contactId"), "UTF-8"); }
-         * catch (final UnsupportedEncodingException e1) { // TODO
-         * Auto-generated catch block e1.printStackTrace(); } String reqGroupId
-         * = null; try { reqGroupId =
-         * URLDecoder.decode(request.getParameter("groupId"), "UTF-8"); } catch
-         * (final UnsupportedEncodingException e1) { // TODO Auto-generated
-         * catch block e1.printStackTrace(); } final String contactEmail =
-         * request.getParameter("contactEmail"); final CryptoUtil cryptoUtil =
-         * new CryptoUtil(); Long contactId = null; Long groupId = null; try {
-         * contactId =
-         * Long.valueOf(cryptoUtil.decrypt(EmailUtils.EMAIL_SECRET_KEY,
-         * reqContactId)); groupId =
-         * Long.valueOf(cryptoUtil.decrypt(EmailUtils.EMAIL_SECRET_KEY,
-         * reqGroupId)); } catch (InvalidKeyException | NoSuchAlgorithmException
-         * | InvalidKeySpecException | NoSuchPaddingException |
-         * InvalidAlgorithmParameterException | IllegalBlockSizeException |
-         * BadPaddingException | IOException e) { // TODO Auto-generated catch
-         * block e.printStackTrace(); }
-         */
-        final String reqContactId = request.getParameter("contactId");
-        final String reqGroupId = request.getParameter("groupId");
-        final String contactEmail = request.getParameter("contactEmail");
-        Long groupId, contactId = null;
-        contactId = Long.valueOf(reqContactId);
-        groupId = Long.valueOf(reqGroupId);
-        if (contactId != null && groupId != null)
-        {
-            final Contact contact = contactService.getContactById(contactId);
-            if (!contact.getEmail().equals(contactEmail))
-            {
-
-            }
-            else
-            {
-                try
-                {
-                    contactGroupService.unsubscribeContactGroup(contactId, groupId);
-                }
-                catch (final BusinessException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
-
-    /**
-     * Read mail.
-     *
-     * @param request the request
-     * @throws BusinessException the business exception
-     */
-    @RequestMapping(value = "/readMail", method = RequestMethod.GET)
-    public void readMail(HttpServletRequest request) throws BusinessException
-    {
-        final String reqContactId = request.getParameter("contactId");
-        final String reqGroupId = request.getParameter("groupId");
-        final String reqEmailRandomNumber = request.getParameter("emailRandomNumber");
-
-        Long groupId, contactId, emailRandomNumber = null;
-        contactId = Long.valueOf(reqContactId);
-        groupId = Long.valueOf(reqGroupId);
-        emailRandomNumber = Long.valueOf(reqEmailRandomNumber);
-        if (contactId != null && groupId != null)
-        {
-            final EmailContactGroup emailContactGroup = emailContactGroupService
-                    .findByContactIdAndGroupIdAndRandomNumber(contactId, groupId, emailRandomNumber);
-            if (emailContactGroup != null)
-            {
-                Integer readCount = emailContactGroup.getReadCount();
-                readCount = readCount != null ? ++readCount : 1;
-                emailContactGroup.setReadCount(readCount);
-                emailContactGroupService.updateEmailContactGroup(emailContactGroup);
-            }
-        }
-
-    }
 
     /**
      * Handle contact not found exception.

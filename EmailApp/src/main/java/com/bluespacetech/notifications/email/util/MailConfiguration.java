@@ -3,8 +3,8 @@ package com.bluespacetech.notifications.email.util;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.exception.VelocityException;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,40 +27,54 @@ public class MailConfiguration
 {
 
     /** The protocol. */
-    @Value("${mail.protocol}")
-    private String protocol;
+    @Value("${mail.config.protocol}")
+    private String mailProtocol;
 
     /** The host. */
-    @Value("${mail.host}")
-    private String host;
+    @Value("${mail.config.host}")
+    private String mailHost;
 
     /** The port. */
-    @Value("${mail.port}")
-    private int port;
+    @Value("${mail.config.port}")
+    private int mailPort;
 
     /** The auth. */
-    @Value("${mail.smtp.auth}")
+    @Value("${mail.config.smtp.auth}")
     private boolean auth;
 
     /** The starttls. */
-    @Value("${mail.smtp.starttls.enable}")
+    @Value("${mail.config.smtp.starttls.enable}")
     private boolean starttls;
 
     /** The from. */
-    @Value("${mail.from}")
-    private String from;
+    @Value("${mail.config.from}")
+    private String mailFrom;
 
     /** The username. */
-    @Value("${mail.username}")
-    private String username;
+    @Value("${mail.config.username}")
+    private String mailUsername;
 
     /** The password. */
-    @Value("${mail.password}")
-    private String password;
+    @Value("${mail.config.password}")
+    private String mailPassword;
 
     /** The ssl trust. */
     @Value("${mail.smtp.ssl.trust}")
     private String sslTrust;
+    
+    /** The debug flag. */
+    @Value("${mail.debug}")
+    private String mailDebug;
+    
+    /** The bounce address. */
+    @Value("${mail.bounce.to}")
+    private String bounceAddress;
+    
+    @Value("${mail.smtp.dsn.notify}")
+    private String feedbackAddress;
+    
+    @Value("${mail.smtp.dsn.ret}")
+    private String feedbackType;
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(MailConfiguration.class);
@@ -78,14 +92,17 @@ public class MailConfiguration
         mailProperties.put("mail.smtp.auth", auth);
         mailProperties.put("mail.smtp.starttls.enable", starttls);
         mailProperties.put("mail.smtp.ssl.trust", sslTrust);
-        mailProperties.put("mail.from", from);
+        //mailProperties.put("mail.smtp.from", bounceAddress);
+        mailProperties.put("mail.debug", mailDebug);
+        mailProperties.put("mail.smtp.dsn.notify", feedbackAddress);
+        
         mailSender.setJavaMailProperties(mailProperties);
-        mailSender.setHost(host);
-        mailSender.setPort(port);
-        mailSender.setProtocol(protocol);
+        mailSender.setHost(mailHost);
+        mailSender.setPort(mailPort);
+        mailSender.setProtocol(mailProtocol);
 
-        mailSender.setUsername(username);
-        mailSender.setPassword(password);
+        mailSender.setUsername(mailUsername);
+        mailSender.setPassword(mailPassword);
 
         LOGGER.info("Configuration : " + toString());
         return mailSender;
@@ -112,16 +129,23 @@ public class MailConfiguration
         return velocityEngineFactory.createVelocityEngine();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+    public String getMailFrom()
+    {
+        return mailFrom;
+    }
+
     @Override
     public String toString()
     {
-        return "MailConfiguration [protocol=" + protocol + ", host=" + host + ", port=" + port + ", auth=" + auth
-                + ", starttls=" + starttls + ", from=" + from + ", username=" + username + ", password=" + password
-                + ", sslTrust=" + sslTrust + "]";
+        return "MailConfiguration [mailProtocol=" + mailProtocol + ", mailHost=" + mailHost + ", mailPort=" + mailPort
+                + ", auth=" + auth + ", starttls=" + starttls + ", mailFrom=" + mailFrom + ", mailUsername="
+                + mailUsername + ", mailPassword=" + mailPassword + ", sslTrust=" + sslTrust + ", mailDebug="
+                + mailDebug + ", bounceAddress=" + bounceAddress + ", feedbackAddress=" + feedbackAddress
+                + ", feedbackType=" + feedbackType + "]";
     }
+    
+
+    
+    
 
 }

@@ -7,8 +7,13 @@
  */
 package com.bluespacetech.notifications.email.service;
 
+import java.sql.Blob;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -76,7 +81,7 @@ public class EmailServiceImpl implements EmailService
     public Email createEmail(final EmailVO emailVO) throws BusinessException
     {
         Email email = new Email();
-        email.setMessage(emailVO.getMessage());
+        email.setMessage(emailVO.getMessage().getBytes());
         email.setSubject(emailVO.getSubject());
         email = createEmail(email);
         return email;

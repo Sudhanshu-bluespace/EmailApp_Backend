@@ -47,8 +47,23 @@ public class AccountApprovalRepositoryCustomImpl implements AccountApprovalRepos
             dto.setEmail(response[2].toString());
             dto.setCompanyName(response[3].toString());
             dto.setRegistrationRequestDate(response[4].toString());
-            dto.setStatus(response[5].toString());
+            dto.setStatus(response[10].toString());
+            dto.setStreet(response[5].toString());
+            dto.setCity(response[6].toString());
+            dto.setState(response[7].toString());
+            dto.setCountry(response[8].toString());
+            dto.setZipcode(response[9].toString());
             dto.setSerialNo(i);
+            
+            if("ON HOLD".equalsIgnoreCase(dto.getStatus()))
+            {
+                dto.setOnHold(true);
+            }
+            else if("REJECTED".equalsIgnoreCase(dto.getStatus()))
+            {
+                dto.setRejected(true);
+            }
+                    
             pendingApprovalList.add(dto);
         }
         return pendingApprovalList;

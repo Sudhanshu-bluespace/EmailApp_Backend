@@ -33,8 +33,21 @@ public class QueryStringConstants
                 + "e.id,e.subject,e.text as content,date_format(e.creation_date,'%W, %M %D, %Y') as sentOn,sum(ecg.read_count) as clicks,count(ecg.email_id) as total_reach from email e, "
                 + "email_contact_group ecg,contact_group cg,groups g where e.created_user=ecg.created_user and "
                 + "e.created_user='" + userName + "'"
-                + " and cg.group_id=ecg.group_id and e.id=ecg.email_id and cg.group_id=g.id and e.id =(select max(e.id) from email e where e.created_user='"
+                + " and cg.group_id=ecg.group_id and cg.contact_id=ecg.contact_id and e.id=ecg.email_id and cg.group_id=g.id and e.id =(select max(e.id) from email e where e.created_user='"
                 + userName + "')" + " group by e.id;";
+    }
+    
+    public static final String getQuery_RecentlyUnsubscribedUserCountDistribution(int age)
+    {
+        return 
+            "select date_format(cg.unsubscribed_date,'%M %D, %Y') as date, sum(cg.unsubscribed) as count "+
+            "from contacts c,contact_group cg where c.id=cg.contact_id and cg.unsubscribed >= 0 "+
+            "and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY group by cg.unsubscribed_date; ";
+    }
+    
+    public static final String getQuery_RecentlyUnsubscribedUsers(int age)
+    {
+        return "select c.first_name,c.last_name,c.email,date_format(cg.unsubscribed_date,'%M %D, %Y') as unsubscribedOn from contacts c,contact_group cg where c.id=cg.contact_id and cg.unsubscribed >= 0 and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY;";
     }
 
     /**
@@ -50,7 +63,7 @@ public class QueryStringConstants
                 + "e.id,e.subject,e.text as content,date_format(e.creation_date,'%W, %M %D, %Y') as sentOn,sum(ecg.read_count) as clicks,count(ecg.email_id) as total_reach from email e, "
                 + "email_contact_group ecg,contact_group cg,groups g where e.created_user=ecg.created_user and "
                 + "e.created_user='" + userName + "'"
-                + " and cg.group_id=ecg.group_id and e.id=ecg.email_id and cg.group_id=g.id group by e.id;";
+                + " and cg.group_id=ecg.group_id and cg.contact_id=ecg.contact_id and e.id=ecg.email_id and cg.group_id=g.id group by e.id;";
     }
 
     /**

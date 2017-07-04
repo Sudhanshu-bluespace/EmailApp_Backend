@@ -6,7 +6,7 @@
 	<groupId>com.bluespacetech</groupId>
 	<artifactId>BluespaceMailer</artifactId>
 	<version>1</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>BluespaceMailer</name>
 	<description>Mass Mailing Application from Bluespacetech</description>
@@ -81,6 +81,11 @@
 			<version>2.6.2</version>
 		</dependency>
 		<dependency>
+  			<groupId>commons-codec</groupId>
+  			<artifactId>commons-codec</artifactId>
+  			<version>1.9</version>
+  		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
@@ -94,11 +99,16 @@
 		        </exclusion>
 			  </exclusions>
 		</dependency>
-		<dependency>
+		<!--  dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+		   <groupId>javax.el</groupId>
+		   <artifactId>javax.el-api</artifactId>
+		   <version>2.2.4</version>
+		</dependency-->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -116,10 +126,25 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-core</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency-->
 	</dependencies>
+	<build>
+	<plugins>
+		<plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+	</plugins>
+	</build>
 </project>

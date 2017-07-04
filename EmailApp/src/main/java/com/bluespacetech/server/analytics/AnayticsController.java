@@ -4,8 +4,13 @@
 package com.bluespacetech.server.analytics;
 
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,11 +20,12 @@ import org.springframework.web.context.request.WebRequest;
 import com.bluespacetech.server.analytics.repository.CampaignWisePerformanceStatsDTO;
 import com.bluespacetech.server.analytics.repository.CompanyWiseRegistrationDTO;
 import com.bluespacetech.server.analytics.repository.GroupWiseUnsubscriptionStatsDTO;
+import com.bluespacetech.server.analytics.repository.RecentUnsubscribesDTO;
+import com.bluespacetech.server.analytics.repository.RecentlyUnsubscribedCountDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseChartDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseDTO;
 import com.bluespacetech.server.analytics.service.AnalyticsService;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AnayticsController.
  *
@@ -30,6 +36,8 @@ import com.bluespacetech.server.analytics.service.AnalyticsService;
 @RequestMapping("/analytics")
 public class AnayticsController
 {
+    /** The Constant LOGGER. */
+    private static final Logger LOGGER = LogManager.getLogger(AnayticsController.class.getName());
 
     /**
      * View analytics page.
@@ -59,7 +67,7 @@ public class AnayticsController
     public RepositoryResponseDTO getRecentCampaignSummary(@RequestParam("userName") String userName)
     {
         RepositoryResponseDTO response = analyticsService.getRecentCampaignSummary(userName);
-        System.out.println("Response : " + response);
+        LOGGER.info("Recent Summary JSON : " + response);
         return response;
     }
 
@@ -73,7 +81,7 @@ public class AnayticsController
     public List<CampaignWisePerformanceStatsDTO> getCampaignWisePerformance(@RequestParam("userName") String userName)
     {
         List<CampaignWisePerformanceStatsDTO> response = analyticsService.getCampaignWisePerformanceStats(userName);
-        System.out.println("Response : " + response);
+        LOGGER.info("Campaign Wise performance JSON : " + response);
         return response;
     }
 
@@ -87,7 +95,7 @@ public class AnayticsController
     public List<GroupWiseUnsubscriptionStatsDTO> getGroupWiseUnsubscription(@RequestParam("userName") String userName)
     {
         List<GroupWiseUnsubscriptionStatsDTO> response = analyticsService.getGroupWiseUnsubscription(userName);
-        System.out.println("Response : " + response);
+        LOGGER.info("Grop wise Unsbscription JSON : " + response);
         return response;
     }
 
@@ -101,7 +109,7 @@ public class AnayticsController
     public RepositoryResponseChartDTO getRecentCampaignChartSummary(@RequestParam("userName") String userName)
     {
         RepositoryResponseChartDTO response = analyticsService.getRecentCampaignChartSummary(userName);
-        System.out.println("Response : " + response);
+        LOGGER.info("Recent Chart Summary JSON : " + response);
         return response;
     }
     
@@ -114,7 +122,35 @@ public class AnayticsController
     public List<CompanyWiseRegistrationDTO> getCompanyWiseRegistrationStats()
     {
         List<CompanyWiseRegistrationDTO> response = analyticsService.getCompanyWiseRegistrationStats();
-        System.out.println("Response : " + response);
+        LOGGER.info("Company Wise Registration JSON : " + response);
+        return response;
+    }
+    
+    /**
+     * Gets the pending approvals.
+     *
+     * @param userName the user name
+     * @return the pending approvals
+     */
+    @PostMapping(value = "getRecentUnsubscribes", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(@RequestParam("age") String age)
+    {
+        List<RecentUnsubscribesDTO> response = analyticsService.getRecentUnsubscribes(Integer.parseInt(age));
+        LOGGER.info("response : " + response);
+        return response;
+    }
+    
+    /**
+     * Gets the pending approvals.
+     *
+     * @param userName the user name
+     * @return the pending approvals
+     */
+    @PostMapping(value = "getRecentUnsubscribedCount", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<RecentlyUnsubscribedCountDTO> getRecentUnsubscribedCount(@RequestParam("age") String age)
+    {
+        List<RecentlyUnsubscribedCountDTO> response = analyticsService.getRecentUnsuscribedCount(Integer.parseInt(age));
+        LOGGER.info("response : " + response);
         return response;
     }
 }

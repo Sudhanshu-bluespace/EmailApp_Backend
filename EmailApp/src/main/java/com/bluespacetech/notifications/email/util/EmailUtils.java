@@ -1,5 +1,9 @@
 package com.bluespacetech.notifications.email.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.bluespacetech.core.crypto.Encryptor;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
 /**
@@ -11,6 +15,8 @@ public class EmailUtils
 
     /** The Constant EMAIL_SECRET_KEY. */
     public final static String EMAIL_SECRET_KEY = "ThisIsKeyForEmailEncryptDecrypt";
+    
+    private final static Logger LOGGER = LogManager.getLogger(EmailUtils.class);
 
     /**
      * Generate unscribe link.
@@ -22,10 +28,15 @@ public class EmailUtils
     public static String generateUnscribeLink(final EmailContactGroupVO emailContactGroupVO,
             final String emailRequestURL)
     {
-        final StringBuffer unscribeLink = new StringBuffer(emailRequestURL + "/unsubscribe");
-        unscribeLink.append("?contactEmail=").append(emailContactGroupVO.getContactEmail()).append("&contactId=")
+        LOGGER.info("Generating Unsubscribe Link");
+        final StringBuffer unscribeLink = new StringBuffer(emailRequestURL + "/track/unsubscribe");
+        final StringBuilder token = new StringBuilder();
+        unscribeLink.append("?token=");
+        token.append("contactEmail=").append(emailContactGroupVO.getContactEmail()).append("&contactId=")
                 .append(emailContactGroupVO.getContactId().toString()).append("&groupId=")
                 .append(emailContactGroupVO.getGroupId().toString());
+        String tokenEnc = Encryptor.Encrypt(token.toString());
+        unscribeLink.append(tokenEnc);
         /*
          * try { final CryptoUtil cryptoUtil = new CryptoUtil(); try {
          * unscribeLink.append("?contactEmail=").append(emailContactGroupVO.
@@ -43,6 +54,8 @@ public class EmailUtils
          * NoSuchAlgorithmException e) { // TODO Auto-generated catch block
          * e.printStackTrace(); }
          */
+        
+        LOGGER.info("Unsubscribe Link : "+unscribeLink.toString());
         return unscribeLink.toString();
     }
 
@@ -57,7 +70,8 @@ public class EmailUtils
     public static String generateReadMailImageSRC(final EmailContactGroupVO emailContactGroupVO,
             final String emailRequestURL, final Long emailRandomNumber)
     {
-        final StringBuffer unscribeLink = new StringBuffer(emailRequestURL + "/readMail");
+        LOGGER.info("Generating read link");
+        final StringBuffer unscribeLink = new StringBuffer(emailRequestURL + "/track/readMail");
         unscribeLink.append("?emailRandomNumber=").append(emailRandomNumber).append("&contactId=")
                 .append(emailContactGroupVO.getContactId().toString()).append("&groupId=")
                 .append(emailContactGroupVO.getGroupId().toString());
@@ -78,6 +92,7 @@ public class EmailUtils
          * NoSuchAlgorithmException e) { // TODO Auto-generated catch block
          * e.printStackTrace(); }
          */
+        LOGGER.info("Read Mail Link : "+unscribeLink.toString());
         return unscribeLink.toString();
     }
 

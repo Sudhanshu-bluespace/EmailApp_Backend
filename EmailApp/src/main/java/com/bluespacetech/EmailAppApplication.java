@@ -1,11 +1,14 @@
 package com.bluespacetech;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import com.bluespacetech.notifications.email.util.MailTemplateConfiguration;
 
 /**
  * The Class EmailAppApplication.
@@ -13,11 +16,15 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
  * @author Sudhanshu Tripathy
  */
 @SpringBootApplication
+@EnableScheduling
 public class EmailAppApplication extends SpringBootServletInitializer
 {
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(EmailAppApplication.class);
+    
+    @Autowired
+    MailTemplateConfiguration templateConfiguration; 
 
     /**
      * The main method.
@@ -41,5 +48,4 @@ public class EmailAppApplication extends SpringBootServletInitializer
     {
         return application.sources(EmailAppApplication.class);
     }
-
 }

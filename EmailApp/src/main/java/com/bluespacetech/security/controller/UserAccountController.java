@@ -1,14 +1,14 @@
 package com.bluespacetech.security.controller;
 
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -75,7 +75,7 @@ public class UserAccountController extends AbstractBaseController
     VerificationTokenRepository verificationTokenRepository;
 
     /** The Constant LOGGER. */
-    private static final Logger LOGGER = Logger.getLogger(UserAccountController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(UserAccountController.class.getName());
 
     /**
      * Retrieve All Financial Years.
@@ -207,7 +207,7 @@ public class UserAccountController extends AbstractBaseController
             URI uri = new URI(scheme, null, host, port, null, null, null);
             LOGGER.info("Captured Server Url : " + uri.toString());*/
             OnRegistrationCompleteEvent event = new OnRegistrationCompleteEvent(user, request.getLocale(),
-                    null, true);
+                    null, true,"ADMIN");
             LOGGER.debug("Event : " + event);
             eventPublisher.publishEvent(event);
             LOGGER.info("Sent Account Creation Email to user successfully");

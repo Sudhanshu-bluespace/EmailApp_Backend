@@ -27,6 +27,8 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent
 
     /** The is account created by admin. */
     private boolean isAccountCreatedByAdmin;
+    
+    private String requestType;
 
     /**
      * Instantiates a new on registration complete event.
@@ -36,7 +38,7 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent
      * @param appUrl the app url
      * @param isAccountCreatedByAdmin the is account created by admin
      */
-    public OnRegistrationCompleteEvent(UserAccount user, Locale locale, String appUrl, boolean isAccountCreatedByAdmin)
+    public OnRegistrationCompleteEvent(UserAccount user, Locale locale, String appUrl, boolean isAccountCreatedByAdmin,String requestType)
     {
         super(user);
 
@@ -44,6 +46,7 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent
         this.locale = locale;
         this.appUrl = appUrl;
         this.isAccountCreatedByAdmin = isAccountCreatedByAdmin;
+        this.requestType = requestType;
     }
 
     /**
@@ -84,6 +87,11 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent
     public boolean isAccountCreatedByAdmin()
     {
         return isAccountCreatedByAdmin;
+    }
+
+    public String getRequestType()
+    {
+        return requestType;
     }
 
     /*

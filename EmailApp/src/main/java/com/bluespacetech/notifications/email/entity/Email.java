@@ -5,9 +5,11 @@
 package com.bluespacetech.notifications.email.entity;
 
 import java.io.Serializable;
+import java.sql.Blob;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -24,8 +26,9 @@ public class Email extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = 5269234756986410938L;
 
 	@NotEmpty(message = "Message is mandatory.")
-	@Column(name = "TEXT")
-	private String message;
+	@Lob
+	@Column(name = "TEXT",length=300000)
+	private byte[] message;
 
 	@NotEmpty(message = "Subject is mandatory.")
 	@Column(name = "SUBJECT")
@@ -34,14 +37,14 @@ public class Email extends BaseEntity implements Serializable {
 	/**
 	 * @return the message
 	 */
-	public String getMessage() {
+	public byte[] getMessage() {
 		return message;
 	}
 
 	/**
 	 * @param message the message to set
 	 */
-	public void setMessage(String message) {
+	public void setMessage(byte[] message) {
 		this.message = message;
 	}
 

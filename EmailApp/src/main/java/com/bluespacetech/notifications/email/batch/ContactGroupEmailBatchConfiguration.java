@@ -21,8 +21,8 @@ import com.bluespacetech.notifications.email.service.EmailContactGroupService;
 import com.bluespacetech.notifications.email.util.ContactGroupMailMessage;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The Class ContactGroupEmailBatchConfiguration.
@@ -44,7 +44,7 @@ public class ContactGroupEmailBatchConfiguration
     /** The email contact group service. */
     @Autowired
     public EmailContactGroupService emailContactGroupService;
-
+    
     /** The java mail sender. */
     @Autowired
     public JavaMailSender javaMailSender;
@@ -148,7 +148,8 @@ public class ContactGroupEmailBatchConfiguration
     {
         LOGGER.info("Executing Batch Job for email processing");
         return stepBuilderFactory.get("step1").<EmailContactGroupVO, ContactGroupMailMessage> chunk(10)
-                .reader(databaseItemReader(dataSource, null, null, null, null)).processor(processor(null))
+                .reader(databaseItemReader(dataSource, null, null, null, null))
+                .processor(processor(null))
                 .writer(simpleEmailWriter(emailContactGroupService)).build();
     }
 

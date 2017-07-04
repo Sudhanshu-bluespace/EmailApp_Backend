@@ -20,8 +20,9 @@ public class PageLinksServiceImpl implements PageLinksService  {
 	@Override
 	@Transactional
 	public Set<PageLinkConstant> getPageLinksAllowedForUser() {
-
+	        //System.out.println("Inside PageLink Service..");
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		//System.out.println("Authentication : "+authentication.getName()+" | "+authentication.isAuthenticated());
 		final Set<String> authorities = new HashSet<String>();
 		UserAccountTypeConstant userAccountType = UserAccountTypeConstant.ACC_TYPE_USER;
 		if(authentication!= null && authentication.getAuthorities()!=null){

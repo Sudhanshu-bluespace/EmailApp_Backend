@@ -1,5 +1,7 @@
 package com.bluespacetech.notifications.email.util;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -24,6 +26,20 @@ public class MailTemplateConfiguration
     /** The mail super admins. */
     @Value("${mail.superadmins}")
     private String mailSuperAdmins;
+    
+    @Value("${mail.ignoreList}")
+    private String ignoreList;
+    
+
+    public String getIgnoreList()
+    {
+        return ignoreList;
+    }
+
+    public void setIgnoreList(String ignoreList)
+    {
+        this.ignoreList = ignoreList;
+    }
 
     /**
      * Gets the footer light text.
@@ -85,15 +101,10 @@ public class MailTemplateConfiguration
         this.mailSuperAdmins = mailSuperAdmins;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString()
     {
         return "MailTemplateConfiguration [footerLightText=" + footerLightText + ", footerDarkText=" + footerDarkText
-                + ", mailSuperAdmins=" + mailSuperAdmins + "]";
+                + ", mailSuperAdmins=" + mailSuperAdmins + ", ignoreList=" + ignoreList + "]";
     }
-
 }

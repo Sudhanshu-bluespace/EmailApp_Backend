@@ -8,6 +8,8 @@ import java.util.List;
 import com.bluespacetech.server.analytics.repository.CampaignWisePerformanceStatsDTO;
 import com.bluespacetech.server.analytics.repository.CompanyWiseRegistrationDTO;
 import com.bluespacetech.server.analytics.repository.GroupWiseUnsubscriptionStatsDTO;
+import com.bluespacetech.server.analytics.repository.RecentUnsubscribesDTO;
+import com.bluespacetech.server.analytics.repository.RecentlyUnsubscribedCountDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseChartDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseDTO;
 
@@ -52,4 +54,8 @@ public interface AnalyticsService
     public List<GroupWiseUnsubscriptionStatsDTO> getGroupWiseUnsubscription(String username);
     
     public List<CompanyWiseRegistrationDTO> getCompanyWiseRegistrationStats();
+
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOFDays);
+    
+    public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age);
 }

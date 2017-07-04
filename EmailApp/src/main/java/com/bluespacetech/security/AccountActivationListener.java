@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ public class AccountActivationListener implements ApplicationListener<OnRegistra
     private EmailHandler emailHandler;
 
     /** The Constant LOGGER. */
-    private static final Logger LOGGER = Logger.getLogger(AccountActivationListener.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(AccountActivationListener.class.getName());
 
     /*
      * (non-Javadoc)
@@ -84,9 +85,19 @@ public class AccountActivationListener implements ApplicationListener<OnRegistra
                 emailHandler.sendAccountCreationEmail(mail, event.getUser().getUsername(),
                         event.getUser().getPassword());
             }
-            else
+            else if ("APPROVE".equalsIgnoreCase(event.getRequestType()))
             {
                 emailHandler.sendVerificationEmail(mail);
+            }
+            else if ("HOLD".equalsIgnoreCase(event.getRequestType()))
+            {
+                emailHandler.sendAccountCreationOnHoldEmail(mail, event.getUser().getUsername(),
+                        event.getUser().getPassword());
+            }
+            else if ("REJECT".equalsIgnoreCase(event.getRequestType()))
+            {
+                emailHandler.sendAccountCreationRejectedEmail(mail, event.getUser().getUsername(),
+                        event.getUser().getPassword());
             }
         }
         catch (IOException e)

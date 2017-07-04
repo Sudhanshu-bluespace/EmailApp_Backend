@@ -24,6 +24,102 @@ public class PendingAccountApprovalsDTO
 
     /** The registration request date. */
     private String registrationRequestDate;
+    
+    private String street;
+    
+    private String city;
+    
+    private String state;
+    
+    private String country;
+    
+    private String zipcode;
+    
+    private boolean approved;
+    
+    private boolean onHold;
+    
+    private boolean rejected;
+
+    public boolean isApproved()
+    {
+        return approved;
+    }
+
+    public void setApproved(boolean approved)
+    {
+        this.approved = approved;
+    }
+
+    public boolean isOnHold()
+    {
+        return onHold;
+    }
+
+    public void setOnHold(boolean onHold)
+    {
+        this.onHold = onHold;
+    }
+
+    public boolean isRejected()
+    {
+        return rejected;
+    }
+
+    public void setRejected(boolean rejected)
+    {
+        this.rejected = rejected;
+    }
+
+    public String getStreet()
+    {
+        return street;
+    }
+
+    public void setStreet(String street)
+    {
+        this.street = street;
+    }
+
+    public String getCity()
+    {
+        return city;
+    }
+
+    public void setCity(String city)
+    {
+        this.city = city;
+    }
+
+    public String getState()
+    {
+        return state;
+    }
+
+    public void setState(String state)
+    {
+        this.state = state;
+    }
+
+    public String getCountry()
+    {
+        return country;
+    }
+
+    public void setCountry(String country)
+    {
+        this.country = country;
+    }
+
+    public String getZipcode()
+    {
+        return zipcode;
+    }
+
+    public void setZipcode(String zipcode)
+    {
+        this.zipcode = zipcode;
+    }
 
     /** The status. */
     private String status;
@@ -168,15 +264,13 @@ public class PendingAccountApprovalsDTO
         this.status = status;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString()
     {
         return "PendingAccountApprovalsDTO [serialNo=" + serialNo + ", id=" + id + ", name=" + name + ", email=" + email
-                + ", companyName=" + companyName + ", registrationRequestDate=" + registrationRequestDate + ", status="
-                + status + "]";
+                + ", companyName=" + companyName + ", registrationRequestDate=" + registrationRequestDate + ", street="
+                + street + ", city=" + city + ", state=" + state + ", country=" + country + ", zipcode=" + zipcode
+                + ", approved=" + approved + ", onHold=" + onHold + ", rejected=" + rejected + ", status=" + status
+                + "]";
     }
 }

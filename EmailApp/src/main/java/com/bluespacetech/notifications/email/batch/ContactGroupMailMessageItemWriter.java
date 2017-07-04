@@ -9,13 +9,15 @@ import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.util.Assert;
 
 import com.bluespacetech.core.exceptions.BusinessException;
@@ -114,6 +116,7 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
         {
             oldMailProperties = ((JavaMailSenderImpl) mailSender).getJavaMailProperties();
             LOGGER.info("Old properties : " + oldMailProperties);
+            ((JavaMailSenderImpl) mailSender).getSession().setDebug(Boolean.getBoolean((String)oldMailProperties.get("mail.debug")));
             // final String userName = ViewUtil.getPrincipal();
             // final UserAccount userAccount =
             // userAccountService.findUserAccountByUsername(userName);
@@ -156,13 +159,14 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
 
         int count = 0, toltalMessagesCount = 0;
         int mailServerCount = 0;
-        MimeMessage[] messages = null;
+        MimeMessage[] messages = null;//new MimeMessage[items.size()];
+        //MimeMessagePreparator[] preparator = null;//new MimeMessagePreparator[items.size()];
         for (final ContactGroupMailMessage contactGroupMailMessage : items)
         {
             LOGGER.info("Adding emailcntactgroup : " + contactGroupMailMessage.getEmailContactGroup() + " to "
                     + contactGroupMailMessage);
             emailContactGroups.add(contactGroupMailMessage.getEmailContactGroup());
-            if (emailServers != null)
+            if (emailServers != null && !emailServers.isEmpty())
             {
                 // Loop though all email servers
                 LOGGER.info("Looping through mail servers..");
@@ -172,7 +176,8 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
                     final EmailServer emailServer = emailServers.get(mailServerCount);
                     if (mailSender instanceof JavaMailSenderImpl)
                     {
-                        contactGroupMailMessage.getMimeMessage().setFrom(emailServer.getFromAddress());
+                        LOGGER.info("Valid mail configurations found..Setting properties..");
+                        //contactGroupMailMessage.getPreparator()..getMimeMessage().setFrom(emailServer.getFromAddress());
                         if (emailServerPropertiesByServers.get(emailServer.getId()) != null)
                         {
                             ((JavaMailSenderImpl) mailSender)
@@ -189,17 +194,26 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
                     if (count == 0)
                     {
                         messages = new MimeMessage[emailServer.getMailsPerSession()];
+                        //preparator = new MimeMessagePreparator[emailServer.getMailsPerSession()];
                     }
 
                     messages[count] = contactGroupMailMessage.getMimeMessage();
+                    //preparator[count] = contactGroupMailMessage.getPreparator();
                     // Once number of messages reach mail server capacity or all
                     // the messages in the batch are completed, mail/send the
                     // messages.
                     if (count == emailServer.getMailsPerSession() - 1 || toltalMessagesCount == items.size() - 1)
                     {
-                        LOGGER.info("Sending emails...");
-                        mailSender.send(messages);
-                        mailServerCount++;
+                        LOGGER.info("Sending emails through "+mailSender);
+                        for(MimeMessage msg : messages)
+                        {
+                            if(msg!=null)
+                            {
+                                mailSender.send(msg);
+                                //mailSender.send(preparator);
+                                mailServerCount++;
+                            }
+                        }
                         count = 0;
                         LOGGER.info("emails sent..");
                     }
@@ -216,15 +230,21 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
             }
             else
             {
-                messages = new MimeMessage[items.size()];
+                if(count==0)
+                {
+                    messages = new MimeMessage[items.size()];
+                    //preparator = new MimeMessagePreparator[items.size()];
+                }
+                //preparator[count] = contactGroupMailMessage.getPreparator();
                 messages[count] = contactGroupMailMessage.getMimeMessage();
                 count++;
             }
         }
         LOGGER.info("Creating email contact groups through service..");
         emailContactGroupService.createEmailContactGroups(emailContactGroups);
-        if (emailServers == null && messages != null)
+        if ((emailServers == null||emailServers.isEmpty()) && messages != null)
         {
+            LOGGER.info("No Servers configured in application. Sending the entire bunch of "+messages.length+" messages through default mailSender : "+mailSender);
             mailSender.send(messages);
         }
         if (oldMailProperties != null && oldMailProperties.size() > 0 && mailSender instanceof JavaMailSenderImpl)

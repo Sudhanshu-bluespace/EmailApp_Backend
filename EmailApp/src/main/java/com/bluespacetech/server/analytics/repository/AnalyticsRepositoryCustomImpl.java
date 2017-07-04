@@ -165,4 +165,45 @@ public class AnalyticsRepositoryCustomImpl implements AnalyticsRepositoryCustom
         return companyWiseRegistrationstats;
     }
 
+    @Override
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOfDays)
+    {
+        String queryString = QueryStringConstants.getQuery_RecentlyUnsubscribedUsers(numberOfDays);
+        List<RecentUnsubscribesDTO> RecentUnsubscribes = new ArrayList<>();
+        Query query = em.createNativeQuery(queryString);
+        List<Object[]> responseList = query.getResultList();
+        long i=0;
+        for (Object[] response : responseList)
+        {
+            i++;
+            RecentUnsubscribesDTO dto = new RecentUnsubscribesDTO();
+            dto.setSerialNo(i);
+            dto.setFirstName(response[0].toString());
+            dto.setLastName(response[1].toString());
+            dto.setEmail(response[2].toString());
+            dto.setUnsubscribedOn(response[3].toString());
+            RecentUnsubscribes.add(dto);
+        }
+        return RecentUnsubscribes;
+    }
+    
+    @Override
+    public List<RecentlyUnsubscribedCountDTO> getRecentlyUnsubscribedCount(int numberOfDays)
+    {
+        String queryString = QueryStringConstants.getQuery_RecentlyUnsubscribedUserCountDistribution(numberOfDays);
+        List<RecentlyUnsubscribedCountDTO> RecentUnsubscribes = new ArrayList<>();
+        Query query = em.createNativeQuery(queryString);
+        List<Object[]> responseList = query.getResultList();
+        long i=0;
+        for (Object[] response : responseList)
+        {
+            i++;
+            RecentlyUnsubscribedCountDTO dto = new RecentlyUnsubscribedCountDTO();
+            dto.setUnsubscribedOn(response[0].toString());
+            dto.setCount(Integer.parseInt(response[1].toString()));
+            RecentUnsubscribes.add(dto);
+        }
+        return RecentUnsubscribes;
+    }
+
 }

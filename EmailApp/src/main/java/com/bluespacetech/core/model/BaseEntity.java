@@ -66,6 +66,21 @@ public abstract class BaseEntity implements Serializable
 
     /** The resource object id. */
     transient private Long resourceObjectId;
+    
+    transient private boolean autoRunEnabled;
+    
+    transient private final String AUTO_ADMIN="auto_admin";
+    
+
+    public boolean isAutoRunEnabled()
+    {
+        return autoRunEnabled;
+    }
+
+    public void setAutoRunEnabled(boolean autoRunEnabled)
+    {
+        this.autoRunEnabled = autoRunEnabled;
+    }
 
     /**
      * Creates a clone of the given date. Returns null when the given date is null.
@@ -223,7 +238,14 @@ public abstract class BaseEntity implements Serializable
         if (createdUser == null)
         {
             // Created user name;
-            createdUser = ViewUtil.getPrincipal();
+            if(!isAutoRunEnabled())
+            {
+                createdUser = ViewUtil.getPrincipal();
+            }
+            else
+            {
+                createdUser = AUTO_ADMIN;
+            }
         }
 
         // last updated time stamp
@@ -232,7 +254,14 @@ public abstract class BaseEntity implements Serializable
         if (lastUpdatedUser == null)
         {
             // last updated user name;
-            lastUpdatedUser = ViewUtil.getPrincipal();
+            if(!autoRunEnabled)
+            {
+                lastUpdatedUser = ViewUtil.getPrincipal();
+            }
+            else
+            {
+                lastUpdatedUser=AUTO_ADMIN;
+            }
         }
     }
 

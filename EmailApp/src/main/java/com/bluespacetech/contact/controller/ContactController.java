@@ -17,8 +17,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameter;
@@ -115,15 +115,23 @@ public class ContactController
      */
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> create(@RequestBody final Contact contact) throws BusinessException
+    public ResponseEntity<String> create(@RequestBody final Contact contact)
     {
-        for (final ContactGroup contactGroup : contact.getContactGroups())
+        try
         {
-            contactGroup.setContact(contact);
-            contactGroup.getGroup().setContactGroups(contact.getContactGroups());
+            for (final ContactGroup contactGroup : contact.getContactGroups())
+            {
+                contactGroup.setContact(contact);
+                contactGroup.getGroup().setContactGroups(contact.getContactGroups());
+            }
+            contactService.createContact(contact);
+            return new ResponseEntity<String>(HttpStatus.OK);
+
         }
-        contactService.createContact(contact);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        catch (BusinessException ex)
+        {
+            return new ResponseEntity<String>(String.format("{\"Error\":\"%s\"}", ex.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**

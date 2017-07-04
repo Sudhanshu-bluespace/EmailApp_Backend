@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -53,6 +55,9 @@ public class UserService implements UserDetailsService
     /** The user role repository. */
     @Autowired
     UserRoleRepository userRoleRepository;
+    
+    /** The Constant LOGGER. */
+    private static final Logger LOGGER = LogManager.getLogger(UserService.class.getName());
 
     /*
      * (non-Javadoc)
@@ -63,7 +68,7 @@ public class UserService implements UserDetailsService
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException
     {
         UserAccount userAccount = null;
-        System.out.println("inside user details service");
+        LOGGER.debug("inside user details service");
 
         try
         {
@@ -76,6 +81,7 @@ public class UserService implements UserDetailsService
 
         if (userAccount == null)
         {
+            LOGGER.warn("User not found by username");
             throw new UsernameNotFoundException("User not found by username");
         }
 
@@ -133,9 +139,11 @@ public class UserService implements UserDetailsService
         // + grantedAuthorities);
         if (grantedAuthorities.isEmpty())
         {
+            LOGGER.warn("User does not have granted authorities");
             throw new UsernameNotFoundException("User does not have granted authorities");
         }
 
+        System.out.println("User Account : "+userAccount);
         final String password = userAccount.getPassword();
 
         final boolean isActive = userAccount.isActive();
@@ -148,8 +156,10 @@ public class UserService implements UserDetailsService
 
         final UserDetails userDetails = new org.springframework.security.core.userdetails.User(username, password,
                 isActive, isAccountNotExpried, isCredentialsNotExpired, isAccountNotLocked, grantedAuthorities);
-        System.out.println("User returned : " + userDetails.getUsername() + "|" + userDetails.getPassword());
+        //System.out.println("User returned : " + userDetails.getUsername() + "|" + userDetails.getPassword());
         // pageLinksService.getPageLinksAllowedForUser();
+        LOGGER.info("User retrieved successfully");
+        System.out.println("User : "+userDetails.isAccountNonExpired()+ " | "+userDetails.isAccountNonLocked()+" | "+userDetails.isEnabled()+" | "+userDetails.isCredentialsNonExpired());
         return userDetails;
     }
 

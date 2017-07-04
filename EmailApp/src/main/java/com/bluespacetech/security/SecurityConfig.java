@@ -148,11 +148,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.failureHandler(authenticationFailure).and().logout().permitAll().and().authorizeRequests()
 		.antMatchers("/app/resources/**","/index.html", "/**/*.js", "/**/app/resources/css/**.css", "/**/app/resources/js/**.js",
 						"/**/app/resources/fonts/*.*", "/**/app/resources/css/fonts/*.*", "/","/analytics/recentSummary","/new",
-						"/new/register","/new/**","/about/**","/emails/unsubscribe?**","/emails/readMail?**")//.authenticated().
+						"/new/register","/new/**","/about/**","/track/**")//.authenticated().
 		.permitAll().anyRequest().authenticated()
 		.and()
-		//.csrf().disable();
-		.addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class);
+		.csrf().disable();
+		//.addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class);
 
 		// http.antMatcher("/*/**").authorizeRequests().antMatchers("/*/**").authenticated().and().formLogin().and().csrf()
 		// .disable();

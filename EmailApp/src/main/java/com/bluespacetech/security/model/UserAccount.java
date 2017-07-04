@@ -91,6 +91,320 @@ public class UserAccount extends BaseEntity implements Serializable
     /** The email. */
     @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
+    
+    /** The federal id. */
+    @Column(name="FEDERAL_ID",nullable = false, unique=true)
+    private String federalId;
+    
+    /** The address. */
+    @Column(name="ADDRESS")
+    private String address;
+    
+    /** The street. */
+    @Column(name="STREET")
+    private String street;
+    
+    /** The city. */
+    @Column(name="CITY",nullable = false, unique=true)
+    private String city;
+    
+    /** The state. */
+    @Column(name="STATE",nullable = false)
+    private String state;
+    
+    /** The country. */
+    @Column(name="COUNTRY",nullable = false)
+    private String country;
+    
+    /** The zip code. */
+    @Column(name="ZIP_CODE",nullable = false)
+    private String zipCode;
+    
+    /** The auto renew. */
+    @Column(name="AUTO_RENEW")
+    private Boolean autoRenew = false;
+    
+    /** The comments. */
+    @Column(name="COMMENTS")
+    private String comments;
+    
+    /** The payment plan. */
+    @Column(name="PAYMENT_PLAN")
+    private String paymentPlan;
+    
+    /** The valid to. */
+    @Column(name="VALID_TO")
+    private String validTo;
+    
+    /** The payment info. */
+    @Column(name="PAYMENT_INFO")
+    private String paymentInfo;
+    
+    /** The trial period. */
+    @Column(name="TRIAL_PERIOD")
+    private String trialPeriod;
+    
+    
+    
+    /**
+     * Gets the federal id.
+     *
+     * @return the federal id
+     */
+    public String getFederalId()
+    {
+        return federalId;
+    }
+
+    /**
+     * Sets the federal id.
+     *
+     * @param federalId the new federal id
+     */
+    public void setFederalId(String federalId)
+    {
+        this.federalId = federalId;
+    }
+
+    /**
+     * Gets the address.
+     *
+     * @return the address
+     */
+    public String getAddress()
+    {
+        return address;
+    }
+
+    /**
+     * Sets the address.
+     *
+     * @param address the new address
+     */
+    public void setAddress(String address)
+    {
+        this.address = address;
+    }
+
+    /**
+     * Gets the street.
+     *
+     * @return the street
+     */
+    public String getStreet()
+    {
+        return street;
+    }
+
+    /**
+     * Sets the street.
+     *
+     * @param street the new street
+     */
+    public void setStreet(String street)
+    {
+        this.street = street;
+    }
+
+    /**
+     * Gets the city.
+     *
+     * @return the city
+     */
+    public String getCity()
+    {
+        return city;
+    }
+
+    /**
+     * Sets the city.
+     *
+     * @param city the new city
+     */
+    public void setCity(String city)
+    {
+        this.city = city;
+    }
+
+    /**
+     * Gets the state.
+     *
+     * @return the state
+     */
+    public String getState()
+    {
+        return state;
+    }
+
+    /**
+     * Sets the state.
+     *
+     * @param state the new state
+     */
+    public void setState(String state)
+    {
+        this.state = state;
+    }
+
+    /**
+     * Gets the country.
+     *
+     * @return the country
+     */
+    public String getCountry()
+    {
+        return country;
+    }
+
+    /**
+     * Sets the country.
+     *
+     * @param country the new country
+     */
+    public void setCountry(String country)
+    {
+        this.country = country;
+    }
+
+    /**
+     * Gets the zip code.
+     *
+     * @return the zip code
+     */
+    public String getZipCode()
+    {
+        return zipCode;
+    }
+
+    /**
+     * Sets the zip code.
+     *
+     * @param zipCode the new zip code
+     */
+    public void setZipCode(String zipCode)
+    {
+        this.zipCode = zipCode;
+    }
+
+    /**
+     * Checks if is auto renew.
+     *
+     * @return true, if is auto renew
+     */
+    public boolean isAutoRenew()
+    {
+        return autoRenew;
+    }
+
+    /**
+     * Sets the auto renew.
+     *
+     * @param autoRenew the new auto renew
+     */
+    public void setAutoRenew(boolean autoRenew)
+    {
+        this.autoRenew = autoRenew;
+    }
+
+    /**
+     * Gets the comments.
+     *
+     * @return the comments
+     */
+    public String getComments()
+    {
+        return comments;
+    }
+
+    /**
+     * Sets the comments.
+     *
+     * @param comments the new comments
+     */
+    public void setComments(String comments)
+    {
+        this.comments = comments;
+    }
+
+    /**
+     * Gets the payment plan.
+     *
+     * @return the payment plan
+     */
+    public String getPaymentPlan()
+    {
+        return paymentPlan;
+    }
+
+    /**
+     * Sets the payment plan.
+     *
+     * @param paymentPlan the new payment plan
+     */
+    public void setPaymentPlan(String paymentPlan)
+    {
+        this.paymentPlan = paymentPlan;
+    }
+
+    /**
+     * Gets the valid to.
+     *
+     * @return the valid to
+     */
+    public String getValidTo()
+    {
+        return validTo;
+    }
+
+    /**
+     * Sets the valid to.
+     *
+     * @param validTo the new valid to
+     */
+    public void setValidTo(String validTo)
+    {
+        this.validTo = validTo;
+    }
+
+    /**
+     * Gets the payment info.
+     *
+     * @return the payment info
+     */
+    public String getPaymentInfo()
+    {
+        return paymentInfo;
+    }
+
+    /**
+     * Sets the payment info.
+     *
+     * @param paymentInfo the new payment info
+     */
+    public void setPaymentInfo(String paymentInfo)
+    {
+        this.paymentInfo = paymentInfo;
+    }
+
+    /**
+     * Gets the trial period.
+     *
+     * @return the trial period
+     */
+    public String getTrialPeriod()
+    {
+        return trialPeriod;
+    }
+
+    /**
+     * Sets the trial period.
+     *
+     * @param trialPeriod the new trial period
+     */
+    public void setTrialPeriod(String trialPeriod)
+    {
+        this.trialPeriod = trialPeriod;
+    }
 
     /**
      * Gets the phone number.
@@ -342,17 +656,21 @@ public class UserAccount extends BaseEntity implements Serializable
         this.email = email;
     }
 
-    /*
-     * (non-Javadoc)
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        return "UserAccount [username=" + username + ", active=" + active + ", verifiedByAdmin=" + verifiedByAdmin
-                + ", accountExpired=" + accountExpired + ", credentialsExpired=" + credentialsExpired
-                + ", accountLocked=" + accountLocked + ", userAccountType=" + userAccountType
-                + ", userAccountUserGroups=" + userAccountUserGroups + ", email=" + email + "]";
+        return "UserAccount [username=" + username + ", password=" + password + ", active=" + active
+                + ", verifiedByAdmin=" + verifiedByAdmin + ", accountExpired=" + accountExpired
+                + ", credentialsExpired=" + credentialsExpired + ", accountLocked=" + accountLocked + ", phoneNumber="
+                + phoneNumber + ", userAccountType=" + userAccountType + ", userAccountUserGroups="
+                + userAccountUserGroups + ", companyRegistration=" + companyRegistration + ", email=" + email
+                + ", federalId=" + federalId + ", address=" + address + ", street=" + street + ", city=" + city
+                + ", state=" + state + ", country=" + country + ", zipCode=" + zipCode + ", autoRenew=" + autoRenew
+                + ", comments=" + comments + ", paymentPlan=" + paymentPlan + ", validTo=" + validTo + ", paymentInfo="
+                + paymentInfo + ", trialPeriod=" + trialPeriod + "]";
     }
 
 }

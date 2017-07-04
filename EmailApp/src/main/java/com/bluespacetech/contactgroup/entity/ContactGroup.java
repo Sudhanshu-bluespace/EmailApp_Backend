@@ -1,10 +1,11 @@
 package com.bluespacetech.contactgroup.entity;
 
 import java.io.Serializable;
-
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -13,78 +14,116 @@ import com.bluespacetech.group.entity.Group;
 
 @Entity
 @Table(name = "CONTACT_GROUP")
-public class ContactGroup implements Serializable {
+public class ContactGroup implements Serializable
+{
 
-	private static final long serialVersionUID = 8104121333570891530L;
+    private static final long serialVersionUID = 8104121333570891530L;
 
-	@EmbeddedId
-	private ContactGroupPK contactGroupPK = new ContactGroupPK();
+    @EmbeddedId
+    private ContactGroupPK contactGroupPK = new ContactGroupPK();
 
-	@Column(name = "ISACTIVE")
-	private boolean isActive = true;
+    @Column(name = "ISACTIVE")
+    private boolean isActive = true;
 
-	@Column(name = "UNSUBSCRIBED")
-	private boolean unSubscribed = false;
-	
-	public ContactGroupPK getContactGroupPK() {
-		return contactGroupPK;
-	}
+    @Column(name = "UNSUBSCRIBED")
+    private boolean unSubscribed = false;
 
-	public void setContactGroupPK(ContactGroupPK contactGroupPK) {
-		this.contactGroupPK = contactGroupPK;
-	}
+    @Column(name = "UNSUBSCRIBED_DATE",nullable=true)
+    private Timestamp unsubscribedDate;
 
-	public boolean isActive() {
-		return isActive;
-	}
+    public Timestamp getUnsubscribedDate()
+    {
+        return unsubscribedDate;
+    }
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
+    public void setUnsubscribedDate(Timestamp unsubscribedDate)
+    {
+        this.unsubscribedDate = unsubscribedDate;
+    }
 
-	public boolean isUnSubscribed() {
-		return unSubscribed;
-	}
+    public ContactGroupPK getContactGroupPK()
+    {
+        return contactGroupPK;
+    }
 
-	public void setUnSubscribed(boolean unSubscribed) {
-		this.unSubscribed = unSubscribed;
-	}
+    public void setContactGroupPK(ContactGroupPK contactGroupPK)
+    {
+        this.contactGroupPK = contactGroupPK;
+    }
 
-	@Transient
-	public Contact getContact() {
-		return this.getContactGroupPK().getContact();
-	}
+    public boolean isActive()
+    {
+        return isActive;
+    }
 
-	public void setContact(Contact contact) {
-		this.getContactGroupPK().setContact(contact);
-	}
+    public void setActive(boolean isActive)
+    {
+        this.isActive = isActive;
+    }
 
-	@Transient
-	public Group getGroup() {
-		return this.getContactGroupPK().getGroup();
-	}
+    public boolean isUnSubscribed()
+    {
+        return unSubscribed;
+    }
 
-	public void setGroup(Group group) {
-		this.getContactGroupPK().setGroup(group);
-	}
-	
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+    public void setUnSubscribed(boolean unSubscribed)
+    {
+        this.unSubscribed = unSubscribed;
+    }
 
-		ContactGroup that = (ContactGroup) o;
+    @Transient
+    public Contact getContact()
+    {
+        return this.getContactGroupPK().getContact();
+    }
 
-		if (getContactGroupPK() != null ? !getContactGroupPK().equals(that.getContactGroupPK())
-				: that.getContactGroupPK() != null)
-			return false;
+    public void setContact(Contact contact)
+    {
+        this.getContactGroupPK().setContact(contact);
+    }
 
-		return true;
-	}
+    @Transient
+    public Group getGroup()
+    {
+        return this.getContactGroupPK().getGroup();
+    }
 
-	public int hashCode() {
-		return (getContactGroupPK() != null ? getContactGroupPK().hashCode() : 0);
-	}
+    public void setGroup(Group group)
+    {
+        this.getContactGroupPK().setGroup(group);
+    }
+
+    public boolean equals(Object o)
+    {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        ContactGroup that = (ContactGroup) o;
+
+        if (getContactGroupPK() != null ? !getContactGroupPK().equals(that.getContactGroupPK())
+                : that.getContactGroupPK() != null)
+            return false;
+
+        return true;
+    }
+    
+    /**
+     * Pre persist.
+     */
+    @PrePersist
+    public void prePersist()
+    {
+        // Created time stamp
+        //final java.util.Date date = new java.util.Date();
+            // last updated time stamp
+        unsubscribedDate = null;
+    }
+
+    public int hashCode()
+    {
+        return (getContactGroupPK() != null ? getContactGroupPK().hashCode() : 0);
+    }
 
 }

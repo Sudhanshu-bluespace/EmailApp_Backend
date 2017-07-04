@@ -1,20 +1,27 @@
 package com.bluespacetech.security.controller;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +29,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import com.bluespacetech.core.model.City;
+import com.bluespacetech.core.model.Country;
+import com.bluespacetech.core.model.State;
+import com.bluespacetech.core.repository.CityRepository;
+import com.bluespacetech.core.repository.CountryRepository;
+import com.bluespacetech.core.repository.StateRepository;
 import com.bluespacetech.notifications.email.util.EmailHandler;
 import com.bluespacetech.notifications.email.util.MailTemplateConfiguration;
 import com.bluespacetech.security.constants.UserAccountTypeConstant;
@@ -80,8 +93,150 @@ public class RegistrationController
     @Autowired
     VerificationTokenRepository verificationTokenRepository;
 
+    @Autowired
+    CountryRepository countryRepository;
+
+    @Autowired
+    StateRepository stateRepository;
+
+    @Autowired
+    CityRepository cityRepository;
+
     /** The Constant LOGGER. */
-    private static final Logger LOGGER = Logger.getLogger(RegistrationController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(RegistrationController.class.getName());
+
+    @RequestMapping(value = "/feedData", method = RequestMethod.GET)
+    public void feedCountryList()
+    {
+        populateCountryList();
+        populateStateList();
+        populateCityList();
+    }
+
+    private void populateCountryList()
+    {
+        List<Country> countries = countryRepository.findAll();
+        List<String> countriesToFeed;
+        try
+        {
+            countriesToFeed = Files.readAllLines(Paths.get("/opt/packages/Oracle/BluespaceMailer/data/countries.csv"));
+
+            if (countries == null || countries.isEmpty())
+            {
+                for (String record : countriesToFeed)
+                {
+                    String[] splitData = record.split("\\,");
+                    {
+                        if (splitData.length == 3)
+                        {
+                            Country country = new Country();
+                            country.setShortName(splitData[0].trim());
+                            country.setFullName(splitData[1].trim());
+                            country.setIsdCode(splitData[2].trim());
+                            countries.add(country);
+                        }
+                        else
+                        {
+                            LOGGER.error("Invalid record format in countries.csv : " + splitData
+                                    + ". check for missing commas..");
+                        }
+                    }
+                }
+
+                countryRepository.save(countries);
+
+                LOGGER.info("Countries populated successfully");
+            }
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void populateStateList()
+    {
+        List<State> states = stateRepository.findAll();
+        List<String> statesToFeed;
+        try
+        {
+            statesToFeed = Files.readAllLines(Paths.get("/opt/packages/Oracle/BluespaceMailer/data/states.csv"));
+
+            if (states == null || states.isEmpty())
+            {
+                for (String record : statesToFeed)
+                {
+                    String[] splitData = record.split("\\,");
+                    {
+                        if (splitData.length == 2)
+                        {
+                            State state = new State();
+                            state.setName(splitData[0].trim());
+                            Country country = countryRepository.findOne(Long.parseLong(splitData[1].trim()));
+                            state.setCountry(country);
+                            states.add(state);
+                        }
+                        else
+                        {
+                            LOGGER.error("Invalid record format in states.csv : " + splitData
+                                    + ". check for missing commas..");
+                        }
+                    }
+                }
+
+                stateRepository.save(states);
+            }
+            LOGGER.info("States populated successfully");
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void populateCityList()
+    {
+        List<City> cities = cityRepository.findAll();
+        List<String> citiesToFeed;
+        try
+        {
+            citiesToFeed = Files.readAllLines(Paths.get("/opt/packages/Oracle/BluespaceMailer/data/cities.csv"));
+
+            if (cities == null || cities.isEmpty())
+            {
+                for (String record : citiesToFeed)
+                {
+                    String[] splitData = record.split("\\,");
+                    {
+                        if (splitData.length == 2)
+                        {
+                            City city = new City();
+                            city.setName(splitData[0].trim());
+                            State state = stateRepository.findOne(Long.parseLong(splitData[1].trim()));
+                            city.setState(state);
+                            cities.add(city);
+                            // cityRepository.save(city);
+                        }
+                        else
+                        {
+                            LOGGER.error("Invalid record format in cities.csv : " + splitData
+                                    + ". check for missing commas..");
+                        }
+                    }
+                }
+
+                cityRepository.save(cities);
+            }
+            LOGGER.info("Cities populated successfully");
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Welcome new registration.
@@ -93,16 +248,36 @@ public class RegistrationController
     {
         return new ResponseEntity<BaseResponseDAO>(getWelcomeResponse(), HttpStatus.OK);
     }
+    
+    @GetMapping(value="/getCountries",produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Country> getCountries()
+    {
+        return countryRepository.findAll();
+    }
+    
+    @PostMapping(value="/getStatesFromCountry/{fullName}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<State> getStates(@PathVariable("fullName")String fullName)
+    {
+        Country country = countryRepository.findByFullNameIgnoreCase(fullName);
+        return stateRepository.findByCountry(country);
+    }
+    
+    @PostMapping(value="/getCitiesFromState/{name}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<City> getCities(@PathVariable("name")String name)
+    {
+        State state = stateRepository.findByName(name);
+        System.out.println("Found state : "+state);
+        List<City> cities =  cityRepository.findByState(state);
+        System.out.println("Found cities : "+cities);
+        return cities;
+    }
 
     /**
      * Register new user.
      *
-     * @param registrationDetails
-     *            the registration details
-     * @param request
-     *            the request
-     * @param response
-     *            the response
+     * @param registrationDetails the registration details
+     * @param request the request
+     * @param response the response
      */
     @RequestMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public void registerNewUser(@RequestBody Map<String, Object> registrationDetails, HttpServletRequest request,
@@ -123,6 +298,15 @@ public class RegistrationController
             String emailAdress = (String) registrationDetails.get("email");
             String companyName = (String) registrationDetails.get("companyName");
             String phoneNumber = (String) registrationDetails.get("phone");
+            String address = (String) registrationDetails.get("address");
+            String street = (String) registrationDetails.get("street");
+            String country = (String) registrationDetails.get("country");
+            String state = (String) registrationDetails.get("state");
+            String city = (String) registrationDetails.get("city");
+            String zipcode = (String) registrationDetails.get("zipcode");
+            String federalId = (String) registrationDetails.get("federalId");
+            
+            System.out.println("params : "+address+" | "+street+" | "+country+" | "+state+" | "+city);
 
             UserAccount userDetails = userAccountRepository.findUserAccountByUsername(userName);
             if (userDetails != null)
@@ -185,6 +369,15 @@ public class RegistrationController
                         userAccount.setUserAccountType(UserAccountTypeConstant.ACC_TYPE_EMPLOYEE);
                         userAccount.setPhoneNumber(phoneNumber);
                         userAccount.setCompanyRegistration(company);
+                        userAccount.setCity(city);
+                        userAccount.setState(state);
+                        userAccount.setCountry(country);
+                        userAccount.setAddress(address);
+                        userAccount.setStreet(street);
+                        userAccount.setFederalId(federalId);
+                        userAccount.setZipCode(zipcode);
+                        userAccount.setAutoRenew(false);
+                        
                         UserAccount retrievedUser = userAccountService.save(userAccount);
 
                         AccountApproval approval = new AccountApproval();
@@ -236,14 +429,10 @@ public class RegistrationController
     /**
      * Confirm registration.
      *
-     * @param request
-     *            the request
-     * @param token
-     *            the token
-     * @param response
-     *            the response
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
+     * @param request the request
+     * @param token the token
+     * @param response the response
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     @RequestMapping(value = "/regitrationConfirm", method = RequestMethod.GET)
     public void confirmRegistration(WebRequest request, @RequestParam("token") String token,

@@ -12,6 +12,8 @@ import com.bluespacetech.server.analytics.repository.AnalyticsRepositoryCustom;
 import com.bluespacetech.server.analytics.repository.CampaignWisePerformanceStatsDTO;
 import com.bluespacetech.server.analytics.repository.CompanyWiseRegistrationDTO;
 import com.bluespacetech.server.analytics.repository.GroupWiseUnsubscriptionStatsDTO;
+import com.bluespacetech.server.analytics.repository.RecentUnsubscribesDTO;
+import com.bluespacetech.server.analytics.repository.RecentlyUnsubscribedCountDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseChartDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseDTO;
 
@@ -76,6 +78,18 @@ public class AnalyticsServiceImpl implements AnalyticsService
     public List<CompanyWiseRegistrationDTO> getCompanyWiseRegistrationStats()
     {
         return analyticsRepository.getCompanyWiseRegistrationStats();
+    }
+
+    @Override
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOfDays)
+    {
+        return analyticsRepository.getRecentUnsubscribes(numberOfDays);
+    }
+
+    @Override
+    public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age)
+    {
+        return analyticsRepository.getRecentlyUnsubscribedCount(age);
     }
 
 }
