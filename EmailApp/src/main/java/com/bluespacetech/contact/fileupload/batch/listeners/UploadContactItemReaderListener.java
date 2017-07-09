@@ -7,17 +7,17 @@ public class UploadContactItemReaderListener implements ItemReadListener<Contact
 
 	@Override
 	public void beforeRead() {
-		System.out.println("ItemReadListener - beforeRead");
+		//System.out.println("ItemReadListener - beforeRead");
 	}
 
 	@Override
 	public void onReadError(Exception ex) {
-		System.out.println("ItemReadListener - onReadError "+ex.getMessage());
+		//System.out.println("ItemReadListener - onReadError "+ex.getMessage());
 	}
 
 	@Override
 	public void afterRead(ContactUploadDTO contactUploadDTO) {
-		System.out.println("ItemReadListener - afterRead "+contactUploadDTO);
+		//System.out.println("ItemReadListener - afterRead "+contactUploadDTO);
 		
 	}
 

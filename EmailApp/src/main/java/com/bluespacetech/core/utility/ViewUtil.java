@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,6 +25,11 @@ public final class ViewUtil
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(ViewUtil.class);
+    
+    public static SecurityContext gtecurityContext()
+    {
+        return SecurityContextHolder.getContext();
+    }
 
     /**
      * Gets the principal.

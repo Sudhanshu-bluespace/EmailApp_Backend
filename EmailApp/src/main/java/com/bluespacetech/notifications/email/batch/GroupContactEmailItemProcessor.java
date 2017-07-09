@@ -1,7 +1,6 @@
 package com.bluespacetech.notifications.email.batch;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -66,14 +65,7 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
     public ContactGroupMailMessage process(final EmailContactGroupVO emailContactGroupVO) throws Exception
     {
 
-        LOGGER.info("Processing ContactGroupMailMesaage");
-
-        List<String> ignoreList = new ArrayList<>();
-        String[] ignored = templateConfiguration.getIgnoreList().split("\\,");
-        for (String ignore : ignored)
-        {
-            ignoreList.add(ignore.trim());
-        }
+        LOGGER.debug("Processing ContactGroupMailMesaage");
 
         String email = emailContactGroupVO.getContactEmail();
         if (email == null || email.trim().isEmpty())
@@ -90,7 +82,7 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                         + "]");
                 return null;
             }
-            else if (ignoreList.contains(email.substring(0, email.indexOf("@") + 1)))
+            else if (CommonUtilCache.getIgnoreList().contains(email.substring(0, email.indexOf("@") + 1)))
             {
 
                 LOGGER.warn("Email " + email + " falls under IGNORED LIST, will be skipped");
@@ -98,7 +90,7 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 return null;
             }
             else
-            {
+            {   
                 String[] splitEmail = email.split("@");
                 if (splitEmail.length == 2 && CommonUtilCache.getBlacklistedDomainList().contains(splitEmail[1].trim()))
                 {
@@ -116,7 +108,7 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 }
                 else
                 {
-                    LOGGER.info("MX Records validated for " + email + " : " + mxRecords);
+                    LOGGER.debug("MX Records validated for " + email + " : " + mxRecords);
                 }
 
                 final Random randomno = new Random();
@@ -127,8 +119,8 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 final String readMailImageSRC = EmailUtils.generateReadMailImageSRC(emailContactGroupVO, splitRef,
                         value);
 
-                LOGGER.info("footerLightText : " + templateConfiguration.getFooterLightText());
-                LOGGER.info("footerDarkText : " + templateConfiguration.getFooterDarkText());
+                LOGGER.debug("footerLightText : " + templateConfiguration.getFooterLightText());
+                LOGGER.debug("footerDarkText : " + templateConfiguration.getFooterDarkText());
 
                 VelocityContext context = new VelocityContext();
                 context.put("userName", emailContactGroupVO.getContactFirstName());
@@ -175,11 +167,11 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                     LOGGER.warn("Instance " + emailContactGroupVO + " will not be saved in database");
                 }
 
-                LOGGER.info("Setting emailcontactgroup : " + emailContactGroup);
+                LOGGER.debug("Setting emailcontactgroup : " + emailContactGroup);
                 contactGroupMailMessage.setEmailContactGroup(emailContactGroup);
                 contactGroupMailMessage.setMimeMessage(mimeMessage);
                 // contactGroupMailMessage.setPreparator(preparator);
-                LOGGER.info("Returning processed email message");
+                LOGGER.debug("Returning processed email message");
 
                 return contactGroupMailMessage;
             }

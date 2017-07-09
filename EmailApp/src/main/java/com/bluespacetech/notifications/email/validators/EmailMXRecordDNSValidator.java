@@ -41,7 +41,7 @@ public class EmailMXRecordDNSValidator
         { // print the sorted mail exhchange servers
             for (String mailHost : lookupMailHosts(hostname))
             {
-                LOGGER.info("Host for " + hostname + " : " + mailHost);
+                LOGGER.debug("Host for " + hostname + " : " + mailHost);
                 list.add(mailHost);
             }
         }

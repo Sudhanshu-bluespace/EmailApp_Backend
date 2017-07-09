@@ -143,7 +143,7 @@ public class UserService implements UserDetailsService
             throw new UsernameNotFoundException("User does not have granted authorities");
         }
 
-        System.out.println("User Account : "+userAccount);
+        //System.out.println("User Account : "+userAccount);
         final String password = userAccount.getPassword();
 
         final boolean isActive = userAccount.isActive();
@@ -159,7 +159,7 @@ public class UserService implements UserDetailsService
         //System.out.println("User returned : " + userDetails.getUsername() + "|" + userDetails.getPassword());
         // pageLinksService.getPageLinksAllowedForUser();
         LOGGER.info("User retrieved successfully");
-        System.out.println("User : "+userDetails.isAccountNonExpired()+ " | "+userDetails.isAccountNonLocked()+" | "+userDetails.isEnabled()+" | "+userDetails.isCredentialsNonExpired());
+        //System.out.println("User : "+userDetails.isAccountNonExpired()+ " | "+userDetails.isAccountNonLocked()+" | "+userDetails.isEnabled()+" | "+userDetails.isCredentialsNonExpired());
         return userDetails;
     }
 

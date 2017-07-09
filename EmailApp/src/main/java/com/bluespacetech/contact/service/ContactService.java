@@ -9,6 +9,7 @@ package com.bluespacetech.contact.service;
 
 import java.util.List;
 
+import com.bluespacetech.contact.entity.BlockedContacts;
 import com.bluespacetech.contact.entity.Contact;
 import com.bluespacetech.contact.searchcriteria.ContactSearchCriteria;
 import com.bluespacetech.core.exceptions.BusinessException;
@@ -35,4 +36,6 @@ public interface ContactService {
     Contact updateContact(final Contact contact) throws BusinessException;
     
     List<Contact> findBySearchCriteria(final ContactSearchCriteria contactSearchCriteria);
+    
+    public List<BlockedContacts> getBlockedContacts();
 }

@@ -1,0 +1,25 @@
+<html>
+    <body>
+        <div>Hello ${userName},<br/><br/>Just a reminder that you are receiving this email because you have expressed interest
+         in ContactSwing. Please add 'bounces@hireswing.net' to your address book so that our messages land in your inbox.
+         You may <a href="${unsubscribe}">Unsubscribe</a> if you no longer wish to receive our emails.<br/><br/>
+         </div>
+ 		<br>
+ 		<div style="width:90%;height:3px;background-color:red;"></div>
+       <div style="width:100%;min-height:200px;margin-top:11px;">
+            ${emailText}.
+        </div>
+		<br>
+        <div>
+            <img src="${readMailImageSRC}" height="1" width="1"/>
+        </div>
+        <div style="margin-top:20px;">
+        	${footerLightText}
+        	${footerDarkText}
+        </div>
+        <div style="width:90%;height:3px;background-color:#448FB4;margin-top:10px;"></div>
+        <div style="margin-top:15px;">
+            <a href="${unsubscribe}">Unsubscribe</a>
+        </div>
+    </body>
+</html>

@@ -28,7 +28,7 @@ public class EmailUtils
     public static String generateUnscribeLink(final EmailContactGroupVO emailContactGroupVO,
             final String emailRequestURL)
     {
-        LOGGER.info("Generating Unsubscribe Link");
+        LOGGER.debug("Generating Unsubscribe Link");
         final StringBuffer unscribeLink = new StringBuffer(emailRequestURL + "/track/unsubscribe");
         final StringBuilder token = new StringBuilder();
         unscribeLink.append("?token=");
@@ -55,7 +55,7 @@ public class EmailUtils
          * e.printStackTrace(); }
          */
         
-        LOGGER.info("Unsubscribe Link : "+unscribeLink.toString());
+        LOGGER.debug("Unsubscribe Link : "+unscribeLink.toString());
         return unscribeLink.toString();
     }
 
@@ -70,7 +70,7 @@ public class EmailUtils
     public static String generateReadMailImageSRC(final EmailContactGroupVO emailContactGroupVO,
             final String emailRequestURL, final Long emailRandomNumber)
     {
-        LOGGER.info("Generating read link");
+        LOGGER.debug("Generating read link");
         final StringBuffer unscribeLink = new StringBuffer(emailRequestURL + "/track/readMail");
         unscribeLink.append("?emailRandomNumber=").append(emailRandomNumber).append("&contactId=")
                 .append(emailContactGroupVO.getContactId().toString()).append("&groupId=")
@@ -92,7 +92,7 @@ public class EmailUtils
          * NoSuchAlgorithmException e) { // TODO Auto-generated catch block
          * e.printStackTrace(); }
          */
-        LOGGER.info("Read Mail Link : "+unscribeLink.toString());
+        LOGGER.debug("Read Mail Link : "+unscribeLink.toString());
         return unscribeLink.toString();
     }
 

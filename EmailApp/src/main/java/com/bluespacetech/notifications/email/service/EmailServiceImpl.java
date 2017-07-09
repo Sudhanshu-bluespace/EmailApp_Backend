@@ -8,10 +8,12 @@
 package com.bluespacetech.notifications.email.service;
 
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import com.bluespacetech.core.exceptions.ApplicationException;
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.notifications.email.entity.Email;
 import com.bluespacetech.notifications.email.repository.EmailRepository;
+import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 import com.bluespacetech.notifications.email.valueobjects.EmailVO;
 
 // TODO: Auto-generated Javadoc
@@ -42,6 +45,10 @@ public class EmailServiceImpl implements EmailService
     /** The email repository. */
     @Autowired
     private EmailRepository emailRepository;
+    
+    @Autowired
+    @PersistenceContext
+    private EntityManager em;
 
     /*
      * (non-Javadoc)
@@ -96,6 +103,30 @@ public class EmailServiceImpl implements EmailService
     public List<Email> findAll()
     {
         return emailRepository.findAll();
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+    public List<EmailContactGroupVO> getEmailContactGroups(String query,EmailVO emailVO,Long emailId)
+    {
+       List<EmailContactGroupVO> list = new ArrayList<>(); 
+       Query queryRes = em.createNativeQuery(query);
+       List<Object[]> resultList = queryRes.getResultList();
+       for(Object[] res : resultList)
+       {
+           final EmailContactGroupVO emailContactGroupVO = new EmailContactGroupVO();
+           emailContactGroupVO.setContactFirstName(res[0].toString());
+           emailContactGroupVO.setContactLastName(res[1].toString());
+           emailContactGroupVO.setContactEmail(res[2].toString());
+           emailContactGroupVO.setGroupId(Long.parseLong(res[3].toString()));
+           emailContactGroupVO.setContactId(Long.parseLong(res[4].toString()));
+           emailContactGroupVO.setMessage(emailVO.getMessage());
+           emailContactGroupVO.setSubject(emailVO.getSubject());
+           emailContactGroupVO.setEmailId(emailId);
+           list.add(emailContactGroupVO);
+       }
+       
+       return list;
     }
 
 }

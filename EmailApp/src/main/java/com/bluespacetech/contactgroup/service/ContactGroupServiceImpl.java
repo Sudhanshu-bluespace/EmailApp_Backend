@@ -19,6 +19,8 @@ import com.bluespacetech.contactgroup.repository.ContactGroupRepository;
 import com.bluespacetech.contactgroup.repository.ContactGroupRepositoryCustom;
 import com.bluespacetech.core.exceptions.ApplicationException;
 import com.bluespacetech.core.exceptions.BusinessException;
+import com.bluespacetech.core.exceptions.ContactAlreadyUnsubscribedException;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -79,7 +81,7 @@ public class ContactGroupServiceImpl implements ContactGroupService
 
     @Override
     @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_CONTACTS'))")
-    public ContactGroup unsubscribeContactGroup(Long contactId, Long groupId) throws BusinessException
+    public ContactGroup unsubscribeContactGroup(Long contactId, Long groupId) throws BusinessException,ContactAlreadyUnsubscribedException
     {
         final ContactGroup contactGroup = contactGroupRepositoryCustom.getContactGroupByContactIdAndGroupId(contactId,
                 groupId);
@@ -87,14 +89,14 @@ public class ContactGroupServiceImpl implements ContactGroupService
         {
             contactGroup.setUnSubscribed(true);
             Date now = new Date();
-            Timestamp time = new Timestamp(now.getTime());
+            Timestamp time = new Timestamp(now.getTime()); 
             contactGroup.setUnsubscribedDate(time);
             return updateContactGroup(contactGroup);
         }
         else
         {
             LOGGER.warn("Contact is already unsubscribed. Wont be unsubscribed again.");
-            return contactGroup;
+            throw new ContactAlreadyUnsubscribedException("You have already unsubscribed from the mailing list");
         }
     }
 

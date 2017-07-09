@@ -19,6 +19,14 @@ public class QueryStringConstants
                 + "as 'pending_count' from company_registration c,user_account u "
                 + "where c.company_name = u.company_name group by c.company_name";
     }
+    
+    /** The query find contacts. */
+    public static final String getQuery_QUERY_FIND_CONTACTS()
+    {
+       return "SELECT FIRST_NAME, LAST_NAME, EMAIL, GROUP_ID, CONTACT_ID FROM CONTACTS "
+               + "C, CONTACT_GROUP CG WHERE CG.CONTACT_ID = C.ID AND CG.UNSUBSCRIBED = 0 ";
+    }
+
 
     /**
      * Gets the query recent campaign summary stats.
@@ -47,7 +55,7 @@ public class QueryStringConstants
     
     public static final String getQuery_RecentlyUnsubscribedUsers(int age)
     {
-        return "select c.first_name,c.last_name,c.email,date_format(cg.unsubscribed_date,'%M %D, %Y') as unsubscribedOn from contacts c,contact_group cg where c.id=cg.contact_id and cg.unsubscribed >= 0 and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY;";
+        return "select c.first_name,c.last_name,c.email,date_format(cg.unsubscribed_date,'%M %D, %Y') as unsubscribedOn from contacts c,contact_group cg where c.id=cg.contact_id and cg.unsubscribed > 0 and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY;";
     }
 
     /**

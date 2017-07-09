@@ -1,7 +1,5 @@
 package com.bluespacetech.notifications.email.util;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -30,6 +28,15 @@ public class MailTemplateConfiguration
     @Value("${mail.ignoreList}")
     private String ignoreList;
     
+    @Value("${mail.prohibited_content}")
+    private String prohibitedContent;
+    
+    
+
+    public String getProhibitedContent()
+    {
+        return prohibitedContent;
+    }
 
     public String getIgnoreList()
     {

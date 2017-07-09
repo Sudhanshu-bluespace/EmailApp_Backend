@@ -1,5 +1,6 @@
 package com.bluespacetech.contact.fileupload.batch;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,8 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
 
     @Autowired
     private ContactUtilService contactUtilService;
+
+    private List<String> validatedDomains = new ArrayList<>();
 
     /*
      * (non-Javadoc)
@@ -56,7 +59,7 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
             LOGGER.warn("Email " + email + " detected to be BLACKLISTED. Will be added to the blacklisted group");
             contactUtilService.addEmailToBlockedList(email, contactDTO, "BLACKLISTED");
         }
-        else
+        else if (!validatedDomains.contains(email.split("@")[1]))
         {
             List<String> mxRecords = EmailMXRecordDNSValidator.validateMxRecord(email.trim());
             if (mxRecords == null || mxRecords.isEmpty())
@@ -67,7 +70,8 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
             }
             else
             {
-                LOGGER.info("MX Records for " + email + " : " + mxRecords);
+                validatedDomains.add(email.split("@")[1]);
+                LOGGER.info("Validated domain "+email.split("@")[1]+" for MX reords successfully. Added to local cache");
             }
         }
 

@@ -3,12 +3,18 @@
  */
 package com.bluespacetech.server.analytics;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import com.bluespacetech.common.util.CommonUtilCache;
+import com.bluespacetech.contact.entity.BlockedContacts;
+import com.bluespacetech.contact.service.ContactService;
+import com.bluespacetech.notifications.email.entity.JobExecutionEntity;
+import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
+import com.bluespacetech.notifications.email.executionqueue.JobProcessingPriorityBlockingQueue;
+import com.bluespacetech.security.constants.UserAccountTypeConstant;
+import com.bluespacetech.security.model.UserAccount;
+import com.bluespacetech.security.repository.UserAccountRepository;
 import com.bluespacetech.server.analytics.repository.CampaignWisePerformanceStatsDTO;
 import com.bluespacetech.server.analytics.repository.CompanyWiseRegistrationDTO;
 import com.bluespacetech.server.analytics.repository.GroupWiseUnsubscriptionStatsDTO;
@@ -24,6 +39,7 @@ import com.bluespacetech.server.analytics.repository.RecentUnsubscribesDTO;
 import com.bluespacetech.server.analytics.repository.RecentlyUnsubscribedCountDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseChartDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseDTO;
+import com.bluespacetech.server.analytics.resources.JobStatusResource;
 import com.bluespacetech.server.analytics.service.AnalyticsService;
 
 /**
@@ -38,6 +54,13 @@ public class AnayticsController
 {
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(AnayticsController.class.getName());
+
+    /** The user account repository. */
+    @Autowired
+    UserAccountRepository userAccountRepository;
+    
+    @Autowired
+    ContactService contactService;
 
     /**
      * View analytics page.
@@ -67,7 +90,7 @@ public class AnayticsController
     public RepositoryResponseDTO getRecentCampaignSummary(@RequestParam("userName") String userName)
     {
         RepositoryResponseDTO response = analyticsService.getRecentCampaignSummary(userName);
-        LOGGER.info("Recent Summary JSON : " + response);
+        LOGGER.debug("Recent Summary JSON : " + response);
         return response;
     }
 
@@ -81,7 +104,7 @@ public class AnayticsController
     public List<CampaignWisePerformanceStatsDTO> getCampaignWisePerformance(@RequestParam("userName") String userName)
     {
         List<CampaignWisePerformanceStatsDTO> response = analyticsService.getCampaignWisePerformanceStats(userName);
-        LOGGER.info("Campaign Wise performance JSON : " + response);
+        LOGGER.debug("Campaign Wise performance JSON : " + response);
         return response;
     }
 
@@ -95,7 +118,7 @@ public class AnayticsController
     public List<GroupWiseUnsubscriptionStatsDTO> getGroupWiseUnsubscription(@RequestParam("userName") String userName)
     {
         List<GroupWiseUnsubscriptionStatsDTO> response = analyticsService.getGroupWiseUnsubscription(userName);
-        LOGGER.info("Grop wise Unsbscription JSON : " + response);
+        LOGGER.debug("Grop wise Unsbscription JSON : " + response);
         return response;
     }
 
@@ -109,10 +132,10 @@ public class AnayticsController
     public RepositoryResponseChartDTO getRecentCampaignChartSummary(@RequestParam("userName") String userName)
     {
         RepositoryResponseChartDTO response = analyticsService.getRecentCampaignChartSummary(userName);
-        LOGGER.info("Recent Chart Summary JSON : " + response);
+        LOGGER.debug("Recent Chart Summary JSON : " + response);
         return response;
     }
-    
+
     /**
      * Gets the company wise registration stats.
      *
@@ -122,35 +145,110 @@ public class AnayticsController
     public List<CompanyWiseRegistrationDTO> getCompanyWiseRegistrationStats()
     {
         List<CompanyWiseRegistrationDTO> response = analyticsService.getCompanyWiseRegistrationStats();
-        LOGGER.info("Company Wise Registration JSON : " + response);
+        LOGGER.debug("Company Wise Registration JSON : " + response);
         return response;
     }
-    
+
     /**
      * Gets the pending approvals.
      *
-     * @param userName the user name
+     * @param age the age
      * @return the pending approvals
      */
     @PostMapping(value = "getRecentUnsubscribes", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<RecentUnsubscribesDTO> getRecentUnsubscribes(@RequestParam("age") String age)
     {
         List<RecentUnsubscribesDTO> response = analyticsService.getRecentUnsubscribes(Integer.parseInt(age));
-        LOGGER.info("response : " + response);
+        LOGGER.debug("response : " + response);
         return response;
     }
-    
+
     /**
      * Gets the pending approvals.
      *
-     * @param userName the user name
+     * @param age the age
      * @return the pending approvals
      */
     @PostMapping(value = "getRecentUnsubscribedCount", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<RecentlyUnsubscribedCountDTO> getRecentUnsubscribedCount(@RequestParam("age") String age)
     {
         List<RecentlyUnsubscribedCountDTO> response = analyticsService.getRecentUnsuscribedCount(Integer.parseInt(age));
-        LOGGER.info("response : " + response);
+        LOGGER.debug("response : " + response);
         return response;
+    }
+
+    /**
+     * Gets the job status data.
+     *
+     * @param userName the user name
+     * @return the job status data
+     */
+    @PostMapping(value = "getJobStatusData", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<JobStatusResource> getJobStatusData(@RequestParam("userName") String userName)
+    {
+        UserAccount user = userAccountRepository.findUserAccountByUsername(userName);
+        List<JobStatusResource> response = null;
+        if (UserAccountTypeConstant.ACC_TYPE_ADMIN.equals(user.getUserAccountType())
+                || UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.equals(user.getUserAccountType()))
+        {
+            response = analyticsService.getJobStatusData(userName, true);
+        }
+        else
+        {
+            response = analyticsService.getJobStatusData(userName, false);
+        }
+        LOGGER.debug("response Job Status : " + response);
+        return response;
+    }
+
+    /**
+     * Cancel job.
+     *
+     * @param batchId the batch id
+     * @param requestId the request id
+     * @param response the response
+     * @return the response entity
+     */
+    @PostMapping(value = "cancelJob", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> cancelJob(@RequestParam("batchId") String batchId,
+            @RequestParam("requestId") String requestId, HttpServletResponse response)
+    {
+        LOGGER.debug("Processing Job cancellation request");
+        if (CommonUtilCache.getBatchIdToEmailJobEndpointMap().containsKey(requestId + "|" + batchId))
+        {
+            EmailJobEndpoint endpoint = CommonUtilCache.getBatchIdToEmailJobEndpointMap()
+                    .get(requestId + "|" + batchId);
+            if (JobProcessingPriorityBlockingQueue.getQueueInstance().contains(endpoint))
+            {
+                boolean result = JobProcessingPriorityBlockingQueue.getQueueInstance().remove(endpoint);
+                LOGGER.info("Endpoint " + endpoint + " removed from Queue successfully, [result: " + result + "]");
+                JobExecutionEntity entity = analyticsService.getJobStatusByBatchIdAndRequestId(requestId, batchId);
+                if (entity != null)
+                {
+                    entity.setStatus("CANCELLED");
+                    entity.setLastUpdatedDate(new Timestamp(new Date().getTime()));
+                    analyticsService.persistToDB(entity);
+                }
+                return new ResponseEntity<String>(String.format("{\"Success\":\"%s\"}", "Job Cancellation Successful"),
+                        HttpStatus.OK);
+            }
+            else
+            {
+                return new ResponseEntity<String>(
+                        String.format("{\"Error\":\"%s\"}", "Job has already been picked for processing"),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        else
+        {
+            return new ResponseEntity<String>(String.format("{\"Error\":\"%s\"}", "Job has already completed"),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @PostMapping(value="getBlockedContacts",produces=MediaType.APPLICATION_JSON_VALUE)
+    public List<BlockedContacts> getBlockedContacts()
+    {
+        return contactService.getBlockedContacts();
     }
 }

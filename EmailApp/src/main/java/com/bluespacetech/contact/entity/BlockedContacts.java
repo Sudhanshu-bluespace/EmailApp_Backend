@@ -42,6 +42,20 @@ public class BlockedContacts extends BaseEntity implements Serializable
     @NotEmpty(message = "Reasons fo blocking is mandatory")
     @Column(name="REASON")
     private String reason;
+    
+    @Column(name="RESPONSE_CODE")
+    private String responseCode;
+    
+
+    public String getResponseCode()
+    {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode)
+    {
+        this.responseCode = responseCode;
+    }
 
     public String getReason()
     {
@@ -117,7 +131,7 @@ public class BlockedContacts extends BaseEntity implements Serializable
     public String toString()
     {
         return "BlockedContacts [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", reason="
-                + reason + "]";
+                + reason + ", responseCode=" + responseCode + "]";
     }
 
 }

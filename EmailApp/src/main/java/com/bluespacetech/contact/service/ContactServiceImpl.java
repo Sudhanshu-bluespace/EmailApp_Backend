@@ -15,12 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bluespacetech.common.util.CommonUtilCache;
+import com.bluespacetech.contact.entity.BlockedContacts;
 import com.bluespacetech.contact.entity.Contact;
 import com.bluespacetech.contact.repository.ContactRepository;
 import com.bluespacetech.contact.repository.ContactRepositoryCustom;
 import com.bluespacetech.contact.searchcriteria.ContactSearchCriteria;
 import com.bluespacetech.core.exceptions.ApplicationException;
 import com.bluespacetech.core.exceptions.BusinessException;
+import com.bluespacetech.contact.repository.BlockedContactRepository;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +47,10 @@ public class ContactServiceImpl implements ContactService
     /** The contact repository custom. */
     @Autowired
     private ContactRepositoryCustom contactRepositoryCustom;
+    
+    
+    @Autowired
+    private BlockedContactRepository blockedContactsRepository;
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(ContactServiceImpl.class);
@@ -175,5 +181,12 @@ public class ContactServiceImpl implements ContactService
     public List<Contact> findBySearchCriteria(ContactSearchCriteria contactSearchCriteria)
     {
         return contactRepositoryCustom.findContactsBySearchCriteria(contactSearchCriteria);
+    }
+    
+    @Override
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACC_TYPE_ADMIN'))")
+    public List<BlockedContacts> getBlockedContacts()
+    {
+        return blockedContactsRepository.findAll();
     }
 }

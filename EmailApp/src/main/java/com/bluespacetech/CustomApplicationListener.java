@@ -13,8 +13,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import com.bluespacetech.common.util.CommonUtilCache;
-import com.bluespacetech.core.model.Country;
-import com.bluespacetech.core.model.State;
 import com.bluespacetech.core.repository.CityRepository;
 import com.bluespacetech.core.repository.CountryRepository;
 import com.bluespacetech.core.repository.StateRepository;
@@ -54,6 +52,7 @@ public class CustomApplicationListener implements ApplicationListener<Applicatio
     {
         populateIgnoreList();
         populateBlacklistedDomainList();
+        populateProhibtedContentList();
     }
 
     /**
@@ -68,46 +67,15 @@ public class CustomApplicationListener implements ApplicationListener<Applicatio
         }
         LOGGER.info("Populated Ignore List successfully : " + CommonUtilCache.getIgnoreList());
     }
-
-  /*  private void populateStateList()
+    
+    private void populateProhibtedContentList()
     {
-        List<State> countries = stateRepository.findAll();
-        List<String> countriesToFeed;
-        try
+        String[] prohibited = templateConfiguration.getProhibitedContent().split("\\,");
+        for (String block : prohibited)
         {
-            countriesToFeed = Files.readAllLines(Paths.get("/opt/packages/Oracle/BluespaceMailer/data/states.csv"));
-
-            if (countries == null || countries.isEmpty())
-            {
-                for (String record : countriesToFeed)
-                {
-                    String[] splitData = record.split("\\,");
-                    {
-                        if (splitData.length == 3)
-                        {
-                            State state = new State();
-                            
-                            countryRepository.save(country);
-                        }
-                        else
-                        {
-                            LOGGER.error("Invalid record format in countries.csv : " + splitData
-                                    + ". check for missing commas..");
-                        }
-                    }
-                }
-            }
+            CommonUtilCache.getProhibitedContentList().add(block.trim());
         }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }*/
-
-    private void populateCityList()
-    {
-
+        LOGGER.info("Populated Prohibited Content List successfully : " + CommonUtilCache.getProhibitedContentList());
     }
 
     /**

@@ -16,8 +16,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.util.Assert;
 
 import com.bluespacetech.core.exceptions.BusinessException;
@@ -108,14 +106,15 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
     {
         final List<EmailContactGroup> emailContactGroups = new ArrayList<EmailContactGroup>();
         // try {
-        LOGGER.info("Processing email through Item Writer");
+        LOGGER.debug("Processing email through Item Writer");
+        
         final List<EmailServer> emailServers = emailServerService.findAll();
         final Map<Long, Properties> emailServerPropertiesByServers = new HashMap<Long, Properties>();
         Properties oldMailProperties = null;
         if (mailSender instanceof JavaMailSenderImpl)
         {
             oldMailProperties = ((JavaMailSenderImpl) mailSender).getJavaMailProperties();
-            LOGGER.info("Old properties : " + oldMailProperties);
+            LOGGER.debug("Old properties : " + oldMailProperties);
             ((JavaMailSenderImpl) mailSender).getSession().setDebug(Boolean.getBoolean((String)oldMailProperties.get("mail.debug")));
             // final String userName = ViewUtil.getPrincipal();
             // final UserAccount userAccount =
@@ -125,7 +124,7 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
             {
                 final List<EmailServerProperties> emailServerPropertiesOfServers = emailServerPropertiesService
                         .findByEmailServers(emailServers);
-                LOGGER.info("Email servers found.. Searching for properties..");
+                LOGGER.debug("Email servers found.. Searching for properties..");
                 for (final EmailServerProperties emailServerProperty : emailServerPropertiesOfServers)
                 {
                     if (emailServerPropertiesByServers.get(emailServerProperty.getEmailServer().getId()) != null)
@@ -163,20 +162,20 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
         //MimeMessagePreparator[] preparator = null;//new MimeMessagePreparator[items.size()];
         for (final ContactGroupMailMessage contactGroupMailMessage : items)
         {
-            LOGGER.info("Adding emailcntactgroup : " + contactGroupMailMessage.getEmailContactGroup() + " to "
+            LOGGER.debug("Adding emailcntactgroup : " + contactGroupMailMessage.getEmailContactGroup() + " to "
                     + contactGroupMailMessage);
             emailContactGroups.add(contactGroupMailMessage.getEmailContactGroup());
             if (emailServers != null && !emailServers.isEmpty())
             {
                 // Loop though all email servers
-                LOGGER.info("Looping through mail servers..");
+                LOGGER.debug("Looping through mail servers..");
                 if (mailServerCount < emailServers.size())
                 {
                     // get each configured email server and send mails
                     final EmailServer emailServer = emailServers.get(mailServerCount);
                     if (mailSender instanceof JavaMailSenderImpl)
                     {
-                        LOGGER.info("Valid mail configurations found..Setting properties..");
+                        LOGGER.debug("Valid mail configurations found..Setting properties..");
                         //contactGroupMailMessage.getPreparator()..getMimeMessage().setFrom(emailServer.getFromAddress());
                         if (emailServerPropertiesByServers.get(emailServer.getId()) != null)
                         {
@@ -185,7 +184,7 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
                         }
                         else
                         {
-                            LOGGER.info("No server properties found.. using default old properties");
+                            LOGGER.debug("No server properties found.. using default old properties");
                             ((JavaMailSenderImpl) mailSender).setJavaMailProperties(oldMailProperties);
                         }
                     }
@@ -204,7 +203,7 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
                     // messages.
                     if (count == emailServer.getMailsPerSession() - 1 || toltalMessagesCount == items.size() - 1)
                     {
-                        LOGGER.info("Sending emails through "+mailSender);
+                        LOGGER.debug("Sending emails through "+mailSender);
                         for(MimeMessage msg : messages)
                         {
                             if(msg!=null)
@@ -215,7 +214,7 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
                             }
                         }
                         count = 0;
-                        LOGGER.info("emails sent..");
+                        LOGGER.debug("emails sent..");
                     }
                     else
                     {
@@ -240,11 +239,11 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
                 count++;
             }
         }
-        LOGGER.info("Creating email contact groups through service..");
+        LOGGER.debug("Creating email contact groups through service..");
         emailContactGroupService.createEmailContactGroups(emailContactGroups);
         if ((emailServers == null||emailServers.isEmpty()) && messages != null)
         {
-            LOGGER.info("No Servers configured in application. Sending the entire bunch of "+messages.length+" messages through default mailSender : "+mailSender);
+            LOGGER.debug("No Servers configured in application. Sending the entire bunch of "+messages.length+" messages through default mailSender : "+mailSender);
             mailSender.send(messages);
         }
         if (oldMailProperties != null && oldMailProperties.size() > 0 && mailSender instanceof JavaMailSenderImpl)

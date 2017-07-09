@@ -76,7 +76,7 @@ public class BatchConfiguration {
 
 	@Bean
 	public Step step2(){
-		return stepBuilderFactory.get("step2").<ContactUploadDTO, Contact> chunk(10)
+		return stepBuilderFactory.get("step2").<ContactUploadDTO, Contact> chunk(5000)
 				.reader(contactUploadReader(null))
 				.listener(new UploadContactItemReaderListener())
 				.processor(contactProcessor())

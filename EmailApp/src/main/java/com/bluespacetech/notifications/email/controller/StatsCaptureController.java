@@ -18,6 +18,7 @@ import com.bluespacetech.contact.service.ContactService;
 import com.bluespacetech.contactgroup.service.ContactGroupService;
 import com.bluespacetech.core.crypto.Decryptor;
 import com.bluespacetech.core.exceptions.BusinessException;
+import com.bluespacetech.core.exceptions.ContactAlreadyUnsubscribedException;
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 import com.bluespacetech.notifications.email.service.EmailContactGroupService;
 
@@ -159,6 +160,17 @@ public class StatsCaptureController
                 {
                     LOGGER.error("Failed to unsubscribe contact, reason: [ "+e.getMessage()+" ]");
                     e.printStackTrace();
+                }
+                catch (ContactAlreadyUnsubscribedException ex)
+                {
+                    try
+                    {
+                        response.getOutputStream().println("Your unsubscription request has already been processed.");
+                    }
+                    catch (IOException e)
+                    {
+                        LOGGER.error("Failed to send response, reason:  ["+ex.getMessage()+"]");
+                    }
                 }
             }
         }

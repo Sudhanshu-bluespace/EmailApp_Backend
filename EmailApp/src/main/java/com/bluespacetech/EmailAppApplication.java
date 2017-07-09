@@ -7,7 +7,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
+import com.bluespacetech.notifications.email.executionqueue.JobProcessingPriorityBlockingQueue;
 import com.bluespacetech.notifications.email.util.MailTemplateConfiguration;
 
 /**
@@ -36,6 +40,18 @@ public class EmailAppApplication extends SpringBootServletInitializer
     {
         LOGGER.info("Starting application");
         SpringApplication.run(EmailAppApplication.class, args);
+    }
+    
+    @Bean
+    public JobProcessingPriorityBlockingQueue blockingQueue()
+    {
+        return JobProcessingPriorityBlockingQueue.getQueueInstance();
+    }
+    
+    @Bean
+    public EmailJobEndpoint jobEndPoint()
+    {
+        return new EmailJobEndpoint();
     }
 
     /*

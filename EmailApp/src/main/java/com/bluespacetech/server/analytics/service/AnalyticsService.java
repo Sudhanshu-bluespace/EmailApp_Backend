@@ -5,6 +5,9 @@ package com.bluespacetech.server.analytics.service;
 
 import java.util.List;
 
+import com.bluespacetech.contact.entity.BlockedContacts;
+import com.bluespacetech.notifications.email.entity.JobExecutionEntity;
+import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
 import com.bluespacetech.server.analytics.repository.CampaignWisePerformanceStatsDTO;
 import com.bluespacetech.server.analytics.repository.CompanyWiseRegistrationDTO;
 import com.bluespacetech.server.analytics.repository.GroupWiseUnsubscriptionStatsDTO;
@@ -12,6 +15,7 @@ import com.bluespacetech.server.analytics.repository.RecentUnsubscribesDTO;
 import com.bluespacetech.server.analytics.repository.RecentlyUnsubscribedCountDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseChartDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseDTO;
+import com.bluespacetech.server.analytics.resources.JobStatusResource;
 
 /**
  * The Interface AnalyticsService.
@@ -58,4 +62,12 @@ public interface AnalyticsService
     public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOFDays);
     
     public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age);
+    
+    public List<JobStatusResource> getJobStatusData(String userName,boolean isAdmin);
+    
+    public List<JobStatusResource> getJobStatusDataByStatus(String userName,String status);
+    
+    public JobExecutionEntity persistToDB(JobExecutionEntity entity);
+    
+    public JobExecutionEntity getJobStatusByBatchIdAndRequestId(String requestId,String batchId);
 }

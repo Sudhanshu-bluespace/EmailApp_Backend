@@ -9,6 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.bluespacetech.group.entity.Group;
+import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
+import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -28,6 +30,28 @@ public class CommonUtilCache
     
     /** The ignore list. */
     private static List<String> ignoreList = new ArrayList<>();
+    
+    /** The ignore list. */
+    private static List<String> prohibitedContentList = new ArrayList<>();
+    
+    private static Map<String,List<EmailContactGroupVO>> batchIdToEmailListMap = new HashMap<>();
+    
+    private static Map<String,EmailJobEndpoint> batchIdToEmailJobEndpointMap = new HashMap<>();   
+
+    public static Map<String, EmailJobEndpoint> getBatchIdToEmailJobEndpointMap()
+    {
+        return batchIdToEmailJobEndpointMap;
+    }
+
+    public static Map<String, List<EmailContactGroupVO>> getBatchIdToEmailListMap()
+    {
+        return batchIdToEmailListMap;
+    }
+
+    public static List<String> getProhibitedContentList()
+    {
+        return prohibitedContentList;
+    }
 
     /**
      * Instantiates a new common util cache.
@@ -44,7 +68,7 @@ public class CommonUtilCache
      */
     public static Map<String, Group> getGroupNameToGroupMap()
     {
-        LOGGER.info("Returning groupNameToGroupMap");
+        //LOGGER.debug("Returning groupNameToGroupMap");
         return groupNameToGroupMap;
     }
 

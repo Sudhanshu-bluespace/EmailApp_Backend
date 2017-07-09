@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.notifications.email.entity.Email;
+import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 import com.bluespacetech.notifications.email.valueobjects.EmailVO;
 
 /**
@@ -53,5 +54,7 @@ public interface EmailService
      * @return the list
      */
     List<Email> findAll();
+    
+    List<EmailContactGroupVO> getEmailContactGroups(String query,EmailVO emailVO,Long emailId);
 
 }
