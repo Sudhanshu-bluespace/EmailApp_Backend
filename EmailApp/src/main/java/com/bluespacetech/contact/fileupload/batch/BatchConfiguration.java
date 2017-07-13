@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+
+import com.bluespacetech.common.util.ContactUtilService;
 import com.bluespacetech.contact.entity.Contact;
 import com.bluespacetech.contact.fileupload.batch.listeners.UploadContactItemReaderListener;
 import com.bluespacetech.contact.fileupload.batch.listeners.UploadContactItemWriterListener;
@@ -33,6 +35,9 @@ public class BatchConfiguration {
 
     @Autowired
     public StepBuilderFactory stepBuilderFactory;
+    
+    @Autowired
+    private ContactUtilService contactUtilService;
 
     @Autowired
     public DataSource dataSource;
@@ -58,7 +63,7 @@ public class BatchConfiguration {
 
     @Bean
     public ContactItemProcessor contactProcessor() {
-        ContactItemProcessor processor = new ContactItemProcessor();
+        ContactItemProcessor processor = new ContactItemProcessor(contactUtilService);
         return processor;
     }
 

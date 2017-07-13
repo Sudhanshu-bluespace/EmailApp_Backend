@@ -405,6 +405,10 @@ public class ContactController
                             List<String> content = Files.readAllLines(origFile.toPath());
                             for (String data : content)
                             {
+                                if(data.trim().isEmpty())
+                                {
+                                    continue;
+                                }
                                 String[] values = data.split(",");
                                 if (values.length != 4)
                                 {
@@ -532,7 +536,6 @@ public class ContactController
     {
         if (name != null && !name.trim().isEmpty())
         {
-
             Group newGroup = new Group();
             newGroup.setName(name);
             newGroup.setComments("Description for " + name);

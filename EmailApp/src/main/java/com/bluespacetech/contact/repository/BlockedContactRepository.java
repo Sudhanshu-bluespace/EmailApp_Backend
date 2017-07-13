@@ -11,8 +11,8 @@ import com.bluespacetech.contact.entity.BlockedContacts;
 public interface BlockedContactRepository extends JpaRepository<BlockedContacts,Long>
 {
     List<BlockedContacts> findAll();
-    BlockedContacts findByEmailIgnoreCase(String email);
-    BlockedContacts findByFirstNameIgnoreCase(String firstName);
-    BlockedContacts findById(long id);
+    BlockedContacts findByEmailIgnoreCase(final String email);
+    BlockedContacts findByFirstNameIgnoreCase(final String firstName);
+    BlockedContacts findById(final Long id);
 
 }

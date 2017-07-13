@@ -55,7 +55,7 @@ public class QueryStringConstants
     
     public static final String getQuery_RecentlyUnsubscribedUsers(int age)
     {
-        return "select c.first_name,c.last_name,c.email,date_format(cg.unsubscribed_date,'%M %D, %Y') as unsubscribedOn from contacts c,contact_group cg where c.id=cg.contact_id and cg.unsubscribed > 0 and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY;";
+        return "select distinct c.first_name,c.last_name,c.email,date_format(cg.unsubscribed_date,'%M %D, %Y') as unsubscribedOn from contacts c,contact_group cg where c.id=cg.contact_id and cg.unsubscribed > 0 and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY;";
     }
 
     /**

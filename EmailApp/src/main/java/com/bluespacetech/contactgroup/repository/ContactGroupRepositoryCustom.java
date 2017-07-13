@@ -4,6 +4,8 @@
  */
 package com.bluespacetech.contactgroup.repository;
 
+import java.util.List;
+
 import com.bluespacetech.contactgroup.entity.ContactGroup;
 
 /**
@@ -14,5 +16,6 @@ import com.bluespacetech.contactgroup.entity.ContactGroup;
 public interface ContactGroupRepositoryCustom {
 
 	ContactGroup getContactGroupByContactIdAndGroupId(Long contactId, Long groupId);
+	List<ContactGroup> getContactGroupsByContactId(Long contactId);
 
 }

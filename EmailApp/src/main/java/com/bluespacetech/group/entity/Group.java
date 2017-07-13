@@ -22,85 +22,114 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "GROUPS")
-public class Group extends BaseEntity implements Serializable {
+public class Group extends BaseEntity implements Serializable
+{
 
-	private static final long serialVersionUID = -9115675653111826751L;
+    private static final long serialVersionUID = -9115675653111826751L;
 
-	@NotEmpty(message = "Name is mandatory.")
-	@Column(name = "NAME")
-	private String name;
+    @NotEmpty(message = "Name is mandatory.")
+    @Column(name = "NAME")
+    private String name;
 
-	@Column(name = "COMMENTS")
-	private String comments;
+    @Column(name = "COMMENTS")
+    private String comments;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "contactGroupPK.group", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Collection<ContactGroup> contactGroups = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "contactGroupPK.group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Collection<ContactGroup> contactGroups = new ArrayList<>();
 
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((contactCount == null) ? 0 : contactCount.hashCode());
+        result = prime * result + ((contactGroups == null) ? 0 : contactGroups.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Group other = (Group) obj;
+        if (contactCount == null)
+        {
+            if (other.contactCount != null)
+                return false;
+        }
+        else if (!contactCount.equals(other.contactCount))
+            return false;
+        if (contactGroups == null)
+        {
+            if (other.contactGroups != null)
+                return false;
+        }
+        else if (!contactGroups.equals(other.contactGroups))
+            return false;
+        if (name == null)
+        {
+            if (other.name != null)
+                return false;
+        }
+        else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
+    @Transient
+    private Integer contactCount;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Group other = (Group) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
-	}
+    public Integer getContactCount()
+    {
+        return contactCount;
+    }
 
-	@Transient
-	private Integer contactCount;
+    public void setContactCount(Integer contactCount)
+    {
+        this.contactCount = contactCount;
+    }
 
-	public Integer getContactCount() {
-		return contactCount;
-	}
+    public String getComments()
+    {
+        return comments;
+    }
 
-	public void setContactCount(Integer contactCount) {
-		this.contactCount = contactCount;
-	}
+    public void setComments(String comments)
+    {
+        this.comments = comments;
+    }
 
-	public String getComments() {
-		return comments;
-	}
+    public Collection<ContactGroup> getContactGroups()
+    {
+        return contactGroups;
+    }
 
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+    public void setContactGroups(Collection<ContactGroup> contactGroups)
+    {
+        this.contactGroups = contactGroups;
+    }
 
-	public Collection<ContactGroup> getContactGroups() {
-		return contactGroups;
-	}
+    public String getName()
+    {
+        return name;
+    }
 
-	public void setContactGroups(Collection<ContactGroup> contactGroups) {
-		this.contactGroups = contactGroups;
-	}
+    public void setName(final String name)
+    {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    @Override
+    public String toString()
+    {
+        return "Group [name=" + name + ", Comments=" + comments + "]";
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String toString() {
-		return "Group [name=" + name + ", Comments=" + comments + "]";
-	}
 }

@@ -36,7 +36,7 @@ import org.apache.logging.log4j.LogManager;
 @Service
 @Transactional(rollbackFor = { Exception.class, RuntimeException.class, BusinessException.class,
         ApplicationException.class })
-@PreAuthorize("hasAuthority('EXCLUDE_ALL')")
+//@PreAuthorize("hasAuthority('EXCLUDE_ALL')")
 public class ContactServiceImpl implements ContactService
 {
 
@@ -131,7 +131,7 @@ public class ContactServiceImpl implements ContactService
      * @see com.bluespacetech.contact.service.ContactService#getContactById(java.lang.Long)
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_CONTACTS'))")
+    //@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_CONTACTS'))")
     public Contact getContactById(final Long contactId)
     {
         return contactRepository.findOne(contactId);

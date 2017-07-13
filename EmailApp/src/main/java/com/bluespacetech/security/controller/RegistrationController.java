@@ -271,6 +271,35 @@ public class RegistrationController
         System.out.println("Found cities : "+cities);
         return cities;
     }
+    
+    /*@GetMapping(value="/feedAdminData")
+    public void feedAdminData()
+    {
+        
+        CompanyRegistration reg2 =  companyRegRepo.findById(Long.valueOf(1));
+        System.out.println(reg2);
+        UserAccount user = new UserAccount();
+        user.setUsername("admin");
+        user.setPassword("$2a$10$lqIZwlsIJK0l209OUZ/cEupsUpE2b0dN.EdZYRzqbmW0yvd2N/GCK");
+        user.setAccountExpired(false);
+        user.setAccountLocked(false);
+        user.setActive(true);
+        user.setCity("Pune");
+        user.setCountry("India");
+        user.setZipCode("411021");
+        user.setCompanyRegistration(reg2);
+        user.setEmail("sudhanshu@bluespacetech.com");
+        user.setFederalId("AX124134");
+        user.setPhoneNumber("7888009227");
+        user.setState("Maharashtra");
+        user.setVerifiedByAdmin(true);
+        user.setStreet("Pashan sus road");
+        user.setAddress("kapil aasmant");
+        user.setCredentialsExpired(false);
+        user.setUserAccountType(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN);
+        userAccountRepository.save(user);
+        
+    }*/
 
     /**
      * Register new user.

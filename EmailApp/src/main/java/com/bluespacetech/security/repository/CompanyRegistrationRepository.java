@@ -26,6 +26,8 @@ public interface CompanyRegistrationRepository extends JpaRepository<CompanyRegi
      * @see org.springframework.data.jpa.repository.JpaRepository#findAll()
      */
     public List<CompanyRegistration> findAll();
+    
+    public CompanyRegistration findById(Long id);
 
     /**
      * Find company registration by company name ignore case.

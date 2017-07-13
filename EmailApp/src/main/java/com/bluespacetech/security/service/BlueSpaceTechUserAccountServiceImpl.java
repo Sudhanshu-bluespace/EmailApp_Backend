@@ -115,10 +115,19 @@ public class BlueSpaceTechUserAccountServiceImpl implements BlueSpaceTechUserAcc
         final String randomPassword = RandomStringUtils.randomAlphanumeric(8);
         Map<UserAccount,String> map = new HashMap<>();
         final String hashedPassword = service.getEncodedPassword(randomPassword);
-        System.out.println("Pssword "+randomPassword+" enocded to "+hashedPassword);
         userAccount.setPassword(hashedPassword);
         userAccount.setVerifiedByAdmin(true);
         userAccount.setPhoneNumber("-");
+        userAccount.setAccountExpired(false);
+        userAccount.setAccountLocked(false);
+        userAccount.setActive(true);
+        userAccount.setAddress("-");
+        userAccount.setAutoRenew(false);
+        userAccount.setCity("-");
+        userAccount.setCountry("-");
+        userAccount.setState("-");
+        userAccount.setFederalId("-");
+        userAccount.setZipCode("-");
 
         for (final UserAccountUserGroup userAccountUserGroup : userAccount.getUserAccountUserGroups())
         {

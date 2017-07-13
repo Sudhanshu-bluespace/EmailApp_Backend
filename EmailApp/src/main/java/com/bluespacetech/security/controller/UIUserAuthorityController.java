@@ -32,6 +32,7 @@ public class UIUserAuthorityController extends AbstractBaseController {
 	public ResponseEntity<UIModuleRolesResource> getUserUIUserAuthorities(@RequestBody final UIModuleRolesResource uiUserRole) {
 
 		final List<String> uiUserRoles = new ArrayList<String>();
+		System.out.println("inside authority controller");
 
 		if(ViewUtil.getAuthentication()!=null && uiUserRole!=null && uiUserRole.getModuleNames()!=null&& uiUserRole.getModuleNames().size()>0) {
 			if(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.equals(ViewUtil.getUserAccountType())){

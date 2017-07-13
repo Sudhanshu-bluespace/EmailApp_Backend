@@ -115,7 +115,9 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 final long value = randomno.nextLong();
 
                 String splitRef = emailRequestURL.substring(0, emailRequestURL.indexOf("/emails"));
-                final String unscribeLink = EmailUtils.generateUnscribeLink(emailContactGroupVO, splitRef);
+                final String unsubscribeLink = EmailUtils.generateUnsubscribeLink(emailContactGroupVO, splitRef);
+                final String fullUnsubscribeLink = EmailUtils.generateFullUnsubscribeLink(emailContactGroupVO, splitRef);
+                final String subscribeLink = EmailUtils.generateSubscribeLink(emailContactGroupVO, splitRef);
                 final String readMailImageSRC = EmailUtils.generateReadMailImageSRC(emailContactGroupVO, splitRef,
                         value);
 
@@ -125,7 +127,9 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 VelocityContext context = new VelocityContext();
                 context.put("userName", emailContactGroupVO.getContactFirstName());
                 context.put("emailText", emailContactGroupVO.getMessage());
-                context.put("unsubscribe", unscribeLink);
+                context.put("unsubscribe", unsubscribeLink);
+                context.put("fullUnsubscribe", fullUnsubscribeLink);
+                context.put("subscribe", subscribeLink);
                 context.put("readMailImageSRC", readMailImageSRC);
                 context.put("footerLightText", templateConfiguration.getFooterLightText());
                 context.put("footerDarkText", templateConfiguration.getFooterDarkText());

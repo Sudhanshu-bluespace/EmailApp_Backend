@@ -26,10 +26,14 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(ContactItemProcessor.class);
 
-    @Autowired
     private ContactUtilService contactUtilService;
 
     private List<String> validatedDomains = new ArrayList<>();
+    
+    public ContactItemProcessor(ContactUtilService contactUtilService)
+    {
+        this.contactUtilService = contactUtilService;
+    }
 
     /*
      * (non-Javadoc)
@@ -51,13 +55,26 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         else if (CommonUtilCache.getIgnoreList().contains(email.substring(0, email.indexOf("@") + 1)))
         {
             LOGGER.warn("Email " + email + " falls under IGNORED LIST, will be skipped");
+           // contactUtilService.addEmailToBlockedList(email, contactDTO, "IGNORED");
+            return null;
+        }
+        /*else if (CommonUtilCache.getIgnoreList().contains(firstName))
+        {
+            LOGGER.warn("First Name " + firstName + " falls under IGNORED LIST, will be skipped");
             contactUtilService.addEmailToBlockedList(email, contactDTO, "IGNORED");
             return null;
         }
+        else if (CommonUtilCache.getIgnoreList().contains(lastName))
+        {
+            LOGGER.warn("Last Name " + lastName + " falls under IGNORED LIST, will be skipped");
+            contactUtilService.addEmailToBlockedList(email, contactDTO, "IGNORED");
+            return null;
+        }*/
         else if (CommonUtilCache.getBlacklistedDomainList().contains(email.split("@")[1].trim()))
         {
             LOGGER.warn("Email " + email + " detected to be BLACKLISTED. Will be added to the blacklisted group");
-            contactUtilService.addEmailToBlockedList(email, contactDTO, "BLACKLISTED");
+            //contactUtilService.addEmailToBlockedList(email, contactDTO, "BLACKLISTED");
+            return null;
         }
         else if (!validatedDomains.contains(email.split("@")[1]))
         {
@@ -65,7 +82,8 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
             if (mxRecords == null || mxRecords.isEmpty())
             {
                 LOGGER.warn("No MX records found for email " + email + ", Potential candidate for blacklist");
-                contactUtilService.addEmailToBlockedList(email, contactDTO, "INVALID_MX_RECORDS");
+                //TODO fix logic to add to blacklist..
+                //contactUtilService.addEmailToBlockedList(email, contactDTO, "INVALID_MX_RECORDS");
                 return null;
             }
             else

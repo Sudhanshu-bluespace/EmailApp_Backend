@@ -18,6 +18,7 @@ import com.bluespacetech.contact.service.ContactService;
 import com.bluespacetech.contactgroup.service.ContactGroupService;
 import com.bluespacetech.core.crypto.Decryptor;
 import com.bluespacetech.core.exceptions.BusinessException;
+import com.bluespacetech.core.exceptions.ContactAlreadySubscribedException;
 import com.bluespacetech.core.exceptions.ContactAlreadyUnsubscribedException;
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 import com.bluespacetech.notifications.email.service.EmailContactGroupService;
@@ -77,41 +78,12 @@ public class StatsCaptureController
 
     }
     
-
-    /**
-     * Unsubscribe to group.
-     *
-     * @param request the request
-     */
-    @RequestMapping(value = "/unsubscribe", method = RequestMethod.GET)
-    public void unsubscribeToGroup(HttpServletRequest request,HttpServletResponse response)
+    @RequestMapping(value = "/subscribe", method = RequestMethod.GET)
+    public void selfSubscribeToGroup(HttpServletRequest request,HttpServletResponse response)
     {
-        /*
-         * String reqContactId = null; try { reqContactId =
-         * URLDecoder.decode(request.getParameter("contactId"), "UTF-8"); }
-         * catch (final UnsupportedEncodingException e1) { // TODO
-         * Auto-generated catch block e1.printStackTrace(); } String reqGroupId
-         * = null; try { reqGroupId =
-         * URLDecoder.decode(request.getParameter("groupId"), "UTF-8"); } catch
-         * (final UnsupportedEncodingException e1) { // TODO Auto-generated
-         * catch block e1.printStackTrace(); } final String contactEmail =
-         * request.getParameter("contactEmail"); final CryptoUtil cryptoUtil =
-         * new CryptoUtil(); Long contactId = null; Long groupId = null; try {
-         * contactId =
-         * Long.valueOf(cryptoUtil.decrypt(EmailUtils.EMAIL_SECRET_KEY,
-         * reqContactId)); groupId =
-         * Long.valueOf(cryptoUtil.decrypt(EmailUtils.EMAIL_SECRET_KEY,
-         * reqGroupId)); } catch (InvalidKeyException | NoSuchAlgorithmException
-         * | InvalidKeySpecException | NoSuchPaddingException |
-         * InvalidAlgorithmParameterException | IllegalBlockSizeException |
-         * BadPaddingException | IOException e) { // TODO Auto-generated catch
-         * block e.printStackTrace(); }
-         */
-        //final String reqContactId = request.getParameter("contactId");
-        //final String reqGroupId = request.getParameter("groupId");
-        //final String contactEmail = request.getParameter("contactEmail");
         Long groupId=null, contactId = null;
         String contactEmail = null;
+        Long emailId=null;
         final String token = request.getParameter("token");
         String decryptedToken = Decryptor.Decrypt(token);
         String[] split = decryptedToken.split("&");
@@ -129,6 +101,118 @@ public class StatsCaptureController
             else if("groupId".equalsIgnoreCase(secondSplit[0]))
             {
                 groupId=Long.valueOf(secondSplit[1]);
+            }
+            else if("emailId".equalsIgnoreCase(secondSplit[0]))
+            {
+                emailId=Long.valueOf(secondSplit[1]);
+            }
+        }
+            
+        //contactId = Long.valueOf(reqContactId);
+        //groupId = Long.valueOf(reqGroupId);
+        
+        LOGGER.info("Contact id "+contactId+" initiated an Unsubscribe request. Processing!");
+        
+        if (contactId != null && groupId != null)
+        {
+            final Contact contact = contactService.getContactById(contactId);
+            if(contact==null)
+            {
+                LOGGER.error("Failed to subscribe contact, Could not locate contact_id "+contactId);
+            }
+            else if (!contact.getEmail().equals(contactEmail))
+            {
+
+            }
+            else
+            {
+                try
+                {
+                    String createdUser = emailContactGroupService.findByEmailIdAndContactIdAndGroupId(emailId, contactId, groupId);
+                    if(createdUser==null)
+                    {
+                        LOGGER.error("Failed to process full unsubscription request. Could not locate account that added this contact");
+                    }
+                    else
+                    {
+                        try
+                        {
+                            contactGroupService.subscribeContactGroup(contactId, groupId,createdUser);
+                        }
+                        catch (ContactAlreadyUnsubscribedException e)
+                        {
+                            try
+                            {
+                                response.getOutputStream().println("Your unsubscription request has already been processed.");
+                            }
+                            catch (IOException ex)
+                            {
+                                LOGGER.error("Failed to send response, reason:  ["+ex.getMessage()+"]");
+                            }
+                        }
+                    }
+
+                    LOGGER.info("Contact ID "+contactId+" has been re-subscribed to the mailing list successfully");
+                    response.getOutputStream().println("You have successsfully subscribed to the portal");
+                }
+                catch (final BusinessException | IOException e)
+                {
+                    LOGGER.error("Failed to unsubscribe contact, reason: [ "+e.getMessage()+" ]");
+                }
+                catch (ContactAlreadySubscribedException ex)
+                {
+                    try
+                    {
+                        response.getOutputStream().println("Your subscription request has already been processed.");
+                    }
+                    catch (IOException e)
+                    {
+                        LOGGER.error("Failed to send response, reason:  ["+ex.getMessage()+"]");
+                    }
+                }
+            }
+        }
+    }
+    
+
+    /**
+     * Unsubscribe to group.
+     *
+     * @param request the request
+     */
+    @RequestMapping(value = "/unsubscribe", method = RequestMethod.GET)
+    public void unsubscribeToGroup(HttpServletRequest request,HttpServletResponse response)
+    {
+        Long groupId=null, contactId = null;
+        String contactEmail = null;
+        boolean fullUnsubscribe = false;
+        Long emailId=null;
+        
+        final String token = request.getParameter("token");
+        String decryptedToken = Decryptor.Decrypt(token);
+        String[] split = decryptedToken.split("&");
+        for(String splitToken : split)
+        {
+            String[] secondSplit = splitToken.split("=");
+            if("contactEmail".equalsIgnoreCase(secondSplit[0]))
+            {
+                contactEmail = secondSplit[1];
+            }
+            else if("contactId".equalsIgnoreCase(secondSplit[0]))
+            {
+                contactId = Long.valueOf(secondSplit[1]);
+            }
+            else if("groupId".equalsIgnoreCase(secondSplit[0]))
+            {
+                groupId=Long.valueOf(secondSplit[1]);
+            }
+            else if("full".equalsIgnoreCase(secondSplit[0]))
+            {
+                fullUnsubscribe = true;
+            }
+            else if("emailId".equalsIgnoreCase(secondSplit[0]))
+            {
+                emailId=Long.valueOf(secondSplit[1]);
             }
         }
             
@@ -152,7 +236,22 @@ public class StatsCaptureController
             {
                 try
                 {
-                    contactGroupService.unsubscribeContactGroup(contactId, groupId);
+                    if(fullUnsubscribe)
+                    {
+                        String createdUser = emailContactGroupService.findByEmailIdAndContactIdAndGroupId(emailId, contactId, groupId);
+                        if(createdUser==null)
+                        {
+                            LOGGER.error("Failed to process full unsubscription request. Could not locate account that added this contact");
+                        }
+                        else
+                        {
+                            contactGroupService.fullUnsubscribeContactGroup(contactId, groupId,createdUser);
+                        }
+                    }
+                    else
+                    {
+                        contactGroupService.unsubscribeContactGroup(contactId, groupId);
+                    }
                     LOGGER.info("Contact ID "+contactId+" has been unsubscribed from the mailing list successfully");
                     response.getOutputStream().println("You have been successsfully unsubscribed from the portal");
                 }
@@ -169,12 +268,11 @@ public class StatsCaptureController
                     }
                     catch (IOException e)
                     {
-                        LOGGER.error("Failed to send response, reason:  ["+ex.getMessage()+"]");
+                        LOGGER.error("Failed to send response, reason:  ["+e.getMessage()+"]");
                     }
                 }
             }
         }
-
     }
 
 }

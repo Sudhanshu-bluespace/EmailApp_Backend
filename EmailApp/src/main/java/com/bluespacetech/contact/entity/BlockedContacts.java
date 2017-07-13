@@ -22,9 +22,10 @@ import com.bluespacetech.core.model.BaseEntity;
 @Table(name = "BLOCKED_CONTACTS")
 public class BlockedContacts extends BaseEntity implements Serializable
 {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -245405057574360955L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -920295196248477456L;
 
     /** The first name. */
     @Column(name = "FIRST_NAME")
@@ -39,7 +40,7 @@ public class BlockedContacts extends BaseEntity implements Serializable
     @Column(name = "EMAIL")
     private String email;
     
-    @NotEmpty(message = "Reasons fo blocking is mandatory")
+    @NotEmpty(message = "Reasons for blocking is mandatory")
     @Column(name="REASON")
     private String reason;
     

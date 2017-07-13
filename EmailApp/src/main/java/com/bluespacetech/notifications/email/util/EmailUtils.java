@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.bluespacetech.core.crypto.Encryptor;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class EmailUtils.
  * @author Sudhanshu Tripathy
@@ -16,7 +17,59 @@ public class EmailUtils
     /** The Constant EMAIL_SECRET_KEY. */
     public final static String EMAIL_SECRET_KEY = "ThisIsKeyForEmailEncryptDecrypt";
     
+    /** The Constant LOGGER. */
     private final static Logger LOGGER = LogManager.getLogger(EmailUtils.class);
+    
+    /**
+     * Generate full unscribe link.
+     *
+     * @param emailContactGroupVO the email contact group VO
+     * @param emailRequestURL the email request URL
+     * @return the string
+     */
+    public static String generateFullUnsubscribeLink(final EmailContactGroupVO emailContactGroupVO,
+            final String emailRequestURL)
+    {
+        LOGGER.debug("Generating Full Unsubscribe Link");
+        final StringBuffer unscribeLink = new StringBuffer(emailRequestURL + "/track/unsubscribe");
+        final StringBuilder token = new StringBuilder();
+        unscribeLink.append("?token=");
+        token.append("contactEmail=").append(emailContactGroupVO.getContactEmail()).append("&contactId=")
+                .append(emailContactGroupVO.getContactId().toString()).append("&groupId=")
+                .append(emailContactGroupVO.getGroupId().toString())
+                .append("&emailId=").append(emailContactGroupVO.getEmailId())
+                .append("&full=true");
+        String tokenEnc = Encryptor.Encrypt(token.toString());
+        unscribeLink.append(tokenEnc);
+        
+        LOGGER.debug("Full Unsubscribe Link : "+unscribeLink.toString());
+        return unscribeLink.toString();
+    }
+    
+    /**
+     * Generate subscribe link.
+     *
+     * @param emailContactGroupVO the email contact group VO
+     * @param emailRequestURL the email request URL
+     * @return the string
+     */
+    public static String generateSubscribeLink(final EmailContactGroupVO emailContactGroupVO,
+            final String emailRequestURL)
+    {
+        LOGGER.debug("Generating Resubscribe Link");
+        final StringBuffer unscribeLink = new StringBuffer(emailRequestURL + "/track/subscribe");
+        final StringBuilder token = new StringBuilder();
+        unscribeLink.append("?token=");
+        token.append("contactEmail=").append(emailContactGroupVO.getContactEmail()).append("&contactId=")
+                .append(emailContactGroupVO.getContactId().toString()).append("&groupId=")
+                .append(emailContactGroupVO.getGroupId().toString())
+                .append("&emailId=").append(emailContactGroupVO.getEmailId());
+        String tokenEnc = Encryptor.Encrypt(token.toString());
+        unscribeLink.append(tokenEnc);
+        
+        LOGGER.debug("Unsubscribe Link : "+unscribeLink.toString());
+        return unscribeLink.toString();
+    }
 
     /**
      * Generate unscribe link.
@@ -25,7 +78,7 @@ public class EmailUtils
      * @param emailRequestURL the email request URL
      * @return the string
      */
-    public static String generateUnscribeLink(final EmailContactGroupVO emailContactGroupVO,
+    public static String generateUnsubscribeLink(final EmailContactGroupVO emailContactGroupVO,
             final String emailRequestURL)
     {
         LOGGER.debug("Generating Unsubscribe Link");
@@ -37,23 +90,6 @@ public class EmailUtils
                 .append(emailContactGroupVO.getGroupId().toString());
         String tokenEnc = Encryptor.Encrypt(token.toString());
         unscribeLink.append(tokenEnc);
-        /*
-         * try { final CryptoUtil cryptoUtil = new CryptoUtil(); try {
-         * unscribeLink.append("?contactEmail=").append(emailContactGroupVO.
-         * getContactEmail()) .append("&contactId=") .append(URLEncoder.encode(
-         * cryptoUtil.encrypt(EMAIL_SECRET_KEY,
-         * emailContactGroupVO.getContactId().toString()), "UTF-8"))
-         * .append("&groupId=") .append(URLEncoder.encode(
-         * cryptoUtil.encrypt(EMAIL_SECRET_KEY,
-         * emailContactGroupVO.getGroupId().toString()), "UTF-8"));
-         * 
-         * } catch (InvalidKeyException | InvalidKeySpecException |
-         * NoSuchPaddingException | InvalidAlgorithmParameterException |
-         * UnsupportedEncodingException | IllegalBlockSizeException |
-         * BadPaddingException e) { e.printStackTrace(); } } catch (final
-         * NoSuchAlgorithmException e) { // TODO Auto-generated catch block
-         * e.printStackTrace(); }
-         */
         
         LOGGER.debug("Unsubscribe Link : "+unscribeLink.toString());
         return unscribeLink.toString();
@@ -75,23 +111,7 @@ public class EmailUtils
         unscribeLink.append("?emailRandomNumber=").append(emailRandomNumber).append("&contactId=")
                 .append(emailContactGroupVO.getContactId().toString()).append("&groupId=")
                 .append(emailContactGroupVO.getGroupId().toString());
-        /*
-         * try { final CryptoUtil cryptoUtil = new CryptoUtil(); try {
-         * unscribeLink.append("?emailRandomNumber=").append(emailRandomNumber)
-         * .append("&contactId=") .append(URLEncoder.encode(
-         * cryptoUtil.encrypt(EMAIL_SECRET_KEY,
-         * emailContactGroupVO.getContactId().toString()), "UTF-8"))
-         * .append("&groupId=") .append(URLEncoder.encode(
-         * cryptoUtil.encrypt(EMAIL_SECRET_KEY,
-         * emailContactGroupVO.getGroupId().toString()), "UTF-8"));
-         * 
-         * } catch (InvalidKeyException | InvalidKeySpecException |
-         * NoSuchPaddingException | InvalidAlgorithmParameterException |
-         * UnsupportedEncodingException | IllegalBlockSizeException |
-         * BadPaddingException e) { e.printStackTrace(); } } catch (final
-         * NoSuchAlgorithmException e) { // TODO Auto-generated catch block
-         * e.printStackTrace(); }
-         */
+
         LOGGER.debug("Read Mail Link : "+unscribeLink.toString());
         return unscribeLink.toString();
     }

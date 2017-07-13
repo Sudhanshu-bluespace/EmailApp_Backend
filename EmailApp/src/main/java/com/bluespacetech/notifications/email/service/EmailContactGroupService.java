@@ -73,6 +73,8 @@ public interface EmailContactGroupService
      */
     EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(final Long contactId, final Long groupId,
             final Long randomNumber);
+    
+    String findByEmailIdAndContactIdAndGroupId(final Long emailIs,final Long contactId,final Long groupId);
 
     /**
      * Update email contact group.
