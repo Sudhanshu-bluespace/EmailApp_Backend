@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.bluespacetech.contact.repository.BlockedContactRepository;
 import com.bluespacetech.contact.repository.ContactRepository;
+import com.bluespacetech.contact.service.BlockedContactService;
 
 /**
  * The Class BouncedEmailJobConfiguration.
@@ -45,7 +45,7 @@ public class BouncedEmailJobConfiguration
 
     /** The blocked contact repository. */
     @Autowired
-    private BlockedContactRepository blockedContactRepository;
+    private BlockedContactService blockedContactService;
 
     /**
      * Upload contact job.
@@ -67,6 +67,6 @@ public class BouncedEmailJobConfiguration
     public Step stepBounce()
     {
         return stepBuilderFactory.get("stepBounce")
-                .tasklet(new BouncedEmailReaderTasklet(contactRepository, blockedContactRepository)).build();
+                .tasklet(new BouncedEmailReaderTasklet(contactRepository, blockedContactService)).build();
     }
 }

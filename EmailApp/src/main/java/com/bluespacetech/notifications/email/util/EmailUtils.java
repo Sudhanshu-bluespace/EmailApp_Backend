@@ -1,8 +1,18 @@
 package com.bluespacetech.notifications.email.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.regex.Pattern;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
+import com.bluespacetech.common.util.Base64ToImageDecodeHelper;
 import com.bluespacetech.core.crypto.Encryptor;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 

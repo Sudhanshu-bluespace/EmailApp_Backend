@@ -34,7 +34,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/analytics/analytics.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!--form (ngSubmit)=\"onSubmit()\" autocomplete=\"off\" novalidate #loginForm=\"ngForm\"-->\r\n<script src=\"https://www.gstatic.com/charts/loader.js\"></script>\r\n<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\r\n<script type=\"text/javascript\">        \r\n  google.load('visualization', '1.0', {\r\n    'packages': ['corechart']\r\n  });\r\n  \r\n</script>\r\n  <div class=\"col-xs-1 col-sm-3 col-md-4 col-lg-4 col-xl-4\"></div>\r\n  <div class=\"barChartTabs\">\r\n      <md-card class=\"app-analytics-display-section\">\r\n      <md-card-title>Company Wise Registration Statistics</md-card-title>\r\n      <md-card-content>\r\n\t\t<google-chart [data]='regColumnChartOptions'></google-chart>\r\n      </md-card-content>\r\n      <md-card-actions>\r\n      </md-card-actions>\r\n    </md-card>\r\n  </div>\r\n  <div class=\"divtabs\">\r\n    <md-card class=\"app-analytics-display-section\">\r\n      <md-card-title>Campaign Wise Performance Statistics</md-card-title>\r\n      <md-card-content>\r\n\t  <p>This view allows you to analyze the campaign statistics completed by you till date. \r\n\t\tIt has a stacked column chart with Total Reach, Clicks and Unsubscribes for each campaign.\r\n\t  </p>\r\n\t\t<google-chart [data]='columnChartOptions'></google-chart>\r\n      </md-card-content>\r\n      <md-card-actions>\r\n      </md-card-actions>\r\n    </md-card>\r\n  </div>\r\n  <div class=\"barChartTabs\">\r\n      <md-card class=\"app-analytics-display-section\">\r\n      <md-card-title>Group Wise Unsubscription</md-card-title>\r\n      <md-card-content>\r\n\t  <p>This is a view of how your contacts have opted for unsubscribing from your campaigns. It shows a bar chart for number of unsubscribes per group that you have created. \r\n\t  </p>\r\n\t\t<google-chart [data]='barChartOptions'></google-chart>\r\n      </md-card-content>\r\n      <md-card-actions>\r\n      </md-card-actions>\r\n    </md-card>\r\n  </div>\r\n<!--/form-->"
+module.exports = "<!--form (ngSubmit)=\"onSubmit()\" autocomplete=\"off\" novalidate #loginForm=\"ngForm\"-->\r\n<script src=\"https://www.gstatic.com/charts/loader.js\"></script>\r\n<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\r\n<script type=\"text/javascript\">        \r\n  google.load('visualization', '1.0', {\r\n    'packages': ['corechart']\r\n  });\r\n  \r\n</script>\r\n  <div class=\"col-xs-1 col-sm-3 col-md-4 col-lg-4 col-xl-4\"></div>\r\n  <div class=\"barChartTabs\" *ngIf=\"authorizationService.isUserSuperAdmin()\">\r\n      <md-card class=\"app-analytics-display-section\">\r\n      <md-card-title>Company Wise Registration Statistics</md-card-title>\r\n      <md-card-content>\r\n\t\t<google-chart [data]='regColumnChartOptions'></google-chart>\r\n      </md-card-content>\r\n      <md-card-actions>\r\n      </md-card-actions>\r\n    </md-card>\r\n  </div>\r\n  <div class=\"divtabs\">\r\n    <md-card class=\"app-analytics-display-section\">\r\n      <md-card-title>Campaign Wise Performance Statistics</md-card-title>\r\n      <md-card-content>\r\n\t  <p>This view allows you to analyze the campaign statistics completed by you till date. \r\n\t\tIt has a stacked column chart with Total Reach, Clicks and Unsubscribes for each campaign.\r\n\t  </p>\r\n\t\t<google-chart [data]='columnChartOptions'></google-chart>\r\n      </md-card-content>\r\n      <md-card-actions>\r\n      </md-card-actions>\r\n    </md-card>\r\n  </div>\r\n  <div class=\"barChartTabs\">\r\n      <md-card class=\"app-analytics-display-section\">\r\n      <md-card-title>Group Wise Unsubscription</md-card-title>\r\n      <md-card-content>\r\n\t  <p>This is a view of how your contacts have opted for unsubscribing from your campaigns. It shows a bar chart for number of unsubscribes per group that you have created. \r\n\t  </p>\r\n\t\t<google-chart [data]='barChartOptions'></google-chart>\r\n      </md-card-content>\r\n      <md-card-actions>\r\n      </md-card-actions>\r\n    </md-card>\r\n  </div>\r\n<!--/form-->"
 
 /***/ }),
 
@@ -46,6 +46,7 @@ module.exports = "<!--form (ngSubmit)=\"onSubmit()\" autocomplete=\"off\" novali
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__analytics_analytics_service__ = __webpack_require__("../../../../../src/app/analytics/analytics.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_global_service__ = __webpack_require__("../../../../../src/app/core/global.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__ = __webpack_require__("../../../../../src/app/core/authorization.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AnalyticsComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -60,11 +61,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var AnalyticsComponent = (function () {
-    function AnalyticsComponent(AnalyticsService, router, globalService) {
+    function AnalyticsComponent(AnalyticsService, router, globalService, authorizationService) {
         this.AnalyticsService = AnalyticsService;
         this.router = router;
         this.globalService = globalService;
+        this.authorizationService = authorizationService;
         this.regColumnChartOptions = {
             chartType: 'ColumnChart',
             dataTable: [
@@ -217,10 +220,10 @@ var AnalyticsComponent = (function () {
         this.AnalyticsService.campaignWisePerformanceSummary(username)
             .subscribe(function (data) {
             _this.campaignWisePerformanceSummaryResponse = data;
-            for (var _i = 0, _a = _this.campaignWisePerformanceSummaryResponse; _i < _a.length; _i++) {
-                var entry = _a[_i];
-                console.log(entry.campaignName + " | " + entry.totalReach); // 1, "string", false
-            }
+            /*	for (let entry of this.campaignWisePerformanceSummaryResponse)
+                {
+                    console.log(entry.campaignName+" | "+entry.totalReach); // 1, "string", false
+                }*/
             //console.log("response : "+this.summary.unsubscribes+" | "+this.summary.reach+" | "+this.summary.clicks);
             _this.myClickCampaignWisePerformance();
             //this.loadData("Sent on "+this.summary.sentOn,this.summary.subject,this.summary.clickPercentage,this.summary.unsubscribePercentage);
@@ -233,10 +236,10 @@ var AnalyticsComponent = (function () {
         this.AnalyticsService.companyWiseRegistrationStats()
             .subscribe(function (data) {
             _this.companyWiseRegistrationSummary = data;
-            for (var _i = 0, _a = _this.companyWiseRegistrationSummary; _i < _a.length; _i++) {
-                var entry = _a[_i];
-                console.log(entry.companyName + " | " + entry.approvedCount + " | " + entry.pendingCount); // 1, "string", false
-            }
+            /*for (let entry of this.companyWiseRegistrationSummary)
+            {
+                console.log(entry.companyName+" | "+entry.approvedCount+" | "+entry.pendingCount); // 1, "string", false
+            }*/
             //console.log("response : "+this.summary.unsubscribes+" | "+this.summary.reach+" | "+this.summary.clicks);
             _this.myClickCompanyWiseRegistration();
             //this.loadData("Sent on "+this.summary.sentOn,this.summary.subject,this.summary.clickPercentage,this.summary.unsubscribePercentage);
@@ -249,10 +252,10 @@ var AnalyticsComponent = (function () {
         this.AnalyticsService.groupWiseUnsubscription(username)
             .subscribe(function (data) {
             _this.groupWiseUnsubscriptionResponse = data;
-            for (var _i = 0, _a = _this.groupWiseUnsubscriptionResponse; _i < _a.length; _i++) {
-                var entry = _a[_i];
-                console.log(entry.groupName + " | " + entry.unsubscribed); // 1, "string", false
-            }
+            /*	for (let entry of this.groupWiseUnsubscriptionResponse)
+                {
+                    console.log(entry.groupName+" | "+entry.unsubscribed); // 1, "string", false
+                }*/
             //console.log("response : "+this.summary.unsubscribes+" | "+this.summary.reach+" | "+this.summary.clicks);
             _this.myClickGroupWiseUnsubscribes();
             //this.loadData("Sent on "+this.summary.sentOn,this.summary.subject,this.summary.clickPercentage,this.summary.unsubscribePercentage);
@@ -264,7 +267,7 @@ var AnalyticsComponent = (function () {
         this.barChartOptions = Object.create(this.barChartOptions);
         for (var _i = 0, _a = this.groupWiseUnsubscriptionResponse; _i < _a.length; _i++) {
             var entry = _a[_i];
-            console.log("Setting values for : " + entry.groupName + " | " + entry.unsubscribed);
+            //console.log("Setting values for : "+entry.groupName+" | "+entry.unsubscribed);	
             this.barChartOptions.dataTable.push([entry.groupName, entry.unsubscribed]);
         }
     };
@@ -273,17 +276,17 @@ var AnalyticsComponent = (function () {
         this.regColumnChartOptions = Object.create(this.regColumnChartOptions);
         for (var _i = 0, _a = this.companyWiseRegistrationSummary; _i < _a.length; _i++) {
             var entry = _a[_i];
-            console.log("Setting values for : " + entry.companyName);
+            //console.log("Setting values for : "+entry.companyName);	
             this.regColumnChartOptions.dataTable.push([entry.companyName, entry.approvedCount, entry.pendingCount]);
         }
     };
     AnalyticsComponent.prototype.myClickCampaignWisePerformance = function () {
         // forces a reference update (otherwise angular doesn't detect the change)
-        console.log("Combo chart values : " + this.columnChartOptions.dataTable[0][0] + " | " + this.columnChartOptions.dataTable[0][1]);
+        //console.log("Combo chart values : "+this.columnChartOptions.dataTable[0][0]+" | "+this.columnChartOptions.dataTable[0][1]);
         this.columnChartOptions = Object.create(this.columnChartOptions);
         for (var _i = 0, _a = this.campaignWisePerformanceSummaryResponse; _i < _a.length; _i++) {
             var entry = _a[_i];
-            console.log("Setting values for : " + entry.subject + " | " + entry.totalReach + " | " + entry.clicks + " | " + entry.unsubscribes);
+            //console.log("Setting values for : "+entry.subject+" | "+entry.totalReach+" | "+entry.clicks+" | "+entry.unsubscribes);	
             this.columnChartOptions.dataTable.push([entry.subject, entry.totalReach, entry.clicks, entry.unsubscribes]);
         }
     };
@@ -296,10 +299,10 @@ AnalyticsComponent = __decorate([
         styles: [__webpack_require__("../../../../../src/app/analytics/analytics.component.css")],
         providers: [__WEBPACK_IMPORTED_MODULE_2__analytics_analytics_service__["a" /* AnalyticsService */]]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__analytics_analytics_service__["a" /* AnalyticsService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__analytics_analytics_service__["a" /* AnalyticsService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */]) === "function" && _c || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__analytics_analytics_service__["a" /* AnalyticsService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__analytics_analytics_service__["a" /* AnalyticsService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__["a" /* AuthorizationService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__["a" /* AuthorizationService */]) === "function" && _d || Object])
 ], AnalyticsComponent);
 
-var _a, _b, _c;
+var _a, _b, _c, _d;
 //# sourceMappingURL=D:/workspace-sts-3.7.0.RELEASE/emialapp-ui/src/analytics.root.component.js.map
 
 /***/ }),
@@ -362,11 +365,10 @@ var AnalyticsService = (function () {
         return this.http.post('analytics/cancelJob', body, options)
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
-        ;
     };
     AnalyticsService.prototype.recentChartSummary = function (userName) {
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
-        console.log("dashboard for " + userName);
+        //console.log("dashboard for "+userName);
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
         var urlSearchParams = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* URLSearchParams */]();
@@ -375,31 +377,30 @@ var AnalyticsService = (function () {
         return this.http.post('analytics/recentSummary', body, options)
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
-        ;
     };
-    AnalyticsService.prototype.recentUnsubscribes = function (age) {
+    AnalyticsService.prototype.recentUnsubscribes = function (age, isAdmin) {
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
         var urlSearchParams = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* URLSearchParams */]();
         urlSearchParams.append('age', age.toString());
+        urlSearchParams.append('isAdmin', isAdmin);
         var body = urlSearchParams.toString();
         return this.http.post('analytics/getRecentUnsubscribes', body, options)
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
-        ;
     };
-    AnalyticsService.prototype.recentUnsubscribedCount = function (age) {
+    AnalyticsService.prototype.recentUnsubscribedCount = function (age, isAdmin) {
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
         var urlSearchParams = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* URLSearchParams */]();
         urlSearchParams.append('age', age.toString());
+        urlSearchParams.append('isAdmin', isAdmin);
         var body = urlSearchParams.toString();
         return this.http.post('analytics/getRecentUnsubscribedCount', body, options)
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
-        ;
     };
     AnalyticsService.prototype.companyWiseRegistrationStats = function () {
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
@@ -411,7 +412,7 @@ var AnalyticsService = (function () {
     };
     AnalyticsService.prototype.campaignWisePerformanceSummary = function (userName) {
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
-        console.log("campaign wise summary for " + userName);
+        //console.log("campaign wise summary for "+userName);
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
         var urlSearchParams = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* URLSearchParams */]();
@@ -423,7 +424,7 @@ var AnalyticsService = (function () {
     };
     AnalyticsService.prototype.groupWiseUnsubscription = function (userName) {
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
-        console.log("groupwise unsubscription for " + userName);
+        //console.log("groupwise unsubscription for "+userName);
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
         var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
         var urlSearchParams = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* URLSearchParams */]();
@@ -905,6 +906,24 @@ var AuthorizationService = (function () {
         }
         return false;
     };
+    AuthorizationService.prototype.isUserAdmin = function () {
+        if (this.globalService.loggedInUser.userType === 'ACC_TYPE_SUPER_ADMIN' || this.globalService.loggedInUser.userType === 'ACC_TYPE_ADMIN') {
+            //console.log("Super admin found.. roles available by default");
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    AuthorizationService.prototype.isUserSuperAdmin = function () {
+        if (this.globalService.loggedInUser.userType === 'ACC_TYPE_SUPER_ADMIN') {
+            //console.log("Super admin found.. roles available by default");
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
     return AuthorizationService;
 }());
 AuthorizationService = __decorate([
@@ -983,7 +1002,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/dashboard/dashboard.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n<script src=\"https://www.gstatic.com/charts/loader.js\"></script>\r\n<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\r\n<script type=\"text/javascript\">        \r\n  google.load('visualization', '1.1', {\r\n    'packages': ['corechart','bar']\r\n  });\r\n  \r\n</script>\r\n<div class=\"dashboardMainContainer\">\r\n<md-card class=\"app-input-section\">\r\n\t<div id=\"refresh-button\">\r\n\t\t\t<!--button type=\"submit\" class=\"btn btn-success btn-s\" (click)=\"refreshStats()\">Refresh Statistics</button-->\r\n\t\t\t<button type=\"button\" class=\"btn btn-success btn-s\" (click)=\"refreshStats()\" ripple-radius style=\"float:right;margin-right:20px;\">Refresh Statistics</button>\r\n\t</div>\r\n\t\t\t<md-card-title>\r\n\t\t\t\t\t<span><img src=\"../../app/resources/images/jobstatsicon.png\" style=\"width:65px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Job Statistics (Queued)</span>\r\n\t\t\t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t\t<p-dataTable [value]=\"jobstatusdataQueued\" [rows]=\"10\" [paginator]=\"true\"\r\n        [pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20]\" selectionMode=\"single\" [(selection)]=\"selectedJob\" [responsive]=\"true\" [contextMenu]=\"cm\">\r\n        <header>Job Status Statistics (Queued)</header>\r\n\t\t\t\t<header>Right click on a row to request cancellation</header>\r\n        <p-column  field=\"jobId\" header=\"Job ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column  field=\"batchId\" header=\"Batch Id\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column  field=\"requestId\" header=\"Request ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column  field=\"campaignName\" header=\"Campaign Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column  field=\"emailCount\" header=\"Total Contacts\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column  field=\"sender\" header=\"Sender\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column  field=\"status\" header=\"Status\" [sortable]=\"true\" [filter]=\"false\"></p-column>\r\n        <footer>\r\n        </footer>\r\n      </p-dataTable>\r\n\t\t\t<p-contextMenu #cm [model]=\"datatable_menu_items\"></p-contextMenu>\r\n\t\t\t</md-card-content>\r\n\t\t\t<br><br>\r\n\t\t\t<md-card-title>\r\n\t\t\t\t\t<span><img src=\"../../app/resources/images/jobcompletedicon.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span> Job Statistics (Completed)</span>\r\n\t\t\t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t\t<p-dataTable [value]=\"jobstatusdataCompleted\" [rows]=\"10\" [paginator]=\"true\"\r\n        [pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20]\" selectionMode=\"single\" [responsive]=\"true\">\r\n        <header>Job Status Statistics (Completed)</header>\r\n        <p-column field=\"jobId\" header=\"Job ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"batchId\" header=\"Batch Id\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"requestId\" header=\"Request ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"campaignName\" header=\"Campaign Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"emailCount\" header=\"Total Contacts\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"sender\" header=\"Sender\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"status\" header=\"Status\" [sortable]=\"true\" [filter]=\"false\" [colspan]=\"2\"></p-column>\r\n        <footer>\r\n        </footer>\r\n      </p-dataTable>\r\n\t\t\t</md-card-content>\r\n\t\t\t<br><br>\r\n\t\t\t\t\t\t<md-card-title>\r\n\t\t\t\t\t<span><img src=\"../../app/resources/images/jobfailedicon.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Job Statistics (Failed)</span>\r\n\t\t\t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t\t<p-dataTable [value]=\"jobstatusdataFailed\" [rows]=\"10\" [paginator]=\"true\"\r\n        [pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20]\" selectionMode=\"single\" [responsive]=\"true\">\r\n        <header>Job Status Statistics (Failed)</header>\r\n        <p-column field=\"jobId\" header=\"Job ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"batchId\" header=\"Batch Id\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"requestId\" header=\"Request ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"campaignName\" header=\"Campaign Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"emailCount\" header=\"Total Contacts\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"sender\" header=\"Sender\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"status\" header=\"Status\" [sortable]=\"true\" [filter]=\"false\" [colspan]=\"2\"></p-column>\r\n        <footer>\r\n        </footer>\r\n      </p-dataTable>\r\n\t\t\t</md-card-content>\r\n\t\t\t<br><br>\r\n\t\t\t<div *ngIf=\"admin\">\r\n\t\t\t<md-card-title>\r\n\t\t\t\t\t<span><img src=\"../../app/resources/images/blockedcontacticon.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Blocked / Bounced Contacts</span>\r\n\t\t\t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t\t<p-dataTable [value]=\"blockedContacts\" [rows]=\"10\" [paginator]=\"true\"\r\n        \t[pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20]\" selectionMode=\"single\" [responsive]=\"true\">\r\n        \t<header>Contacts Blocked due to Bounces / Failures</header>\r\n        \t<p-column field=\"firstName\" header=\"First Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        \t<p-column field=\"lastName\" header=\"Last Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        \t<p-column field=\"email\" header=\"Email\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        \t<p-column field=\"reason\" header=\"Reason\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t\t<p-column field=\"responseCode\" header=\"Response Code\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        \t<footer>\r\n        \t</footer>\r\n      \t</p-dataTable>\r\n\t\t\t</md-card-content>\r\n\t\t\t</div>\r\n\t\t\t<br><br>\r\n      <md-card-title>\r\n\t\t\t\t<span><img src=\"../../app/resources/images/summary.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Recent Campaign Summary</span>\r\n\t  </md-card-title>\r\n      <md-card-content>\r\n              <p> See your most recent campaign summary here </p>\r\n\t\t\t  <div id=\"summaryContainer\">\t\t\t  \r\n\t\t\t\t  <div id=\"summary-left\">\r\n\t\t\t\t\t<h4 #emailSubject></h4>\r\n\t\t\t\t\t<h6 #sentOnDate></h6>\r\n\t\t\t\t  </div>\r\n\t\t\t\t  <div id=\"summary-right\">\r\n\t\t\t\t\t<h4> Statistical Summary </h4>\r\n\t\t\t\t\t<p #description>\r\n\t\t\t\t\t\tThis is a section that gives a summarized text for visitor campaign held on May 01, 2017. The campaign was targeted to visitors, default and prime contact groups. The campaign was completed successfully with a bounce percentage of 3%\r\n\t\t\t\t\t</p>\r\n\t\t\t\t  </div>\r\n\t\t\t  </div>\r\n\t\t\t  <div id=\"chartContainer\">\r\n\t\t\t    <div id=\"chart\">\r\n\t\t\t\t\t\t<google-chart [data]='barChartOptions'></google-chart>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div id=\"tabularData\">\r\n\t\t\t\t\t\t<table>\r\n\t\t\t\t\t\t\t<thead>\r\n\t\t\t\t\t\t\t\t<tr class=\"odd\">\r\n\t\t\t\t\t\t\t\t\t<td>Statistical Analysis</td>\r\n\t\t\t\t\t\t\t\t\t<td>Hit Percentage</td>\r\n\t\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t</thead>\r\n\t\t\t\t\t\t\t<tr class=\"totalreach\">\r\n\t\t\t\t\t\t\t\t<td>Total Reach</td>\r\n\t\t\t\t\t\t\t\t<td>100%</td>\r\n\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t<tr class=\"clicks\">\r\n\t\t\t\t\t\t\t\t<td>Total clicks</td>\r\n\t\t\t\t\t\t\t\t<td #clickPercentage></td>\r\n\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t<tr class=\"unsubscribe\">\r\n\t\t\t\t\t\t\t\t<td>Usubscribes</td>\r\n\t\t\t\t\t\t\t\t<td #unsubscribePercentage></td>\r\n\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t</table>\t\t\t\t\t\r\n\t\t\t\t\t</div>\r\n\t\t\t  </div>\r\n      </md-card-content>\r\n\t\t\t<md-card-title>\r\n\t\t\t\t<span><img src=\"../../app/resources/images/unsubscribedicon.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Recent Unsubscriptions</span>\r\n\t  \t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t  <p> Check how many people have opted out of this portal </p>\r\n\t\t\t  <div id=\"summaryContainer\">\r\n\t\t\t\t\t<div id=\"summary-left\">\r\n\t\t\t\t\t\t<h4>Recent Unsubscription Statistics</h4>\r\n\t\t\t\t\t\t<h6>A graphical representation of number of unsubscriptions per day</h6>\r\n\t\t\t\t  </div>\t  \r\n\t\t\t\t  <div id=\"summary-right\">\r\n\t\t\t\t\t<h4> Unsubscription records </h4>\r\n\t\t\t\t\t<p>\r\n\t\t\t\t\t\tThis is a section that gives a summary of recent unsubscribes for the last 60 days\r\n\t\t\t\t\t</p>\r\n\t\t\t\t  </div>\r\n\t\t\t  </div>\r\n\t\t\t  <div id=\"chartContainer\">\r\n\t\t\t  \t<div id=\"chart\">\r\n\t\t\t\t\t\t<google-chart [data]='unsubscribeLineChartOptions'></google-chart>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div id=\"tabularData\">\r\n\t\t\t\t    <table>\r\n                <thead>\r\n                    <tr>\r\n                        <td>Serial No</td>\r\n                        <td>Contact Name</td>\r\n                        <td>Email</td>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<td>Date</td>\r\n                    </tr>\r\n                </thead>\r\n                <tbody>\r\n                    <tr *ngIf=\"noDataFound\">\r\n                        <td colspan=\"8\">No unsubscriptions found</td>            \r\n                    </tr>\r\n                        <tr *ngFor=\"let data of unsubscribes\" [ngClass]=\"getClass(data.serialNo)\">\r\n                            <td>{{data.serialNo}}</td>\r\n                            <td>{{data.firstName}} {{data.lastName}}</td>\r\n                            <td>{{data.email}}</td>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td>{{data.unsubscribedOn}}</td>\r\n                        </tr>\r\n                </tbody>\r\n            </table>\t\t\t\t\t\r\n\t\t\t\t\t</div>\r\n\t\t\t  </div>\r\n      </md-card-content>\r\n</md-card>\r\n</div>\r\n"
+module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n<script src=\"https://www.gstatic.com/charts/loader.js\"></script>\r\n<script type=\"text/javascript\" src=\"https://www.google.com/jsapi\"></script>\r\n<script type=\"text/javascript\">        \r\n  google.load('visualization', '1.1', {\r\n    'packages': ['corechart','bar']\r\n  });\r\n  \r\n</script>\r\n<div class=\"dashboardMainContainer\">\r\n<md-card class=\"app-input-section\">\r\n\t<div id=\"refresh-button\">\r\n\t\t\t<!--button type=\"submit\" class=\"btn btn-success btn-s\" (click)=\"refreshStats()\">Refresh Statistics</button-->\r\n\t\t\t<button type=\"button\" class=\"btn btn-success btn-s\" (click)=\"refreshStats()\" ripple-radius style=\"float:right;margin-right:20px;\">Refresh Statistics</button>\r\n\t</div>\r\n\t\t\t<md-card-title>\r\n\t\t\t\t\t<span><img src=\"../../app/resources/images/jobstatsicon.png\" style=\"width:65px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Job Statistics (Queued)</span>\r\n\t\t\t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t\t<p-dataTable [value]=\"jobstatusdataQueued\" [rows]=\"10\" [paginator]=\"true\"\r\n        [pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20]\" selectionMode=\"single\" [(selection)]=\"selectedJob\" [responsive]=\"true\" [contextMenu]=\"cm\">\r\n        <header>Job Status Statistics (Queued)</header>\r\n\t\t\t\t<header>Right click on a row to request cancellation</header>\r\n        <p-column  field=\"jobId\" header=\"Job ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column  field=\"batchId\" header=\"Batch Id\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column  field=\"requestId\" header=\"Request ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column  field=\"campaignName\" header=\"Campaign Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column  field=\"emailCount\" header=\"Total Contacts\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column  field=\"sender\" header=\"Sender\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column  field=\"status\" header=\"Status\" [sortable]=\"true\" [filter]=\"false\"></p-column>\r\n        <footer>\r\n        </footer>\r\n      </p-dataTable>\r\n\t\t\t<p-contextMenu #cm [model]=\"datatable_menu_items\"></p-contextMenu>\r\n\t\t\t</md-card-content>\r\n\t\t\t<br><br>\r\n\t\t\t<md-card-title>\r\n\t\t\t\t\t<span><img src=\"../../app/resources/images/jobcompletedicon.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span> Job Statistics (Completed)</span>\r\n\t\t\t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t\t<p-dataTable [value]=\"jobstatusdataCompleted\" [rows]=\"10\" [paginator]=\"true\"\r\n        [pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20]\" selectionMode=\"single\" [responsive]=\"true\">\r\n        <header>Job Status Statistics (Completed)</header>\r\n        <p-column field=\"jobId\" header=\"Job ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"batchId\" header=\"Batch Id\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"requestId\" header=\"Request ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"campaignName\" header=\"Campaign Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"emailCount\" header=\"Total Contacts\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"sender\" header=\"Sender\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"status\" header=\"Status\" [sortable]=\"true\" [filter]=\"false\"></p-column>\r\n        <footer>\r\n        </footer>\r\n      </p-dataTable>\r\n\t\t\t</md-card-content>\r\n\t\t\t<br><br>\r\n\t\t\t\t\t\t<md-card-title>\r\n\t\t\t\t\t<span><img src=\"../../app/resources/images/jobfailedicon.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Job Statistics (Failed)</span>\r\n\t\t\t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t\t<p-dataTable [value]=\"jobstatusdataFailed\" [rows]=\"10\" [paginator]=\"true\"\r\n        [pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20]\" selectionMode=\"single\" [responsive]=\"true\">\r\n        <header>Job Status Statistics (Failed)</header>\r\n        <p-column field=\"jobId\" header=\"Job ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"batchId\" header=\"Batch Id\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"requestId\" header=\"Request ID\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"campaignName\" header=\"Campaign Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"emailCount\" header=\"Total Contacts\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"sender\" header=\"Sender\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t<p-column field=\"status\" header=\"Status\" [sortable]=\"true\" [filter]=\"false\"></p-column>\r\n        <footer>\r\n        </footer>\r\n      </p-dataTable>\r\n\t\t\t</md-card-content>\r\n\t\t\t<br><br>\r\n\t\t\t<div *ngIf=\"admin\">\r\n\t\t\t<md-card-title>\r\n\t\t\t\t\t<span><img src=\"../../app/resources/images/blockedcontacticon.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Blocked / Bounced Contacts</span>\r\n\t\t\t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t\t<p-dataTable [value]=\"blockedContacts\" [rows]=\"10\" [paginator]=\"true\"\r\n        \t[pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20]\" selectionMode=\"single\" [responsive]=\"true\">\r\n        \t<header>Contacts Blocked due to Bounces / Failures</header>\r\n        \t<p-column field=\"firstName\" header=\"First Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        \t<p-column field=\"lastName\" header=\"Last Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        \t<p-column field=\"email\" header=\"Email\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        \t<p-column field=\"reason\" header=\"Reason\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n\t\t\t\t\t<p-column field=\"responseCode\" header=\"Response Code\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        \t<footer>\r\n        \t</footer>\r\n      \t</p-dataTable>\r\n\t\t\t</md-card-content>\r\n\t\t\t</div>\r\n\t\t\t<br><br>\r\n      <md-card-title>\r\n\t\t\t\t<span><img src=\"../../app/resources/images/summary.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Recent Campaign Summary</span>\r\n\t  </md-card-title>\r\n      <md-card-content>\r\n              <p> See your most recent campaign summary here </p>\r\n\t\t\t  <div id=\"summaryContainer\">\t\t\t  \r\n\t\t\t\t  <div id=\"summary-left\">\r\n\t\t\t\t\t<h4 #emailSubject></h4>\r\n\t\t\t\t\t<h6 #sentOnDate></h6>\r\n\t\t\t\t  </div>\r\n\t\t\t\t  <div id=\"summary-right\">\r\n\t\t\t\t\t<h4> Statistical Summary </h4>\r\n\t\t\t\t\t<p #description>\r\n\t\t\t\t\t\tThis is a section that gives a summarized text for visitor campaign held on May 01, 2017. The campaign was targeted to visitors, default and prime contact groups. The campaign was completed successfully with a bounce percentage of 3%\r\n\t\t\t\t\t</p>\r\n\t\t\t\t  </div>\r\n\t\t\t  </div>\r\n\t\t\t  <div id=\"chartContainer\">\r\n\t\t\t    <div id=\"chart\">\r\n\t\t\t\t\t\t<google-chart [data]='barChartOptions'></google-chart>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div id=\"tabularData\">\r\n\t\t\t\t\t\t<table>\r\n\t\t\t\t\t\t\t<thead>\r\n\t\t\t\t\t\t\t\t<tr class=\"odd\">\r\n\t\t\t\t\t\t\t\t\t<td>Statistical Analysis</td>\r\n\t\t\t\t\t\t\t\t\t<td>Hit Percentage</td>\r\n\t\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t</thead>\r\n\t\t\t\t\t\t\t<tr class=\"totalreach\">\r\n\t\t\t\t\t\t\t\t<td>Total Reach</td>\r\n\t\t\t\t\t\t\t\t<td>100%</td>\r\n\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t<tr class=\"clicks\">\r\n\t\t\t\t\t\t\t\t<td>Total clicks</td>\r\n\t\t\t\t\t\t\t\t<td #clickPercentage></td>\r\n\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t\t<tr class=\"unsubscribe\">\r\n\t\t\t\t\t\t\t\t<td>Usubscribes</td>\r\n\t\t\t\t\t\t\t\t<td #unsubscribePercentage></td>\r\n\t\t\t\t\t\t\t</tr>\r\n\t\t\t\t\t\t</table>\t\t\t\t\t\r\n\t\t\t\t\t</div>\r\n\t\t\t  </div>\r\n      </md-card-content>\r\n\t\t\t<md-card-title>\r\n\t\t\t\t<span><img src=\"../../app/resources/images/unsubscribedicon.png\" style=\"width:60px;height:60px;margin-right:15px;opacity:100;\"/></span><span>Recent Unsubscriptions</span>\r\n\t  \t</md-card-title>\r\n\t\t\t<md-card-content>\r\n\t\t\t  <p> Check how many people have opted out of this portal </p>\r\n\t\t\t  <div id=\"summaryContainer\">\r\n\t\t\t\t\t<div id=\"summary-left\">\r\n\t\t\t\t\t\t<h4>Recent Unsubscription Statistics</h4>\r\n\t\t\t\t\t\t<h6>A graphical representation of number of unsubscriptions per day</h6>\r\n\t\t\t\t  </div>\t  \r\n\t\t\t\t  <div id=\"summary-right\">\r\n\t\t\t\t\t<h4> Unsubscription records </h4>\r\n\t\t\t\t\t<p>\r\n\t\t\t\t\t\tThis is a section that gives a summary of recent unsubscribes for the last 60 days\r\n\t\t\t\t\t</p>\r\n\t\t\t\t  </div>\r\n\t\t\t  </div>\r\n\t\t\t  <div id=\"chartContainer\">\r\n\t\t\t  \t<div id=\"chart\">\r\n\t\t\t\t\t\t<google-chart [data]='unsubscribeLineChartOptions'></google-chart>\r\n\t\t\t\t\t</div>\r\n\t\t\t\t\t<div id=\"tabularData\">\r\n\t\t\t\t    <table>\r\n                <thead>\r\n                    <tr>\r\n                        <td>Serial No</td>\r\n                        <td>Contact Name</td>\r\n                        <td>Email</td>\r\n\t\t\t\t\t\t\t\t\t\t\t\t<td>Date</td>\r\n                    </tr>\r\n                </thead>\r\n                <tbody>\r\n                    <tr *ngIf=\"noDataFound\">\r\n                        <td colspan=\"8\">No unsubscriptions found</td>            \r\n                    </tr>\r\n                        <tr *ngFor=\"let data of unsubscribes\" [ngClass]=\"getClass(data.serialNo)\">\r\n                            <td>{{data.serialNo}}</td>\r\n                            <td>{{data.firstName}} {{data.lastName}}</td>\r\n                            <td>{{data.email}}</td>\r\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td>{{data.unsubscribedOn}}</td>\r\n                        </tr>\r\n                </tbody>\r\n            </table>\t\t\t\t\t\r\n\t\t\t\t\t</div>\r\n\t\t\t  </div>\r\n      </md-card-content>\r\n</md-card>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -995,6 +1014,7 @@ module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n<script src=\"https://
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__analytics_analytics_service__ = __webpack_require__("../../../../../src/app/analytics/analytics.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__("../../../router/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_global_service__ = __webpack_require__("../../../../../src/app/core/global.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__ = __webpack_require__("../../../../../src/app/core/authorization.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return DashboardComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -1010,11 +1030,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var DashboardComponent = (function () {
-    function DashboardComponent(AnalyticsService, router, globalService) {
+    function DashboardComponent(AnalyticsService, router, globalService, authService) {
         this.AnalyticsService = AnalyticsService;
         this.router = router;
         this.globalService = globalService;
+        this.authService = authService;
         this.admin = false;
         this.msgs = [];
         this.noDataFound = false;
@@ -1091,15 +1113,19 @@ var DashboardComponent = (function () {
             }
         };
         var user = this.globalService.loggedInUser.loggedInUserName;
+        if (this.globalService.loggedInUser.userType === 'ACC_TYPE_SUPER_ADMIN' || this.globalService.loggedInUser.userType === 'ACC_TYPE_ADMIN') {
+            this.admin = true;
+            this.isAdmin = "true";
+            this.getBlockedContacts();
+        }
+        else {
+            this.isAdmin = "false";
+        }
         this.recentChartSummary(user);
         this.recentUnsubscribedCount(60);
         this.recentUnsubscribes(60);
         this.getJobStatusDump(user);
         //console.log("User Type : "+this.globalService.loggedInUser.userType);
-        if (this.globalService.loggedInUser.userType === 'ACC_TYPE_SUPER_ADMIN' || this.globalService.loggedInUser.userType === 'ACC_TYPE_ADMIN') {
-            this.admin = true;
-            this.getBlockedContacts();
-        }
     }
     DashboardComponent.prototype.getBlockedContacts = function () {
         var _this = this;
@@ -1185,7 +1211,7 @@ var DashboardComponent = (function () {
     ;
     DashboardComponent.prototype.recentUnsubscribes = function (age) {
         var _this = this;
-        this.AnalyticsService.recentUnsubscribes(age)
+        this.AnalyticsService.recentUnsubscribes(age, this.isAdmin)
             .subscribe(function (data) {
             _this.unsubscribes = data;
             if (_this.unsubscribes.length === 0) {
@@ -1199,7 +1225,7 @@ var DashboardComponent = (function () {
     ;
     DashboardComponent.prototype.recentUnsubscribedCount = function (age) {
         var _this = this;
-        this.AnalyticsService.recentUnsubscribedCount(age)
+        this.AnalyticsService.recentUnsubscribedCount(age, this.isAdmin)
             .subscribe(function (data) {
             _this.unsubscribedCount = data;
             console.log("unsubscribedCount: ", data);
@@ -1251,10 +1277,10 @@ DashboardComponent = __decorate([
         styles: [__webpack_require__("../../../../../src/app/dashboard/dashboard.component.css"), __webpack_require__("../../../../../src/app/email/contact/fileupload.component.css")],
         providers: [__WEBPACK_IMPORTED_MODULE_1__analytics_analytics_service__["a" /* AnalyticsService */]]
     }),
-    __metadata("design:paramtypes", [typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1__analytics_analytics_service__["a" /* AnalyticsService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__analytics_analytics_service__["a" /* AnalyticsService */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["Router"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_router__["Router"]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */]) === "function" && _g || Object])
+    __metadata("design:paramtypes", [typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_1__analytics_analytics_service__["a" /* AnalyticsService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__analytics_analytics_service__["a" /* AnalyticsService */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_2__angular_router__["Router"] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_router__["Router"]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */]) === "function" && _g || Object, typeof (_h = typeof __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__["a" /* AuthorizationService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__["a" /* AuthorizationService */]) === "function" && _h || Object])
 ], DashboardComponent);
 
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 //# sourceMappingURL=D:/workspace-sts-3.7.0.RELEASE/emialapp-ui/src/dashboard.component.js.map
 
 /***/ }),
@@ -1435,7 +1461,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/email/contact/contact.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p-growl [value]=\"msgs\" sticky=\"sticky\"></p-growl>\r\n\r\n<form #contactForm=\"ngForm\" *ngIf=\"active\">\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"!displayViewDialog && !displayCreateDialog\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Search Contacts</h3>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" placeholder=\"First Name\" class=\"form-control\" id=\"firstName\" [(ngModel)]=\"commonService.contactSearchCriteria.firstName\"\r\n                        name=\"firstNameSearchCriteria\">\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" placeholder=\"Last Name\" class=\"form-control\" id=\"lastName\" [(ngModel)]=\"commonService.contactSearchCriteria.lastName\"\r\n                        name=\"lastNameSearchCriteria\">\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <input type=\"email\" placeholder=\"Email\" class=\"form-control\" id=\"email\" [(ngModel)]=\"commonService.contactSearchCriteria.email\"\r\n                        name=\"emailSearchCriteria\">\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <p-multiSelect id=\"groupsSearchCriteria\" defaultLabel=\"Choose Groups - Required\" name=\"groupsSearchCriteria\" [options]=\"commonService.groupNamesForSearch\"\r\n                        (onChange)=\"onSelectItemChange()\" [(ngModel)]=\"commonService.contactSearchCriteria.groupIds\" [style]=\"{'width':'100%'}\"\r\n                        required #groupsSearchCriteria=\"ngModel\"></p-multiSelect>\r\n                    <div [hidden]=\"groupsSearchCriteria.valid || groupsSearchCriteria.pristine\" class=\"alert alert-danger\">\r\n                        Choose atleast one Group\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-12\">\r\n                <div class=\"col-md-5\"></div>\r\n                <button type=\"submit\" *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_CONTACTS')\" [disabled]=\"!contactForm.form.valid\"\r\n                    pButton icon=\"fa fa-search\" pButton label=\"Search\" (click)=\"commonService.getAllContactsBySearchCriteria()\"></button>\r\n                <button type=\"button\" pButton icon=\"fa fa-refresh\" pButton label=\"Reset\" (click)=\"commonService.resetContactsBySearchCriteria()\"></button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <p-dataTable *ngIf=\"!displayViewDialog && !displayCreateDialog\" [value]=\"commonService.contacts\" [rows]=\"50\" [paginator]=\"true\"\r\n        [pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20,50]\" selectionMode=\"single\" [responsive]=\"true\" (onRowSelect)=\"onRowSelect($event)\">\r\n        <header>Contacts</header>\r\n        <p-column field=\"firstName\" header=\"First Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"lastName\" header=\"Last Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"email\" header=\"Email Id\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"groupDetails\" header=\"Groups\" [sortable]=\"true\" [filter]=\"true\" [colspan]=\"2\"></p-column>\r\n        <p-footer>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <button type=\"button\" icon=\"fa fa-plus\" *ngIf=\"authorizationService.isUserHasRole('UI_CREATE_CONTACTS')\" pButton label=\"Create\"\r\n                        (click)=\"createContactClick()\"></button>\r\n                    <!--button type=\"button\" pButton icon=\"fa fa-download\" label=\"Import\">\r\n\t\t\t\t\t    \r\n\t\t\t\t\t</button-->\r\n                </div>\r\n            </div>\r\n        </p-footer>\r\n    </p-dataTable>\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"displayViewDialog && contactSelected\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Contact Details</h3>\r\n        </div>\r\n\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateContact\">\r\n                        <label for=\"firstName\">First Name*</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"firstName\" required [(ngModel)]=\"contactSelected.firstName\" name=\"firstNameView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateContact\">\r\n                        <label for=\"firstName\">First Name*</label>\r\n                        <input type=\"text\" class=\"form-control\" placeholder=\"Required\" id=\"firstName\" required [(ngModel)]=\"contactSelected.firstName\"\r\n                            name=\"firstNameView\" #firstNameView=\"ngModel\">\r\n                        <div [hidden]=\"firstNameView.valid || firstNameView.pristine\" class=\"alert alert-danger\">\r\n                            First name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateContact\">\r\n                        <label for=\"firstName\">Last Name*</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"lastName\" required [(ngModel)]=\"contactSelected.lastName\" name=\"lastNameView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateContact\">\r\n                        <label for=\"firstName\">Last Name*</label>\r\n                        <input type=\"text\" class=\"form-control\" placeholder=\"Required\" id=\"lastName\" required [(ngModel)]=\"contactSelected.lastName\"\r\n                            name=\"lastNameView\" #lastNameView=\"ngModel\">\r\n                        <div [hidden]=\"lastNameView.valid || lastNameView.pristine\" class=\"alert alert-danger\">\r\n                            Last name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateContact\">\r\n                        <label for=\"email\">Email*</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"email\" required [(ngModel)]=\"contactSelected.email\" name=\"emailView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateContact\">\r\n                        <label for=\"email\">Email*</label>\r\n                        <input type=\"text\" class=\"form-control\" placeholder=\"Required\" id=\"email\" required [(ngModel)]=\"contactSelected.email\" name=\"emailView\"\r\n                            #emailView=\"ngModel\">\r\n                        <div [hidden]=\"emailView.valid || emailView.pristine\" class=\"alert alert-danger\">\r\n                            Email is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\" *ngIf=\"updateContact && moreGroupItems.length > 0\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateContact\">\r\n                        <label for=\"groups\">Groups</label>\r\n                        <p-multiSelect id=\"groups\" name=\"groups\" [options]=\"moreGroupItems\" [(ngModel)]=\"contactSelected.moreGroups\" [style]=\"{'width':'100%'}\"></p-multiSelect>\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateContact\">\r\n                        <label for=\"groups\">Groups*</label>\r\n                        <p-multiSelect id=\"groups\" required name=\"groupsView\" #groupsView=\"ngModel\" [options]=\"moreGroupItems\" [(ngModel)]=\"contactSelected.moreGroups\"\r\n                            [style]=\"{'width':'100%'}\"></p-multiSelect>\r\n                        <div [hidden]=\"groupsView.valid || groupsView.pristine\" class=\"alert alert-danger\">\r\n                            Group is invalid\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n\r\n            <p-dataTable [value]=\"contactSelected.contactGroups\" *ngIf=\"!updateContact && contactSelected.contactGroups.length > 0\">\r\n                <p-column field=\"group.name\" header=\"Group Name\"></p-column>\r\n                <p-column field=\"active\" header=\"Active\"></p-column>\r\n                <p-column field=\"unSubscribed\" header=\"UnSubscribed\"></p-column>\r\n            </p-dataTable>\r\n            <br/>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <div class=\"col-md-5\"></div>\r\n                    <button *ngIf=\"!updateContact && authorizationService.isUserHasRole('UI_UPDATE_CONTACTS')\" type=\"button\" pButton icon=\"fa-pencil\" (click)=\"updateContactClick()\"\r\n                        label=\"Edit\"></button>\r\n                    <button *ngIf=\"!updateContact && authorizationService.isUserHasRole('UI_DELETE_CONTACTS')\" type=\"submit\" pButton icon=\"fa-trash\" (click)=\"deleteSelectedContact()\"\r\n                        label=\"Delete\"></button>\r\n                    <button *ngIf=\"!updateContact\" type=\"button\" pButton icon=\"fa-close\" (click)=\"viewDialogCancelClick()\" label=\"Cancel\"></button>\r\n                </div>\r\n            </div>\r\n            <div class=\"panel panel-default\" *ngIf=\"updateContact && contactSelected.contactGroups.length > 0\">\r\n                <div class=\"panel-body\">\r\n                    <table class=\"table\" *ngIf=\"updateContact && contactSelected.contactGroups.length > 0\">\r\n                        <thead>\r\n                            <tr>\r\n                                <th>Group Name</th>\r\n                                <th>First Name</th>\r\n                                <th>Last Name</th>\r\n                                <th>Email</th>\r\n                            </tr>\r\n                        </thead>\r\n                        <tbody>\r\n                            <tr *ngFor=\"let contactGroup of contactSelected.contactGroups\">\r\n                                <td>{{contactGroup.group.name}}</td>\r\n                                <td><input id=\"active\" name=\"active\" type=\"checkbox\" [(ngModel)]=\"contactGroup.active\">Active</td>\r\n                                <td><input id=\"unSubscribed\" name=\"unSubscribed\" type=\"checkbox\" [(ngModel)]=\"contactGroup.unSubscribed\">UnSubscribe</td>\r\n                                <td><input id=\"delete\" name=\"delete\" type=\"checkbox\" disabled=\"true\" [(ngModel)]=\"contactGroup.delete\">Delete</td>\r\n                            </tr>\r\n                        </tbody>\r\n                    </table>\r\n                </div>\r\n            </div>\r\n            <br/>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <div class=\"col-md-5\"></div>\r\n                    <button *ngIf=\"updateContact && authorizationService.isUserHasRole('UI_CREATE_CONTACTS')\" type=\"submit\" pButton icon=\"fa-check\" (click)=\"updateContactSubmit()\" label=\"Submit\"\r\n                        [disabled]=\"!contactForm.form.valid\"></button>\r\n                    <button *ngIf=\"updateContact\" type=\"button\" pButton icon=\"fa-close\" (click)=\"dialogUpdateCancelClick()\" label=\"Cancel\"></button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"displayCreateDialog && contactNew\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Create Contact</h3>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"firstName\">First Name*</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"firstName\" required [(ngModel)]=\"contactNew.firstName\" name=\"firstNameCreate\"\r\n                            #firstNameCreate=\"ngModel\" placeholder=\"Required\">\r\n                        <div [hidden]=\"firstNameCreate.valid || firstNameCreate.pristine\" class=\"alert alert-danger\">\r\n                            First name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"lastName\">Last Name*</label>\r\n                        <input type=\"text\" class=\"form-control\" placeholder=\"Required\" id=\"lastName\" required [(ngModel)]=\"contactNew.lastName\" name=\"lastNameCreate\"\r\n                            #lastNameCreate=\"ngModel\">\r\n                        <div [hidden]=\"lastNameCreate.valid || lastNameCreate.pristine\" class=\"alert alert-danger\">\r\n                            Last name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"email\" class=\"control-label\">Email*</label>\r\n                        <input type=\"email\" class=\"form-control\" placeholder=\"Required\" id=\"email\" required [(ngModel)]=\"contactNew.email\" name=\"emailCreate\"\r\n                            #emailCreate=\"ngModel\">\r\n                        <div [hidden]=\"emailCreate.valid || emailCreate.pristine\" class=\"alert alert-danger\">\r\n                            Email is invalid\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"groups\">Groups*</label>\r\n                        <p-multiSelect id=\"groups\" required name=\"groupsCreate\" #groupsCreate=\"ngModel\" [options]=\"commonService.groupItems\" [(ngModel)]=\"contactNew.groups\"\r\n                            [style]=\"{'width':'100%'}\"></p-multiSelect>\r\n                        <div [hidden]=\"groupsCreate.valid || groupsCreate.pristine\" class=\"alert alert-danger\">\r\n                            Group is invalid\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n            <div class=\"col-md-12\">\r\n                <div class=\"col-md-5\"></div>\r\n                <button type=\"submit\" pButton icon=\"fa-check\" *ngIf=\"authorizationService.isUserHasRole('UI_CREATE_CONTACTS')\" (click)=\"createContactSubmit()\" label=\"Create\" [disabled]=\"!contactForm.form.valid\"></button>\r\n                <button type=\"button\" pButton icon=\"fa-close\" (click)=\"createDialogCancelClick()\" label=\"Cancel\"></button>\r\n            </div>\r\n        </div>\r\n        <br/>\r\n    </div>\r\n\r\n</form>"
+module.exports = "<p-growl [value]=\"msgs\" sticky=\"sticky\"></p-growl>\r\n\r\n<form #contactForm=\"ngForm\" *ngIf=\"active\">\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"!displayViewDialog && !displayCreateDialog\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Search Contacts</h3>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" placeholder=\"First Name\" class=\"form-control\" id=\"firstName\" [(ngModel)]=\"commonService.contactSearchCriteria.firstName\"\r\n                        name=\"firstNameSearchCriteria\">\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" placeholder=\"Last Name\" class=\"form-control\" id=\"lastName\" [(ngModel)]=\"commonService.contactSearchCriteria.lastName\"\r\n                        name=\"lastNameSearchCriteria\">\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <input type=\"email\" placeholder=\"Email\" class=\"form-control\" id=\"email\" [(ngModel)]=\"commonService.contactSearchCriteria.email\"\r\n                        name=\"emailSearchCriteria\">\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <p-multiSelect id=\"groupsSearchCriteria\" defaultLabel=\" Choose Groups - Required\" name=\"groupsSearchCriteria\" [options]=\"commonService.groupNamesForSearch\"\r\n                        (onChange)=\"onSelectItemChange()\" [(ngModel)]=\"commonService.contactSearchCriteria.groupIds\" [style]=\"{'width':'100%'}\"\r\n                        required #groupsSearchCriteria=\"ngModel\"></p-multiSelect>\r\n                    <div [hidden]=\"groupsSearchCriteria.valid || groupsSearchCriteria.pristine\" class=\"alert alert-danger\">\r\n                        Choose atleast one Group\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-12\">\r\n                <div class=\"col-md-5\"></div>\r\n                <button type=\"submit\" *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_CONTACTS')\" [disabled]=\"!contactForm.form.valid\"\r\n                    pButton icon=\"fa fa-search\" pButton label=\"Search\" (click)=\"commonService.getAllContactsBySearchCriteria(username)\"></button>\r\n                <button type=\"button\" pButton icon=\"fa fa-refresh\" pButton label=\"Reset\" (click)=\"commonService.resetContactsBySearchCriteria()\"></button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <p-dataTable *ngIf=\"!displayViewDialog && !displayCreateDialog\" [value]=\"commonService.contacts\" [rows]=\"50\" [paginator]=\"true\"\r\n        [pageLinks]=\"3\" [rowsPerPageOptions]=\"[10,20,50]\" selectionMode=\"single\" [responsive]=\"true\" (onRowSelect)=\"onRowSelect($event)\">\r\n        <header>Contacts</header>\r\n        <p-column field=\"firstName\" header=\"First Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"lastName\" header=\"Last Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"email\" header=\"Email Id\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"groupDetails\" header=\"Groups\" [sortable]=\"true\" [filter]=\"true\" [colspan]=\"2\"></p-column>\r\n        <p-footer>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <button type=\"button\" icon=\"fa fa-plus\" *ngIf=\"authorizationService.isUserHasRole('UI_CREATE_CONTACTS')\" pButton label=\"Create\"\r\n                        (click)=\"createContactClick()\"></button>\r\n                    <!--button type=\"button\" pButton icon=\"fa fa-download\" label=\"Import\">\r\n\t\t\t\t\t    \r\n\t\t\t\t\t</button-->\r\n                </div>\r\n            </div>\r\n        </p-footer>\r\n    </p-dataTable>\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"displayViewDialog && contactSelected\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Contact Details</h3>\r\n        </div>\r\n\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateContact\">\r\n                        <label for=\"firstName\">First Name*</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"firstName\" required [(ngModel)]=\"contactSelected.firstName\" name=\"firstNameView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateContact\">\r\n                        <label for=\"firstName\">First Name*</label>\r\n                        <input type=\"text\" class=\"form-control\" placeholder=\"Required\" id=\"firstName\" required [(ngModel)]=\"contactSelected.firstName\"\r\n                            name=\"firstNameView\" #firstNameView=\"ngModel\">\r\n                        <div [hidden]=\"firstNameView.valid || firstNameView.pristine\" class=\"alert alert-danger\">\r\n                            First name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateContact\">\r\n                        <label for=\"firstName\">Last Name*</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"lastName\" required [(ngModel)]=\"contactSelected.lastName\" name=\"lastNameView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateContact\">\r\n                        <label for=\"firstName\">Last Name*</label>\r\n                        <input type=\"text\" class=\"form-control\" placeholder=\"Required\" id=\"lastName\" required [(ngModel)]=\"contactSelected.lastName\"\r\n                            name=\"lastNameView\" #lastNameView=\"ngModel\">\r\n                        <div [hidden]=\"lastNameView.valid || lastNameView.pristine\" class=\"alert alert-danger\">\r\n                            Last name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateContact\">\r\n                        <label for=\"email\">Email*</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"email\" required [(ngModel)]=\"contactSelected.email\" name=\"emailView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateContact\">\r\n                        <label for=\"email\">Email*</label>\r\n                        <input type=\"text\" class=\"form-control\" placeholder=\"Required\" id=\"email\" required [(ngModel)]=\"contactSelected.email\" name=\"emailView\"\r\n                            #emailView=\"ngModel\">\r\n                        <div [hidden]=\"emailView.valid || emailView.pristine\" class=\"alert alert-danger\">\r\n                            Email is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\" *ngIf=\"updateContact && moreGroupItems.length > 0\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateContact\">\r\n                        <label for=\"groups\">Groups</label>\r\n                        <p-multiSelect id=\"groups\" name=\"groups\" [options]=\"moreGroupItems\" [(ngModel)]=\"contactSelected.moreGroups\" [style]=\"{'width':'100%'}\"></p-multiSelect>\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateContact\">\r\n                        <label for=\"groups\">Groups*</label>\r\n                        <p-multiSelect id=\"groups\" required name=\"groupsView\" #groupsView=\"ngModel\" [options]=\"moreGroupItems\" [(ngModel)]=\"contactSelected.moreGroups\"\r\n                            [style]=\"{'width':'100%'}\"></p-multiSelect>\r\n                        <div [hidden]=\"groupsView.valid || groupsView.pristine\" class=\"alert alert-danger\">\r\n                            Group is invalid\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n\r\n            <p-dataTable [value]=\"contactSelected.contactGroups\" *ngIf=\"!updateContact && contactSelected.contactGroups.length > 0\">\r\n                <p-column field=\"group.name\" header=\"Group Name\"></p-column>\r\n                <p-column field=\"active\" header=\"Active\"></p-column>\r\n                <p-column field=\"unSubscribed\" header=\"UnSubscribed\"></p-column>\r\n            </p-dataTable>\r\n            <br/>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <div class=\"col-md-5\"></div>\r\n                    <button *ngIf=\"!updateContact && authorizationService.isUserHasRole('UI_UPDATE_CONTACTS')\" type=\"button\" pButton icon=\"fa-pencil\" (click)=\"updateContactClick()\"\r\n                        label=\"Edit\"></button>\r\n                    <button *ngIf=\"!updateContact && authorizationService.isUserHasRole('UI_DELETE_CONTACTS')\" type=\"submit\" pButton icon=\"fa-trash\" (click)=\"deleteSelectedContact()\"\r\n                        label=\"Delete\"></button>\r\n                    <button *ngIf=\"!updateContact\" type=\"button\" pButton icon=\"fa-close\" (click)=\"viewDialogCancelClick()\" label=\"Cancel\"></button>\r\n                </div>\r\n            </div>\r\n            <div class=\"panel panel-default\" *ngIf=\"updateContact && contactSelected.contactGroups.length > 0\">\r\n                <div class=\"panel-body\">\r\n                    <table class=\"table\" *ngIf=\"updateContact && contactSelected.contactGroups.length > 0\">\r\n                        <thead>\r\n                            <tr>\r\n                                <th>Group Name</th>\r\n                                <th>First Name</th>\r\n                                <th>Last Name</th>\r\n                                <th>Email</th>\r\n                            </tr>\r\n                        </thead>\r\n                        <tbody>\r\n                            <tr *ngFor=\"let contactGroup of contactSelected.contactGroups\">\r\n                                <td>{{contactGroup.group.name}}</td>\r\n                                <td><input id=\"active\" name=\"active\" type=\"checkbox\" [(ngModel)]=\"contactGroup.active\">Active</td>\r\n                                <td><input id=\"unSubscribed\" name=\"unSubscribed\" type=\"checkbox\" [(ngModel)]=\"contactGroup.unSubscribed\">UnSubscribe</td>\r\n                                <td><input id=\"delete\" name=\"delete\" type=\"checkbox\" disabled=\"true\" [(ngModel)]=\"contactGroup.delete\">Delete</td>\r\n                            </tr>\r\n                        </tbody>\r\n                    </table>\r\n                </div>\r\n            </div>\r\n            <br/>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <div class=\"col-md-5\"></div>\r\n                    <button *ngIf=\"updateContact && authorizationService.isUserHasRole('UI_CREATE_CONTACTS')\" type=\"submit\" pButton icon=\"fa-check\" (click)=\"updateContactSubmit()\" label=\"Submit\"\r\n                        [disabled]=\"!contactForm.form.valid\"></button>\r\n                    <button *ngIf=\"updateContact\" type=\"button\" pButton icon=\"fa-close\" (click)=\"dialogUpdateCancelClick()\" label=\"Cancel\"></button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"displayCreateDialog && contactNew\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Create Contact</h3>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"firstName\">First Name*</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"firstName\" required [(ngModel)]=\"contactNew.firstName\" name=\"firstNameCreate\"\r\n                            #firstNameCreate=\"ngModel\" placeholder=\"Required\">\r\n                        <div [hidden]=\"firstNameCreate.valid || firstNameCreate.pristine\" class=\"alert alert-danger\">\r\n                            First name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"lastName\">Last Name*</label>\r\n                        <input type=\"text\" class=\"form-control\" placeholder=\"Required\" id=\"lastName\" required [(ngModel)]=\"contactNew.lastName\" name=\"lastNameCreate\"\r\n                            #lastNameCreate=\"ngModel\">\r\n                        <div [hidden]=\"lastNameCreate.valid || lastNameCreate.pristine\" class=\"alert alert-danger\">\r\n                            Last name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n\r\n            <div class=\"row\">\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"email\" class=\"control-label\">Email*</label>\r\n                        <input type=\"email\" class=\"form-control\" placeholder=\"Required\" id=\"email\" required [(ngModel)]=\"contactNew.email\" name=\"emailCreate\"\r\n                            #emailCreate=\"ngModel\">\r\n                        <div [hidden]=\"emailCreate.valid || emailCreate.pristine\" class=\"alert alert-danger\">\r\n                            Email is invalid\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"groups\">Groups*</label>\r\n                        <p-multiSelect id=\"groups\" required name=\"groupsCreate\" #groupsCreate=\"ngModel\" [options]=\"commonService.groupItems\" [(ngModel)]=\"contactNew.groups\"\r\n                            [style]=\"{'width':'100%'}\"></p-multiSelect>\r\n                        <div [hidden]=\"groupsCreate.valid || groupsCreate.pristine\" class=\"alert alert-danger\">\r\n                            Group is invalid\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class=\"row\">\r\n            <div class=\"col-md-12\">\r\n                <div class=\"col-md-5\"></div>\r\n                <button type=\"submit\" pButton icon=\"fa-check\" *ngIf=\"authorizationService.isUserHasRole('UI_CREATE_CONTACTS')\" (click)=\"createContactSubmit()\" label=\"Create\" [disabled]=\"!contactForm.form.valid\"></button>\r\n                <button type=\"button\" pButton icon=\"fa-close\" (click)=\"createDialogCancelClick()\" label=\"Cancel\"></button>\r\n            </div>\r\n        </div>\r\n        <br/>\r\n    </div>\r\n\r\n</form>"
 
 /***/ }),
 
@@ -1451,6 +1477,7 @@ module.exports = "<p-growl [value]=\"msgs\" sticky=\"sticky\"></p-growl>\r\n\r\n
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__group_group_service__ = __webpack_require__("../../../../../src/app/email/group/group.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__shared_common_service__ = __webpack_require__("../../../../../src/app/email/shared/common.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__core_authorization_service__ = __webpack_require__("../../../../../src/app/core/authorization.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__core_global_service__ = __webpack_require__("../../../../../src/app/core/global.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ContactComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -1469,17 +1496,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var ContactComponent = (function () {
-    function ContactComponent(contactService, groupService, commonService, authorizationService) {
+    function ContactComponent(contactService, groupService, commonService, authorizationService, globalService) {
         this.contactService = contactService;
         this.groupService = groupService;
         this.commonService = commonService;
         this.authorizationService = authorizationService;
+        this.globalService = globalService;
         this.msgs = [];
         this.active = true;
+        this.username = globalService.loggedInUser.loggedInUserName;
     }
     ContactComponent.prototype.ngOnInit = function () {
-        this.commonService.getAllGroups();
+        this.commonService.getAllGroups(this.globalService.loggedInUser.loggedInUserName);
     };
     ContactComponent.prototype.onSelectItemChange = function () {
         var _this = this;
@@ -1641,10 +1671,10 @@ ContactComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/email/contact/contact.component.html"),
         styles: [__webpack_require__("../../../../../src/app/email/contact/contact.component.css")]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__contact_service__["a" /* ContactService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__contact_service__["a" /* ContactService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_5__group_group_service__["a" /* GroupService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5__group_group_service__["a" /* GroupService */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_6__shared_common_service__["a" /* CommonService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__shared_common_service__["a" /* CommonService */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_7__core_authorization_service__["a" /* AuthorizationService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__core_authorization_service__["a" /* AuthorizationService */]) === "function" && _d || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__contact_service__["a" /* ContactService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__contact_service__["a" /* ContactService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_5__group_group_service__["a" /* GroupService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5__group_group_service__["a" /* GroupService */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_6__shared_common_service__["a" /* CommonService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__shared_common_service__["a" /* CommonService */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_7__core_authorization_service__["a" /* AuthorizationService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__core_authorization_service__["a" /* AuthorizationService */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_8__core_global_service__["a" /* GlobalService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_8__core_global_service__["a" /* GlobalService */]) === "function" && _e || Object])
 ], ContactComponent);
 
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 //# sourceMappingURL=D:/workspace-sts-3.7.0.RELEASE/emialapp-ui/src/contact.component.js.map
 
 /***/ }),
@@ -1693,15 +1723,22 @@ var ContactService = (function () {
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
     };
-    ContactService.prototype.getAllContactsByCriteria = function (contactSearchCriteria) {
+    ContactService.prototype.getAllContactsByCriteria = function (contactSearchCriteria, username) {
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
+        contactSearchCriteria.username = username;
         return this.http.post(this.contactUrl + "/searchCriteria", JSON.stringify(contactSearchCriteria), { headers: headers })
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
     };
-    ContactService.prototype.getAllContacts = function () {
-        return this.http.get(this.contactUrl)
+    ContactService.prototype.getAllContacts = function (username) {
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
+        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
+        var urlSearchParams = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* URLSearchParams */]();
+        urlSearchParams.append('username', username);
+        var body = urlSearchParams.toString();
+        return this.http.post(this.contactUrl + '/getAllByCreatedUser', body, options)
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
     };
@@ -2054,7 +2091,8 @@ module.exports = "<p-growl [value]=\"msgs\" sticky=\"true\"></p-growl>\r\n\r\n<f
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__email__ = __webpack_require__("../../../../../src/app/email/email/email.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_common_service__ = __webpack_require__("../../../../../src/app/email/shared/common.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__email_service__ = __webpack_require__("../../../../../src/app/email/email/email.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__core_global_service__ = __webpack_require__("../../../../../src/app/core/global.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__email_service__ = __webpack_require__("../../../../../src/app/email/email/email.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EmailComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -2069,17 +2107,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var EmailComponent = (function () {
-    function EmailComponent(emailService, commonService) {
+    function EmailComponent(emailService, commonService, globalService) {
         this.emailService = emailService;
         this.commonService = commonService;
+        this.globalService = globalService;
         this.emailVO = new __WEBPACK_IMPORTED_MODULE_1__email__["a" /* Email */]();
         this.active = true;
         this.msgs = [];
         this.emailSending = false;
     }
     EmailComponent.prototype.ngOnInit = function () {
-        this.commonService.getAllGroups();
+        this.commonService.getAllGroups(this.globalService.loggedInUser.loggedInUserName);
     };
     EmailComponent.prototype.test = function () {
         alert(this.selectedGroups.length);
@@ -2117,10 +2157,10 @@ EmailComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         template: __webpack_require__("../../../../../src/app/email/email/email.component.html")
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_3__email_service__["a" /* EmailService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__email_service__["a" /* EmailService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__shared_common_service__["a" /* CommonService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__shared_common_service__["a" /* CommonService */]) === "function" && _b || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_4__email_service__["a" /* EmailService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__email_service__["a" /* EmailService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__shared_common_service__["a" /* CommonService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__shared_common_service__["a" /* CommonService */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__core_global_service__["a" /* GlobalService */]) === "function" && _c || Object])
 ], EmailComponent);
 
-var _a, _b;
+var _a, _b, _c;
 //# sourceMappingURL=D:/workspace-sts-3.7.0.RELEASE/emialapp-ui/src/email.component.js.map
 
 /***/ }),
@@ -2201,7 +2241,7 @@ var Email = (function () {
 /***/ "../../../../../src/app/email/group/group.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n\r\n<form *ngIf=\"active\" #groupForm=\"ngForm\">\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"!displayViewDialog && !displayCreateDialog\">\r\n        <div class=\"panel-heading\">\r\n            <h3 style=\"margin:0px auto;display:block\" class=\"panel-title\">Search Groups</h3>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" placeholder=\"Group Name\" class=\"form-control\" id=\"groupName\" [(ngModel)]=\"commonService.groupSearchCriteria.name\"\r\n                        name=\"groupNameSearchCriteria\">\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6\">               \r\n                <button type=\"submit\" pButton icon=\"fa fa-search\" pButton label=\"Search\" *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_GROUPS')\" (click)=\"commonService.searchGroupsByCriteria()\"></button>\r\n                <button type=\"button\" pButton icon=\"fa fa-refresh\" pButton label=\"Reset\" (click)=\"commonService.resetGroupsBySearchCriteria()\"></button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <p-dataTable [value]=\"commonService.groups\" *ngIf=\"!displayViewDialog && !displayCreateDialog\" selectionMode=\"single\" [responsive]=\"true\"\r\n        (onRowSelect)=\"onRowSelect($event)\">\r\n        <header>Groups</header>\r\n        <p-column field=\"name\" header=\"Group Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"comments\" header=\"Comments\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-footer>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <button type=\"button\" icon=\"fa fa-plus\" pButton label=\"Create\" *ngIf=\"authorizationService.isUserHasRole('UI_CREATE_GROUPS')\" (click)=\"createGroupClick()\"></button>\r\n                    <!--button type=\"button\" icon=\"fa fa-download\" pButton label=\"Import\"></button-->\r\n                </div>\r\n            </div>\r\n        </p-footer>\r\n    </p-dataTable>\r\n\r\n    <!-- <p-dialog [(visible)]=\"displayViewDialog\" [responsive]=\"true\" showEffect=\"fade\" [modal]=\"true\" *ngIf=\"groupSelected\" [width]=\"800\"> -->\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"displayViewDialog && groupSelected\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Group Details</h3>\r\n        </div>\r\n        <br/>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-3\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateGroup\">\r\n                        <label for=\"name\">Group Name</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"groupName\" required [(ngModel)]=\"groupSelected.name\" name=\"groupNameView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateGroup\">\r\n                        <label for=\"name\">Group Name</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"groupName\" required [(ngModel)]=\"groupSelected.name\" name=\"groupNameView\" #groupNameView=\"ngModel\">\r\n                        <div [hidden]=\"groupNameView.valid || groupNameView.pristine\" class=\"alert alert-danger\">\r\n                            Group name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"contactCount\">Contact Count</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"contactCount\" required [(ngModel)]=\"groupSelected.contactCount\" name=\"contactCountView\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateGroup\">\r\n                        <label for=\"comments\">Comments</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"comments\" [(ngModel)]=\"groupSelected.comments\" name=\"commentsView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateGroup\">\r\n                        <label for=\"comments\">Comments</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"comments\" [(ngModel)]=\"groupSelected.comments\" name=\"commentsView\">\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <div class=\"col-md-5\"></div>\r\n                    <button *ngIf=\"!updateGroup && authorizationService.isUserHasRole('UI_UPDATE_GROUPS')\" type=\"button\" pButton icon=\"fa-pencil\" (click)=\"updateGroupClick()\" label=\"Edit\" ></button>\r\n                    <button *ngIf=\"!updateGroup && authorizationService.isUserHasRole('UI_UPDATE_GROUPS')\" [disabled]=\"groupSelected.contactCount > 0\" type=\"submit\" pButton icon=\"fa-trash\" (click)=\"deleteSelectedGroup()\"\r\n                        label=\"Delete\"></button>\r\n                    <button *ngIf=\"!updateGroup\" type=\"button\" pButton icon=\"fa-close\" (click)=\"viewDialogCancelClick()\" label=\"Cancel\"></button>\r\n                    <button *ngIf=\"updateGroup && authorizationService.isUserHasRole('UI_UPDATE_GROUPS')\" type=\"submit\" pButton icon=\"fa-check\" (click)=\"updateGroupSubmit()\" label=\"Submit\" [disabled]=\"!groupForm.form.valid\" ></button>\r\n                    <button *ngIf=\"updateGroup\" type=\"button\" pButton icon=\"fa-close\" (click)=\"dialogUpdateCancelClick()\" label=\"Cancel\"></button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <!-- </p-dialog> -->\r\n\r\n    <!-- <p-dialog [(visible)]=\"displayCreateDialog\" [responsive]=\"true\" showEffect=\"fade\" [modal]=\"true\" [width]=\"800\" *ngIf=\"groupNew\"> -->\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"displayCreateDialog && groupNew\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Create Group</h3>\r\n        </div>\r\n        <br/>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-4\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"name\">Group Name</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"groupName\" required [(ngModel)]=\"groupNew.name\" name=\"groupNameCreate\" #groupNameCreate=\"ngModel\">\r\n                        <div [hidden]=\"groupNameCreate.valid || groupNameCreate.pristine\" class=\"alert alert-danger\">\r\n                            Group name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-8\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"comments\">Comments</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"comments\" [(ngModel)]=\"groupNew.comments\" name=\"commentsCreate\">\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <div class=\"col-md-5\"></div>\r\n                    <button type=\"submit\" pButton icon=\"fa-check\" (click)=\"createGroupSubmit()\" label=\"Create\" *ngIf=\"authorizationService.isUserHasRole('UI_CREATE_GROUPS')\" [disabled]=\"!groupForm.form.valid\"></button>\r\n                    <button type=\"button\" pButton icon=\"fa-close\" (click)=\"createDialogCancelClick()\" label=\"Cancel\"></button>\r\n                </div>\r\n            </div>\r\n            <br/>\r\n        </div>\r\n    </div>\r\n\r\n    <!--  </p-dialog> -->\r\n\r\n</form>"
+module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n\r\n<form *ngIf=\"active\" #groupForm=\"ngForm\">\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"!displayViewDialog && !displayCreateDialog\">\r\n        <div class=\"panel-heading\">\r\n            <h3 style=\"margin:0px auto;display:block\" class=\"panel-title\">Search Groups</h3>\r\n        </div>\r\n        <div class=\"panel-body\">\r\n            <div class=\"col-md-6\">\r\n                <div class=\"form-group\">\r\n                    <input type=\"text\" placeholder=\"Group Name\" class=\"form-control\" id=\"groupName\" [(ngModel)]=\"commonService.groupSearchCriteria.name\"\r\n                        name=\"groupNameSearchCriteria\">\r\n                </div>\r\n            </div>\r\n            <div class=\"col-md-6\">               \r\n                <button type=\"submit\" pButton icon=\"fa fa-search\" pButton label=\"Search\" *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_GROUPS')\" (click)=\"commonService.searchGroupsByCriteria(username)\"></button>\r\n                <button type=\"button\" pButton icon=\"fa fa-refresh\" pButton label=\"Reset\" (click)=\"commonService.resetGroupsBySearchCriteria()\"></button>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <p-dataTable [value]=\"commonService.groups\" *ngIf=\"!displayViewDialog && !displayCreateDialog\" selectionMode=\"single\" [responsive]=\"true\"\r\n        (onRowSelect)=\"onRowSelect($event)\">\r\n        <header>Groups</header>\r\n        <p-column field=\"name\" header=\"Group Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-column field=\"comments\" header=\"Comments\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n        <p-footer>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <button type=\"button\" icon=\"fa fa-plus\" pButton label=\"Create\" *ngIf=\"authorizationService.isUserHasRole('UI_CREATE_GROUPS')\" (click)=\"createGroupClick()\"></button>\r\n                    <!--button type=\"button\" icon=\"fa fa-download\" pButton label=\"Import\"></button-->\r\n                </div>\r\n            </div>\r\n        </p-footer>\r\n    </p-dataTable>\r\n\r\n    <!-- <p-dialog [(visible)]=\"displayViewDialog\" [responsive]=\"true\" showEffect=\"fade\" [modal]=\"true\" *ngIf=\"groupSelected\" [width]=\"800\"> -->\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"displayViewDialog && groupSelected\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Group Details</h3>\r\n        </div>\r\n        <br/>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-3\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateGroup\">\r\n                        <label for=\"name\">Group Name</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"groupName\" required [(ngModel)]=\"groupSelected.name\" name=\"groupNameView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateGroup\">\r\n                        <label for=\"name\">Group Name</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"groupName\" required [(ngModel)]=\"groupSelected.name\" name=\"groupNameView\" #groupNameView=\"ngModel\">\r\n                        <div [hidden]=\"groupNameView.valid || groupNameView.pristine\" class=\"alert alert-danger\">\r\n                            Group name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-3\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"contactCount\">Contact Count</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"contactCount\" required [(ngModel)]=\"groupSelected.contactCount\" name=\"contactCountView\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-6\">\r\n                    <div class=\"form-group\" *ngIf=\"!updateGroup\">\r\n                        <label for=\"comments\">Comments</label>\r\n                        <input disabled type=\"text\" class=\"form-control\" id=\"comments\" [(ngModel)]=\"groupSelected.comments\" name=\"commentsView\">\r\n                    </div>\r\n                    <div class=\"form-group\" *ngIf=\"updateGroup\">\r\n                        <label for=\"comments\">Comments</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"comments\" [(ngModel)]=\"groupSelected.comments\" name=\"commentsView\">\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <div class=\"col-md-5\"></div>\r\n                    <button *ngIf=\"!updateGroup && authorizationService.isUserHasRole('UI_UPDATE_GROUPS')\" type=\"button\" pButton icon=\"fa-pencil\" (click)=\"updateGroupClick()\" label=\"Edit\" ></button>\r\n                    <button *ngIf=\"!updateGroup && authorizationService.isUserHasRole('UI_UPDATE_GROUPS')\" [disabled]=\"groupSelected.contactCount > 0\" type=\"submit\" pButton icon=\"fa-trash\" (click)=\"deleteSelectedGroup()\"\r\n                        label=\"Delete\"></button>\r\n                    <button *ngIf=\"!updateGroup\" type=\"button\" pButton icon=\"fa-close\" (click)=\"viewDialogCancelClick()\" label=\"Cancel\"></button>\r\n                    <button *ngIf=\"updateGroup && authorizationService.isUserHasRole('UI_UPDATE_GROUPS')\" type=\"submit\" pButton icon=\"fa-check\" (click)=\"updateGroupSubmit()\" label=\"Submit\" [disabled]=\"!groupForm.form.valid\" ></button>\r\n                    <button *ngIf=\"updateGroup\" type=\"button\" pButton icon=\"fa-close\" (click)=\"dialogUpdateCancelClick()\" label=\"Cancel\"></button>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n\r\n    <!-- </p-dialog> -->\r\n\r\n    <!-- <p-dialog [(visible)]=\"displayCreateDialog\" [responsive]=\"true\" showEffect=\"fade\" [modal]=\"true\" [width]=\"800\" *ngIf=\"groupNew\"> -->\r\n\r\n    <div class=\"panel panel-default\" *ngIf=\"displayCreateDialog && groupNew\">\r\n        <div class=\"panel-heading\">\r\n            <h3 class=\"panel-title\">Create Group</h3>\r\n        </div>\r\n        <br/>\r\n        <div class=\"panel-body\">\r\n            <div class=\"row\">\r\n                <div class=\"col-md-4\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"name\">Group Name</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"groupName\" required [(ngModel)]=\"groupNew.name\" name=\"groupNameCreate\" #groupNameCreate=\"ngModel\">\r\n                        <div [hidden]=\"groupNameCreate.valid || groupNameCreate.pristine\" class=\"alert alert-danger\">\r\n                            Group name is required\r\n                        </div>\r\n                    </div>\r\n                </div>\r\n                <div class=\"col-md-8\">\r\n                    <div class=\"form-group\">\r\n                        <label for=\"comments\">Comments</label>\r\n                        <input type=\"text\" class=\"form-control\" id=\"comments\" [(ngModel)]=\"groupNew.comments\" name=\"commentsCreate\">\r\n                    </div>\r\n                </div>\r\n            </div>\r\n            <div class=\"row\">\r\n                <div class=\"col-md-12\">\r\n                    <div class=\"col-md-5\"></div>\r\n                    <button type=\"submit\" pButton icon=\"fa-check\" (click)=\"createGroupSubmit()\" label=\"Create\" *ngIf=\"authorizationService.isUserHasRole('UI_CREATE_GROUPS')\" [disabled]=\"!groupForm.form.valid\"></button>\r\n                    <button type=\"button\" pButton icon=\"fa-close\" (click)=\"createDialogCancelClick()\" label=\"Cancel\"></button>\r\n                </div>\r\n            </div>\r\n            <br/>\r\n        </div>\r\n    </div>\r\n\r\n    <!--  </p-dialog> -->\r\n\r\n</form>"
 
 /***/ }),
 
@@ -2214,6 +2254,7 @@ module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n\r\n<form *ngIf=\"acti
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__group__ = __webpack_require__("../../../../../src/app/email/group/group.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__shared_common_service__ = __webpack_require__("../../../../../src/app/email/shared/common.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__ = __webpack_require__("../../../../../src/app/core/authorization.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__core_global_service__ = __webpack_require__("../../../../../src/app/core/global.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return GroupComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -2229,13 +2270,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var GroupComponent = (function () {
-    function GroupComponent(groupService, commonService, authorizationService) {
+    function GroupComponent(groupService, commonService, authorizationService, globalService) {
         this.groupService = groupService;
         this.commonService = commonService;
         this.authorizationService = authorizationService;
+        this.globalService = globalService;
         this.msgs = [];
         this.active = true;
+        this.username = globalService.loggedInUser.loggedInUserName;
     }
     GroupComponent.prototype.onRowSelect = function (event) {
         var _this = this;
@@ -2268,7 +2312,7 @@ var GroupComponent = (function () {
             //this.commonService.searchGroupsByCriteria();
             _this.commonService.resetGroupsBySearchCriteria();
             _this.displayCreateDialog = false;
-            _this.commonService.getAllGroups();
+            _this.commonService.getAllGroups(_this.globalService.loggedInUser.loggedInUserName);
             _this.commonService.contacts = [];
             _this.msgs.push({ severity: "info", summary: "Group created successfully.", detail: "" });
         }, function (error) {
@@ -2327,10 +2371,10 @@ GroupComponent = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
         template: __webpack_require__("../../../../../src/app/email/group/group.component.html")
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__group_service__["a" /* GroupService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__group_service__["a" /* GroupService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_3__shared_common_service__["a" /* CommonService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__shared_common_service__["a" /* CommonService */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__["a" /* AuthorizationService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__["a" /* AuthorizationService */]) === "function" && _c || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__group_service__["a" /* GroupService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__group_service__["a" /* GroupService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_3__shared_common_service__["a" /* CommonService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__shared_common_service__["a" /* CommonService */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__["a" /* AuthorizationService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__core_authorization_service__["a" /* AuthorizationService */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_5__core_global_service__["a" /* GlobalService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_5__core_global_service__["a" /* GlobalService */]) === "function" && _d || Object])
 ], GroupComponent);
 
-var _a, _b, _c;
+var _a, _b, _c, _d;
 //# sourceMappingURL=D:/workspace-sts-3.7.0.RELEASE/emialapp-ui/src/group.component.js.map
 
 /***/ }),
@@ -2367,8 +2411,14 @@ var GroupService = (function () {
         this.http = http;
         this.groupUrl = "groups";
     }
-    GroupService.prototype.getAllGroups = function () {
-        return this.http.get(this.groupUrl)
+    GroupService.prototype.getAllGroups = function (username) {
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
+        headers.append('Content-Type', 'application/x-www-form-urlencoded');
+        var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
+        var urlSearchParams = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["e" /* URLSearchParams */]();
+        urlSearchParams.append('username', username);
+        var body = urlSearchParams.toString();
+        return this.http.post(this.groupUrl + '/searchAll', body, options)
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
     };
@@ -2377,10 +2427,11 @@ var GroupService = (function () {
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
     };
-    GroupService.prototype.getAllGroupsBySearchCriteria = function (groupSearchCriteria) {
+    GroupService.prototype.getAllGroupsBySearchCriteria = function (groupSearchCriteria, username) {
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* Headers */]();
         headers.append('Content-Type', 'application/json');
         headers.append('Access-Control-Allow-Origin', '*');
+        groupSearchCriteria.username = username;
         return this.http.post(this.groupUrl + "/searchCriteria", JSON.stringify(groupSearchCriteria), { headers: headers })
             .map(function (res) { return res.json(); })
             .catch(this.handleError);
@@ -2875,9 +2926,9 @@ var CommonService = (function () {
         this.groups = [];
         this.groupSearchCriteria = new __WEBPACK_IMPORTED_MODULE_4__group_group_search_criteria__["a" /* GroupSearchCriteria */]();
     };
-    CommonService.prototype.getAllContacts = function () {
+    CommonService.prototype.getAllContacts = function (username) {
         var _this = this;
-        this.contactService.getAllContacts()
+        this.contactService.getAllContacts(username)
             .subscribe(function (contacts) {
             _this.contacts = contacts;
             for (var _i = 0, _a = _this.contacts; _i < _a.length; _i++) {
@@ -2894,9 +2945,9 @@ var CommonService = (function () {
             }
         });
     };
-    CommonService.prototype.getAllContactsBySearchCriteria = function () {
+    CommonService.prototype.getAllContactsBySearchCriteria = function (username) {
         var _this = this;
-        this.contactService.getAllContactsByCriteria(this.contactSearchCriteria)
+        this.contactService.getAllContactsByCriteria(this.contactSearchCriteria, username)
             .subscribe(function (contacts) {
             _this.contacts = contacts;
             for (var _i = 0, _a = _this.contacts; _i < _a.length; _i++) {
@@ -2913,9 +2964,9 @@ var CommonService = (function () {
             }
         });
     };
-    CommonService.prototype.getAllGroups = function () {
+    CommonService.prototype.getAllGroups = function (username) {
         var _this = this;
-        this.groupService.getAllGroups()
+        this.groupService.getAllGroups(username)
             .subscribe(function (groups) {
             _this.groupItems = [];
             _this.groupNamesForSearch = [];
@@ -2926,9 +2977,9 @@ var CommonService = (function () {
             }
         });
     };
-    CommonService.prototype.searchGroupsByCriteria = function () {
+    CommonService.prototype.searchGroupsByCriteria = function (username) {
         var _this = this;
-        this.groupService.getAllGroupsBySearchCriteria(this.groupSearchCriteria)
+        this.groupService.getAllGroupsBySearchCriteria(this.groupSearchCriteria, username)
             .subscribe(function (groups) { return _this.groups = groups; });
     };
     return CommonService;
@@ -2964,7 +3015,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/home/home.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<md-sidenav-layout [class.m2app-dark]=\"isDarkTheme\">\r\n\r\n  <md-sidenav #sidenav mode=\"side\" class=\"app-sidenav\" [opened]=\"userLoggedIn\">\r\n    <md-toolbar color=\"primary\">\r\n      <h3>\r\n        <span><img src=\"../../app/resources/images/home2.png\" style=\"width:35px;height:35px;\"/></span>\r\n      </h3>\r\n    </md-toolbar>\r\n\r\n    <table>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_DASHBOARD')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/dashboard.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['dashboard']\" routerLinkActive=\"active\">Dashboard</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_CONTACTS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/contact.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['contacts']\" routerLinkActive=\"active\">Contacts</button>\r\n        </td>\r\n      </tr>\r\n\t  <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_BULK_UPLOAD')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/upload.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['bulk_upload']\" routerLinkActive=\"active\">Bulk Contacts Upload</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_GROUPS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/usergroup.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['groups']\" routerLinkActive=\"active\">Groups</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_SEND_EMAIL')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/sendemail.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['send_email']\" routerLinkActive=\"active\">Send Emails</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_SERVERS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/server.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['servers']\" routerLinkActive=\"active\">Servers</button>\r\n        </td>\r\n      </tr>\r\n\t  <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_ANALYTICS')\">\r\n\t\t    <td>\r\n           <img src=\"../../app/resources/images/analytics.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['analytics']\" routerLinkActive=\"active\">Analytics</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_ACCOUNT_APPROVAL')\">\r\n\t\t    <td>\r\n           <img src=\"../../app/resources/images/approve2.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['account_approval']\" routerLinkActive=\"active\">Account Approval</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_USER_ROLES_ACCESS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/userrole.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['user_roles']\" routerLinkActive=\"active\">User Roles</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_GROUPS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/usergroup.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['user_groups']\" routerLinkActive=\"active\">User Groups</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_USERS_ACCESS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/useraccount.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['user_accounts']\" routerLinkActive=\"active\">User Accounts</button>\r\n        </td>\r\n      </tr>\r\n    </table>\r\n  </md-sidenav>\r\n\r\n  <md-toolbar color=\"primary\">\r\n    <button class=\"app-icon-button\" (click)=\"sidenav.toggle()\"  *ngIf=\"userLoggedIn\">\r\n      <i class=\"material-icons app-toolbar-menu\">menu</i>\r\n    </button> Email App\r\n    <span class=\"app-toolbar-filler\"></span>\r\n    <button md-button md-raised-button color=\"primary\" md-tooltip=\"Login\" [routerLink]=\"['/appLogin']\" routerLinkActive=\"active\"\r\n      *ngIf=\"!userLoggedIn\">Login</button>\r\n\t  <button md-button md-raised-button color=\"primary\" md-tooltip=\"Register\" [routerLink]=\"['/appRegister']\" routerLinkActive=\"active\"\r\n      *ngIf=\"!userLoggedIn\">Register</button>\r\n\r\n    <div *ngIf=\"userLoggedIn\" style=\"margin-right:30px;\">\r\n      <button md-button [md-menu-trigger-for]=\"menu\" md-raised-button color=\"primary\" *ngIf=\"userLoggedIn\">\r\n        <md-icon>person</md-icon>\r\n        {{user.loggedInUserName}}\r\n      </button>\r\n    </div>\r\n    <md-menu #menu=\"mdMenu\" >\r\n      <button md-menu-item>Preferences</button>\r\n      <button md-menu-item md-tooltip=\"Change password\" (click)=\"changePassword()\">Change password</button>\r\n      <button md-menu-item md-tooltip=\"Logout\" (click)=\"logout()\">Logout</button>\r\n    </md-menu>\r\n\r\n  </md-toolbar>\r\n\r\n  <div class=\"app-content\" [style.background-image]=\"backgroundImg\">\r\n    <router-outlet></router-outlet>\r\n  </div>\r\n\r\n</md-sidenav-layout>"
+module.exports = "<md-sidenav-layout [class.m2app-dark]=\"isDarkTheme\">\r\n\r\n  <md-sidenav #sidenav mode=\"side\" class=\"app-sidenav\" [opened]=\"userLoggedIn\">\r\n    <md-toolbar color=\"primary\">\r\n      <h3>\r\n        <span><img src=\"../../app/resources/images/home2.png\" style=\"width:35px;height:35px;\"/></span>\r\n      </h3>\r\n    </md-toolbar>\r\n\r\n    <table>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_DASHBOARD')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/dashboard.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['dashboard']\" routerLinkActive=\"active\">Dashboard</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_CONTACTS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/contact.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['contacts']\" routerLinkActive=\"active\">Contacts</button>\r\n        </td>\r\n      </tr>\r\n\t  <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_BULK_UPLOAD')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/upload.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['bulk_upload']\" routerLinkActive=\"active\">Bulk Contacts Upload</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_GROUPS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/usergroup.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['groups']\" routerLinkActive=\"active\">Groups</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_SEND_EMAIL')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/sendemail.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['send_email']\" routerLinkActive=\"active\">Send Emails</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_SERVERS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/server.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['servers']\" routerLinkActive=\"active\">Servers</button>\r\n        </td>\r\n      </tr>\r\n\t  <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_ANALYTICS')\">\r\n\t\t    <td>\r\n           <img src=\"../../app/resources/images/analytics.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['analytics']\" routerLinkActive=\"active\">Analytics</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_ACCESS_ACCOUNT_APPROVAL')\">\r\n\t\t    <td>\r\n           <img src=\"../../app/resources/images/approve2.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['account_approval']\" routerLinkActive=\"active\">Account Approval</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_USER_ROLES_ACCESS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/userrole.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['user_roles']\" routerLinkActive=\"active\">User Roles</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_ACCESS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/usergroup.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['user_groups']\" routerLinkActive=\"active\">User Groups</button>\r\n        </td>\r\n      </tr>\r\n      <tr *ngIf=\"authorizationService.isUserHasRole('UI_USERS_ACCESS')\">\r\n\t\t<td>\r\n           <img src=\"../../app/resources/images/useraccount.png\"/>\r\n        </td>\r\n        <td>\r\n           <button md-button [routerLink]=\"['user_accounts']\" routerLinkActive=\"active\">User Accounts</button>\r\n        </td>\r\n      </tr>\r\n    </table>\r\n  </md-sidenav>\r\n\r\n  <md-toolbar color=\"primary\">\r\n    <button class=\"app-icon-button\" (click)=\"sidenav.toggle()\"  *ngIf=\"userLoggedIn\">\r\n      <i class=\"material-icons app-toolbar-menu\">menu</i>\r\n    </button> Email App\r\n    <span class=\"app-toolbar-filler\"></span>\r\n    <button md-button md-raised-button color=\"primary\" md-tooltip=\"Login\" [routerLink]=\"['/appLogin']\" routerLinkActive=\"active\"\r\n      *ngIf=\"!userLoggedIn\">Login</button>\r\n\t  <button md-button md-raised-button color=\"primary\" md-tooltip=\"Register\" [routerLink]=\"['/appRegister']\" routerLinkActive=\"active\"\r\n      *ngIf=\"!userLoggedIn\">Register</button>\r\n\r\n    <div *ngIf=\"userLoggedIn\" style=\"margin-right:30px;\">\r\n      <button md-button [md-menu-trigger-for]=\"menu\" md-raised-button color=\"primary\" *ngIf=\"userLoggedIn\">\r\n        <md-icon>person</md-icon>\r\n        {{user.loggedInUserName}}\r\n      </button>\r\n    </div>\r\n    <md-menu #menu=\"mdMenu\" >\r\n      <button md-menu-item>Preferences</button>\r\n      <button md-menu-item md-tooltip=\"Change password\" (click)=\"changePassword()\">Change password</button>\r\n      <button md-menu-item md-tooltip=\"Logout\" (click)=\"logout()\">Logout</button>\r\n    </md-menu>\r\n\r\n  </md-toolbar>\r\n\r\n  <div class=\"app-content\" [style.background-image]=\"backgroundImg\">\r\n    <router-outlet></router-outlet>\r\n  </div>\r\n\r\n</md-sidenav-layout>"
 
 /***/ }),
 
@@ -3007,7 +3058,19 @@ var HomeComponent = (function () {
     };
     Object.defineProperty(HomeComponent.prototype, "userLoggedIn", {
         get: function () {
-            return this.globalService.userLoggedIn;
+            //console.log("checking user logged in");
+            var userLoggedIn = false;
+            if (this.globalService.userLoggedIn) {
+                //console.log("globalServic is enabled - "+this.globalService.userLoggedIn);
+                userLoggedIn = this.globalService.userLoggedIn;
+                return userLoggedIn;
+            }
+            else if (sessionStorage.getItem('userLoggedIn')) {
+                //console.log("************************* gobal service oops.. check sessionStorage : "+sessionStorage.getItem('loggedInUser')+" | "+sessionStorage.getItem('userLoggedIn'));
+                this.globalService.userLoggedIn = true;
+                this.globalService.loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+                return (sessionStorage.getItem('userLoggedIn') === 'true');
+            }
         },
         enumerable: true,
         configurable: true
@@ -3024,10 +3087,10 @@ var HomeComponent = (function () {
     HomeComponent.prototype.changePassword = function () {
         this.router.navigate(['changePassword']);
     };
-    HomeComponent.prototype.analytics = function () {
-        this.router.navigate(['analytics']);
-    };
     Object.defineProperty(HomeComponent.prototype, "pageLinks", {
+        /*analytics() {
+            this.router.navigate(['analytics']);
+        }	*/
         get: function () {
             /*this._pageLinks = [];
             let pageLink   = new PageLink();
@@ -3174,6 +3237,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var AccountApprovalComponent = (function () {
+    //user:User;
     function AccountApprovalComponent(router, accountAppovalService, globalService) {
         this.router = router;
         this.accountAppovalService = accountAppovalService;
@@ -3184,15 +3248,16 @@ var AccountApprovalComponent = (function () {
             console.log("user not logged in.. routing to login");
             this.router.navigate(['/appLogin']);
         }
-        console.log("activation approal component");
+        //console.log("activation approal component");
         this.userName = this.globalService.loggedInUser.loggedInUserName;
-        console.log("calling get pending approvals for " + this.userName);
+        //this.userName = this.user.loggedInUserName;
+        //console.log("calling get pending approvals for "+this.userName);
         this.getPendingApprovals(this.userName);
     }
     AccountApprovalComponent.prototype.ngOnInit = function () {
-        console.log('checking loggedin in init');
+        // console.log('checking loggedin in init');
         if (sessionStorage.getItem("userLoggedIn") !== 'true') {
-            console.log("[Init] - user not logged in.. routing to login");
+            //console.log("[Init] - user not logged in.. routing to login");
             this.router.navigate(['/appLogin']);
         }
     };
@@ -3211,10 +3276,10 @@ var AccountApprovalComponent = (function () {
     };
     AccountApprovalComponent.prototype.approveRequest = function (idToApprove) {
         var _this = this;
-        console.log("calling approve service");
+        //console.log("calling approve service");
         this.accountAppovalService.approveRequest(idToApprove.toString())
             .subscribe(function (data) {
-            console.log("Approval Response : " + data);
+            //console.log("Approval Response : "+data);
             _this.msgs.push({ severity: "info", summary: "Registration Approved", detail: "Approval Request processed successfully" });
             _this.approved = false;
             _this.disabled = false;
@@ -3231,7 +3296,7 @@ var AccountApprovalComponent = (function () {
         console.log("calling hold service");
         this.accountAppovalService.holdRequest(idToApprove.toString())
             .subscribe(function (data) {
-            console.log("Hold Response : " + data);
+            //console.log("Hold Response : "+data);
             _this.msgs.push({ severity: "info", summary: "Registration On Hold", detail: "Approval Request processed successfully" });
             _this.approved = false;
             _this.disabled = false;
@@ -3245,7 +3310,7 @@ var AccountApprovalComponent = (function () {
     };
     AccountApprovalComponent.prototype.rejectRequest = function (idToApprove) {
         var _this = this;
-        console.log("calling reject service");
+        //console.log("calling reject service");
         this.accountAppovalService.rejectRequest(idToApprove.toString())
             .subscribe(function (data) {
             console.log("Reject Response : " + data);
@@ -3265,32 +3330,32 @@ var AccountApprovalComponent = (function () {
     };
     AccountApprovalComponent.prototype.setApproveRequestData = function (idToApprove) {
         this.idToApprove = idToApprove;
-        console.log("input params set : " + this.idToApprove);
+        //console.log("input params set : "+this.idToApprove);
         this.request_type = 'APPROVE';
     };
     AccountApprovalComponent.prototype.setOnHoldRequestData = function (idToApprove) {
         this.idToApprove = idToApprove;
-        console.log("input params set : " + this.idToApprove);
+        //console.log("input params set : "+this.idToApprove);
         this.request_type = 'HOLD';
     };
     AccountApprovalComponent.prototype.setRejectRequestData = function (idToApprove) {
         this.idToApprove = idToApprove;
-        console.log("input params set : " + this.idToApprove);
+        //console.log("input params set : "+this.idToApprove);
         this.request_type = 'REJECT';
     };
     AccountApprovalComponent.prototype.getPendingApprovals = function (userName) {
         var _this = this;
-        console.log("caling service for approval account");
+        //console.log("caling service for approval account");
         this.pendingApprovals = [];
         this.accountAppovalService.getPendingApprovals(userName)
             .subscribe(function (data) {
             if (data.length === 0) {
                 _this.noDataFound = true;
-                console.log("No requests pending for approval");
+                //console.log("No requests pending for approval");
             }
             else {
                 _this.pendingApprovals = data;
-                console.log(_this.pendingApprovals);
+                //console.log(this.pendingApprovals);
             }
         }, function (error) {
             console.log(error);
@@ -3595,9 +3660,9 @@ var LoginComponent = (function () {
         var _this = this;
         this.loginService.login(this.username, this.password)
             .subscribe(function (data) {
-            console.log("Raw res : " + data.loggedInUserName + data.uiRoles + data.userType);
+            //console.log("Raw res : "+data.loggedInUserName+data.uiRoles+data.userType);
             _this.user = data;
-            console.log("User Data : " + _this.user.uiRoles + " | " + _this.user.userType + ' | ' + _this.user);
+            //console.log("User Data : "+this.user.uiRoles+ " | "+this.user.userType+' | '+this.user);
             _this.loggedInUser();
         }, function (error) {
             //alert("Login failed: "+error);
@@ -3619,7 +3684,7 @@ var LoginComponent = (function () {
             //console.log('user from server ',user);
             //console.log('Stringified user',JSON.stringify(user));
             _this.globalService.loggedInUser = user;
-            //sessionStorage.setItem('loggedInUser',JSON.stringify(user));
+            sessionStorage.setItem('loggedInUser', JSON.stringify(user));
             _this.globalService.userLoggedIn = true;
             sessionStorage.setItem('userLoggedIn', 'true');
             //console.log("User Authenticated.. Setting session storage and Calling pagelinks");
@@ -3634,7 +3699,7 @@ var LoginComponent = (function () {
             .subscribe(function (pageLinks) {
             console.log('pageLinks from user ', pageLinks);
             _this.globalService.pageLinks = pageLinks;
-            //sessionStorage.setItem('pageLinks',JSON.stringify(pageLinks)); 
+            sessionStorage.setItem('pageLinks', JSON.stringify(pageLinks));
             _this.router.navigate(['/']);
             _this.router.navigate(['dashboard']);
         }, function (error) {
@@ -4369,7 +4434,7 @@ SecurityModule = __decorate([
 /***/ "../../../../../src/app/security/user-account/user-account.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n<div *ngIf=\"!displayUserAccountDetails\">\r\n  <md-card>\r\n    <md-card-title color=\"primary\">Search User Accounts</md-card-title>\r\n    <md-card-content>\r\n      <md-input placeholder=\"Name\" [(ngModel)]=\"userAccountSearchCriteria.username\" class=\"col-md-5\"></md-input>\r\n      <div class=\"col-md-2\"></div>\r\n      <md-input placeholder=\"Email\" [(ngModel)]=\"userAccountSearchCriteria.email\" class=\"col-md-5\"></md-input>\r\n    </md-card-content>\r\n    <md-card-actions class=\"center\">\r\n      <button md-raised-button color=\"primary\" (click)=\"searchUserAccounts()\" *ngIf=\"authorizationService.isUserHasRole('UI_USERS_ACCESS')\">Search</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"resetSearchCriteria()\">Reset</button>\r\n    </md-card-actions>\r\n  </md-card>\r\n  <br>\r\n  <br>\r\n  <p-dataTable [value]=\"userAccounts\" selectionMode=\"single\" [responsive]=\"true\" (onRowSelect)=\"onRowSelect($event)\">\r\n    <header>User Accounts</header>\r\n    <p-column field=\"username\" header=\"Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n    <p-column field=\"email\" header=\"Email\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n    <p-footer>\r\n      <div class=\"row\">\r\n        <div class=\"col-md-12\">\r\n          <button md-raised-button color=\"primary\" (click)=\"createUserAccount()\" *ngIf=\"authorizationService.isUserHasRole('UI_USERS_CREATE')\">Create</button>\r\n          <button md-raised-button color=\"primary\">Import</button>\r\n        </div>\r\n      </div>\r\n    </p-footer>\r\n  </p-dataTable>\r\n</div>\r\n<div *ngIf=\"displayUserAccountDetails\">\r\n  <md-card>\r\n    <md-card-title color=\"primary\">Create User Account</md-card-title>\r\n    <md-card-content>\r\n      <div>\r\n        <md-input placeholder=\"Name\" [(ngModel)]=\"selectedUserAccount.username\" class=\"col-md-3\"></md-input>\r\n          <div class=\"col-md-1\"></div>\r\n        <md-input placeholder=\"Company Name\" [(ngModel)]=\"selectedUserAccount.companyName\" class=\"col-md-3\"></md-input>  \r\n\t\t      <div class=\"col-md-1\"></div>\r\n        <md-input placeholder=\"Email\" [(ngModel)]=\"selectedUserAccount.email\" class=\"col-md-4\"></md-input> \r\n      </div>\r\n      <div style=\"margin-top:15px;\">\r\n        <md-checkbox [(ngModel)]=\"selectedUserAccount.active\" class=\"col-md-5\" >Active</md-checkbox>\r\n        <div class=\"col-md-2\"></div>\r\n        <md-checkbox [(ngModel)]=\"selectedUserAccount.accountExpired\" class=\"col-md-5\" >Account Expired</md-checkbox>\r\n      </div>\r\n      <div>\r\n        <md-checkbox [(ngModel)]=\"selectedUserAccount.credentialsExpired\" class=\"col-md-5\" >Credentials Expired</md-checkbox>\r\n        <div class=\"col-md-2\"></div>\r\n        <md-checkbox [(ngModel)]=\"selectedUserAccount.accountLocked\" class=\"col-md-5\">Account Locked</md-checkbox>\r\n      </div>\r\n      <br>\r\n      <br>\r\n      <br>\r\n      <br>\r\n      <div>\r\n        <p-pickList [source]=\"sourceUserAccountUserGroups\" [target]=\"targetUserAccountUserGroups\" sourceHeader=\"Available Groups\" targetHeader=\"Selected Groups\"\r\n          [responsive]=\"true\" [sourceStyle]=\"{'height':'300px'}\" [targetStyle]=\"{'height':'300px'}\">\r\n          <template let-userAccountUserRole pTemplate=\"item\">\r\n            <div class=\"ui-helper-clearfix\">\r\n              <div style=\"font-size:14px;float:center;margin:15px 5px 0 0\">{{userAccountUserRole.userGroup.groupName}}</div>\r\n            </div>\r\n          </template>\r\n        </p-pickList>\r\n      </div>\r\n    </md-card-content>\r\n    <md-card-actions class=\"center\">\r\n      <button md-raised-button color=\"primary\" (click)=\"submitNewUserAccount()\" *ngIf=\"authorizationService.isUserHasRole('UI_USERS_UPDATE')\">Submit</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"deleteNewUserAccount()\" *ngIf=\"authorizationService.isUserHasRole('UI_USERS_DELETE')\">Delete</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"backToUserAccounts()\">Back</button>\r\n    </md-card-actions>\r\n  </md-card>\r\n</div>"
+module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n<div *ngIf=\"!displayUserAccountDetails\">\r\n  <md-card>\r\n    <md-card-title color=\"primary\">Search User Accounts</md-card-title>\r\n    <md-card-content>\r\n      <md-input placeholder=\"Name\" [(ngModel)]=\"userAccountSearchCriteria.username\" class=\"col-md-5\"></md-input>\r\n      <div class=\"col-md-2\"></div>\r\n      <md-input placeholder=\"Email\" [(ngModel)]=\"userAccountSearchCriteria.email\" class=\"col-md-5\"></md-input>\r\n    </md-card-content>\r\n    <md-card-actions class=\"center\">\r\n      <button md-raised-button color=\"primary\" (click)=\"searchUserAccounts()\" *ngIf=\"authorizationService.isUserHasRole('UI_USERS_ACCESS')\">Search</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"resetSearchCriteria()\">Reset</button>\r\n    </md-card-actions>\r\n  </md-card>\r\n  <br>\r\n  <br>\r\n  <p-dataTable [value]=\"userAccounts\" selectionMode=\"single\" [responsive]=\"true\" (onRowSelect)=\"onRowSelect($event)\">\r\n    <header>User Accounts</header>\r\n    <p-column field=\"username\" header=\"Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n    <p-column field=\"email\" header=\"Email\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n    <p-footer>\r\n      <div class=\"row\">\r\n        <div class=\"col-md-12\">\r\n          <button md-raised-button color=\"primary\" (click)=\"createUserAccount()\" *ngIf=\"authorizationService.isUserHasRole('UI_USERS_CREATE')\">Create</button>\r\n          <!--button md-raised-button color=\"primary\">Import</button-->\r\n        </div>\r\n      </div>\r\n    </p-footer>\r\n  </p-dataTable>\r\n</div>\r\n<div *ngIf=\"displayUserAccountDetails\">\r\n  <md-card>\r\n    <md-card-title color=\"primary\">Create User Account</md-card-title>\r\n    <md-card-content>\r\n      <div>\r\n        <md-input placeholder=\"Name\" [(ngModel)]=\"selectedUserAccount.username\" class=\"col-md-3\"></md-input>\r\n          <div class=\"col-md-1\"></div>\r\n        <md-input placeholder=\"Company Name\" [(ngModel)]=\"selectedUserAccount.companyName\" class=\"col-md-3\"></md-input>  \r\n\t\t      <div class=\"col-md-1\"></div>\r\n        <md-input placeholder=\"Email\" [(ngModel)]=\"selectedUserAccount.email\" class=\"col-md-4\"></md-input> \r\n      </div>\r\n      <div style=\"margin-top:15px;\">\r\n        <md-checkbox [(ngModel)]=\"selectedUserAccount.active\" class=\"col-md-5\" >Active</md-checkbox>\r\n        <div class=\"col-md-2\"></div>\r\n        <md-checkbox [(ngModel)]=\"selectedUserAccount.accountExpired\" class=\"col-md-5\" >Account Expired</md-checkbox>\r\n      </div>\r\n      <div>\r\n        <md-checkbox [(ngModel)]=\"selectedUserAccount.credentialsExpired\" class=\"col-md-5\" >Credentials Expired</md-checkbox>\r\n        <div class=\"col-md-2\"></div>\r\n        <md-checkbox [(ngModel)]=\"selectedUserAccount.accountLocked\" class=\"col-md-5\">Account Locked</md-checkbox>\r\n      </div>\r\n      <br>\r\n      <br>\r\n      <br>\r\n      <br>\r\n      <div>\r\n        <p-pickList [source]=\"sourceUserAccountUserGroups\" [target]=\"targetUserAccountUserGroups\" sourceHeader=\"Available Groups\" targetHeader=\"Selected Groups\"\r\n          [responsive]=\"true\" [sourceStyle]=\"{'height':'300px'}\" [targetStyle]=\"{'height':'300px'}\">\r\n          <template let-userAccountUserRole pTemplate=\"item\">\r\n            <div class=\"ui-helper-clearfix\">\r\n              <div style=\"font-size:14px;float:center;margin:15px 5px 0 0\">{{userAccountUserRole.userGroup.groupName}}</div>\r\n            </div>\r\n          </template>\r\n        </p-pickList>\r\n      </div>\r\n    </md-card-content>\r\n    <md-card-actions class=\"center\">\r\n      <button md-raised-button color=\"primary\" (click)=\"submitNewUserAccount()\" *ngIf=\"authorizationService.isUserHasRole('UI_USERS_UPDATE')\">Submit</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"deleteNewUserAccount()\" *ngIf=\"authorizationService.isUserHasRole('UI_USERS_DELETE')\">Delete</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"backToUserAccounts()\">Back</button>\r\n    </md-card-actions>\r\n  </md-card>\r\n</div>"
 
 /***/ }),
 
@@ -4660,7 +4725,7 @@ var _a;
 /***/ "../../../../../src/app/security/user-group/user-group.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n<div *ngIf=\"!displayUserGroupDetails\">\r\n  <md-card>\r\n    <md-card-title color=\"primary\">Search User Groups</md-card-title>\r\n    <md-card-content>\r\n      <md-input placeholder=\"Name\" [(ngModel)]=\"userGroupSearchCriteria.groupName\" class=\"col-md-5\"></md-input>\r\n      <div class=\"col-md-2\"></div>\r\n      <md-input placeholder=\"Description\" [(ngModel)]=\"userGroupSearchCriteria.description\" class=\"col-md-5\"></md-input>\r\n    </md-card-content>\r\n    <md-card-actions class=\"center\">\r\n      <button md-raised-button color=\"primary\" (click)=\"searchUserGroups()\" *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_ACCESS')\">Search</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"resetSearchCriteria()\">Reset</button>\r\n    </md-card-actions>\r\n  </md-card>\r\n  <br>\r\n  <br>\r\n  <p-dataTable [value]=\"userGroups\" selectionMode=\"single\" [responsive]=\"true\" (onRowSelect)=\"onRowSelect($event)\">\r\n    <header>User Groups</header>\r\n    <p-column field=\"groupName\" header=\"Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n    <p-column field=\"description\" header=\"Description\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n    <p-footer>\r\n      <div class=\"row\">\r\n        <div class=\"col-md-12\">\r\n          <button md-raised-button color=\"primary\" (click)=\"createUserGroup()\" *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_CREATE')\">Create</button>\r\n          <button md-raised-button color=\"primary\">Import</button>\r\n        </div>\r\n      </div>\r\n    </p-footer>\r\n  </p-dataTable>\r\n</div>\r\n<div *ngIf=\"displayUserGroupDetails\">\r\n  <md-card>\r\n    <md-card-title color=\"primary\">Create User Group</md-card-title>\r\n    <md-card-content>\r\n      <div>\r\n        <md-input placeholder=\"Name\" [(ngModel)]=\"selectedUserGroup.groupName\" class=\"col-md-5\"></md-input>\r\n        <div class=\"col-md-2\"></div>\r\n        <md-input placeholder=\"Description\" [(ngModel)]=\"selectedUserGroup.description\" class=\"col-md-5\"></md-input>\r\n      </div>\r\n      <br>\r\n      <br>\r\n      <div>\r\n        <p-pickList [source]=\"sourceUserGroupUserRoles\" [target]=\"targetUserGroupUserRoles\" sourceHeader=\"Available Roles\" targetHeader=\"Selected Roles\"\r\n          [responsive]=\"true\" [sourceStyle]=\"{'height':'300px'}\" [targetStyle]=\"{'height':'300px'}\">\r\n          <template let-userGroupUserRole pTemplate=\"item\">\r\n            <div class=\"ui-helper-clearfix\">\r\n              <div style=\"font-size:14px;float:center;margin:15px 5px 0 0\">{{userGroupUserRole.userRole.roleName}}</div>\r\n            </div>\r\n          </template>\r\n        </p-pickList>\r\n      </div>\r\n    </md-card-content>\r\n    <md-card-actions class=\"center\">\r\n      <button md-raised-button color=\"primary\" (click)=\"submitNewUserGroup()\" *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_UPDATE')\">Submit</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"deleteNewUserGroup()\" *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_DELETE')\">Delete</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"backToUserGroups()\">Back</button>\r\n    </md-card-actions>\r\n  </md-card>\r\n</div>"
+module.exports = "<p-growl [value]=\"msgs\"></p-growl>\r\n<div *ngIf=\"!displayUserGroupDetails\">\r\n  <md-card>\r\n    <md-card-title color=\"primary\">Search User Groups</md-card-title>\r\n    <md-card-content>\r\n      <md-input placeholder=\"Name\" [(ngModel)]=\"userGroupSearchCriteria.groupName\" class=\"col-md-5\"></md-input>\r\n      <div class=\"col-md-2\"></div>\r\n      <md-input placeholder=\"Description\" [(ngModel)]=\"userGroupSearchCriteria.description\" class=\"col-md-5\"></md-input>\r\n    </md-card-content>\r\n    <md-card-actions class=\"center\">\r\n      <button md-raised-button color=\"primary\" (click)=\"searchUserGroups()\" *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_ACCESS')\">Search</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"resetSearchCriteria()\">Reset</button>\r\n    </md-card-actions>\r\n  </md-card>\r\n  <br>\r\n  <br>\r\n  <p-dataTable [value]=\"userGroups\" selectionMode=\"single\" [responsive]=\"true\" (onRowSelect)=\"onRowSelect($event)\">\r\n    <header>User Groups</header>\r\n    <p-column field=\"groupName\" header=\"Name\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n    <p-column field=\"description\" header=\"Description\" [sortable]=\"true\" [filter]=\"true\"></p-column>\r\n    <p-footer>\r\n      <div class=\"row\">\r\n        <div class=\"col-md-12\">\r\n          <button md-raised-button color=\"primary\" (click)=\"createUserGroup()\" *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_CREATE')\">Create</button>\r\n          <!--button md-raised-button color=\"primary\">Import</button-->\r\n        </div>\r\n      </div>\r\n    </p-footer>\r\n  </p-dataTable>\r\n</div>\r\n<div *ngIf=\"displayUserGroupDetails\">\r\n  <md-card>\r\n    <md-card-title color=\"primary\">Create User Group</md-card-title>\r\n    <md-card-content>\r\n      <div>\r\n        <md-input placeholder=\"Name\" [(ngModel)]=\"selectedUserGroup.groupName\" class=\"col-md-5\"></md-input>\r\n        <div class=\"col-md-2\"></div>\r\n        <md-input placeholder=\"Description\" [(ngModel)]=\"selectedUserGroup.description\" class=\"col-md-5\"></md-input>\r\n      </div>\r\n      <br>\r\n      <br>\r\n      <div>\r\n        <p-pickList [source]=\"sourceUserGroupUserRoles\" [target]=\"targetUserGroupUserRoles\" sourceHeader=\"Available Roles\" targetHeader=\"Selected Roles\"\r\n          [responsive]=\"true\" [sourceStyle]=\"{'height':'300px'}\" [targetStyle]=\"{'height':'300px'}\">\r\n          <template let-userGroupUserRole pTemplate=\"item\">\r\n            <div class=\"ui-helper-clearfix\">\r\n              <div style=\"font-size:14px;float:center;margin:15px 5px 0 0\">{{userGroupUserRole.userRole.roleName}}</div>\r\n            </div>\r\n          </template>\r\n        </p-pickList>\r\n      </div>\r\n    </md-card-content>\r\n    <md-card-actions class=\"center\">\r\n      <button md-raised-button color=\"primary\" (click)=\"submitNewUserGroup()\" *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_UPDATE')\">Submit</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"deleteNewUserGroup()\" *ngIf=\"authorizationService.isUserHasRole('UI_USER_GROUPS_DELETE')\">Delete</button>\r\n      <button md-raised-button color=\"primary\" (click)=\"backToUserGroups()\">Back</button>\r\n    </md-card-actions>\r\n  </md-card>\r\n</div>"
 
 /***/ }),
 

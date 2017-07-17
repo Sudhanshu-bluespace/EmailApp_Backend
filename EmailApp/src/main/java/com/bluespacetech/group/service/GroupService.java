@@ -33,4 +33,6 @@ public interface GroupService {
 	Group updateGroup(final Group group) throws BusinessException;
 	
 	List<Group> findBySearchCriteria(final GroupSearchCriteria groupSearchCriteria);
+
+        List<Group> findByCreatedUser(final String username);
 }

@@ -59,9 +59,9 @@ public interface AnalyticsService
     
     public List<CompanyWiseRegistrationDTO> getCompanyWiseRegistrationStats();
 
-    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOFDays);
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOFDays,boolean isAdmin);
     
-    public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age);
+    public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age,boolean isAdmin);
     
     public List<JobStatusResource> getJobStatusData(String userName,boolean isAdmin);
     

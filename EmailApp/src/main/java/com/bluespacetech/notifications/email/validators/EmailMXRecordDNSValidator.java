@@ -47,7 +47,7 @@ public class EmailMXRecordDNSValidator
         }
         catch (NamingException e)
         {
-            LOGGER.error("ERROR: No DNS record for '" + hostname + "'");
+            LOGGER.error("ERROR: Failed to get DNS records for '" + hostname + "', reason: ["+e.getMessage()+"]");
         }
 
         return list;

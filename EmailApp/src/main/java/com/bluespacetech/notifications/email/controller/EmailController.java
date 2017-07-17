@@ -6,11 +6,9 @@ package com.bluespacetech.notifications.email.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,15 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameter;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,16 +57,16 @@ public class EmailController
 {
 
     /** The job launcher. */
-    @Autowired
-    private JobLauncher jobLauncher;
+   // @Autowired
+   // private JobLauncher jobLauncher;
 
     /** The email service. */
     @Autowired
     private EmailService emailService;
-    
+
     @Autowired
     private JobExecutionRepository jobExecutionRepository;
-    
+
     @Autowired
     private Consumer consumer;
 
@@ -105,16 +100,49 @@ public class EmailController
             String requestId = "RQ_" + email.getCreatedUser() + "_" + createdDate;
 
             String emailBody = emailVO.getMessage();
-            for (String blocked : CommonUtilCache.getProhibitedContentList())
+            String formattedBody = "";
+          /*  if (emailBody.contains("<img src="))
             {
-                if (emailBody.toLowerCase().contains(blocked.toLowerCase()))
+                String regex = "<img([\\w\\W]+?)>";
+                Pattern pattern = Pattern.compile(regex);
+                java.util.regex.Matcher matcher = pattern.matcher(emailBody);
+                while (matcher.find())
                 {
-                    LOGGER.error("Found Prohibited content in email body. The campaign cannot be triggered.");
-                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    response.getOutputStream().println(
-                            "{ \"Error\": \"Email campaign has been blocked as it was found to contain prohibited content. \"}");
+                    String res = matcher.group();
+                    if(res.contains("+"))
+                    {
+                        res = res.replaceAll("+", "\\+");
+                    }
+                    formattedBody = emailBody.replace(res, "<img src=\"cid:image\">");
                 }
             }
+            if ("".equalsIgnoreCase(formattedBody.trim()))
+            {
+                for (String blocked : CommonUtilCache.getProhibitedContentList())
+                {
+                    if (emailBody.toLowerCase().contains(blocked.toLowerCase()))
+                    {
+                        LOGGER.error(
+                                "Found Prohibited content in email body even after formatting. The campaign cannot be triggered.");
+                        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        response.getOutputStream().println(
+                                "{ \"Error\": \"Email campaign has been blocked as it was found to contain prohibited content. \"}");
+                    }
+                }
+            }
+            else
+            {*/
+                for (String blocked : CommonUtilCache.getProhibitedContentList())
+                {
+                    if (emailBody.toLowerCase().contains(blocked.toLowerCase()))
+                    {
+                        LOGGER.error("Found Prohibited content in email body. The campaign cannot be triggered.");
+                        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        response.getOutputStream().println(
+                                "{ \"Error\": \"Email campaign has been blocked as it was found to contain prohibited content. \"}");
+                    }
+                }
+            //}
 
             String queryGetContacts = QueryStringConstants.getQuery_QUERY_FIND_CONTACTS();
 
@@ -182,20 +210,20 @@ public class EmailController
                     endpoint.setSender(ViewUtil.getPrincipal());
                     endpoint.setRequestUrl(request.getRequestURL().toString());
 
-                    Producer producer = new Producer(endpoint, queueInstance,jobExecutionRepository);
-                    //Consumer consumer = new Consumer(queueInstance, contactGroupEmailJob, jobLauncher);                   
-                    
+                    Producer producer = new Producer(endpoint, queueInstance, jobExecutionRepository);
+                    // Consumer consumer = new Consumer(queueInstance, contactGroupEmailJob, jobLauncher);
+
                     securedExecutorService = new DelegatingSecurityContextExecutorService(
                             Executors.newFixedThreadPool(splitList.size()), ViewUtil.gtecurityContext());
-                    
+
                     persistJobExecutionToDB(endpoint);
                     securedExecutorService.submit(producer);
                 }
-                
-                if(splitList.size()>8)
+
+                if (splitList.size() > 8)
                 {
                     LOGGER.info("Maintaing a ratio of producers :consumers = 4:1 for batches greater than 8");
-                    for(int j=0;j<splitList.size() / 4;j++)
+                    for (int j = 0; j < splitList.size() / 4; j++)
                     {
                         securedExecutorService.submit(consumer);
                     }
@@ -222,9 +250,9 @@ public class EmailController
                 endpoint.setSender(ViewUtil.getPrincipal());
                 endpoint.setRequestUrl(request.getRequestURL().toString());
 
-                Producer producer = new Producer(endpoint, queueInstance,jobExecutionRepository);
-                //Consumer consumer = new Consumer(queueInstance, contactGroupEmailJob, jobLauncher);
-                
+                Producer producer = new Producer(endpoint, queueInstance, jobExecutionRepository);
+                // Consumer consumer = new Consumer(queueInstance, contactGroupEmailJob, jobLauncher);
+
                 persistJobExecutionToDB(endpoint);
                 securedExecutorService.submit(producer);
                 securedExecutorService.submit(consumer);
@@ -247,7 +275,7 @@ public class EmailController
 
         }
     }
-    
+
     /**
      * Persist job execution to DB.
      *
@@ -264,7 +292,8 @@ public class EmailController
         entity.setJobId("-");
         entity.setStatus("QUEUED");
         jobExecutionRepository.save(entity);
-        LOGGER.info("Batch entry for "+jobEndPoint.getRequestId()+"|"+jobEndPoint.getBatchId()+" saved successfully");
+        LOGGER.info("Batch entry for " + jobEndPoint.getRequestId() + "|" + jobEndPoint.getBatchId()
+                + " saved successfully");
     }
 
     // chops a list into non-view sublists of length L

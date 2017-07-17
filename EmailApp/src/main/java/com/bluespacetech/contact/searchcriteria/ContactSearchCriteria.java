@@ -21,7 +21,20 @@ public class ContactSearchCriteria  implements Serializable{
 	
 	private String email;
 	
-	private List<Long> groupIds = new ArrayList<>();
+	private String username;
+	
+	
+	public String getUsername()
+    {
+        return username;
+    }
+
+    public void setUsername(String username)
+    {
+        this.username = username;
+    }
+
+    private List<Long> groupIds = new ArrayList<>();
 
 	public String getFirstName() {
 		return firstName;

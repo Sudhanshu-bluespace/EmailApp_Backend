@@ -41,7 +41,7 @@ public class EmailServerServiceImpl implements EmailServerService
      * EmailServer)
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('CREATE_SERVERS'))")
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('CREATE_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
     public EmailServer createEmailServer(final EmailServer emailServer) throws BusinessException
     {
         validateEmailServer(emailServer);
@@ -54,7 +54,7 @@ public class EmailServerServiceImpl implements EmailServerService
      * @see com.bluespacetech.notifications.email.service.EmailServerService#findAll()
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS'))")
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
     public List<EmailServer> findAll()
     {
         return emailServerRepository.findAll();
@@ -65,7 +65,7 @@ public class EmailServerServiceImpl implements EmailServerService
      * @see com.bluespacetech.notifications.email.service.EmailServerService#deleteEmailServer(java.lang.Long)
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('DELETE_SERVERS'))")
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('DELETE_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
     public void deleteEmailServer(Long emailServerId) throws BusinessException
     {
         emailServerRepository.delete(emailServerId);
@@ -77,7 +77,7 @@ public class EmailServerServiceImpl implements EmailServerService
      * EmailServer)
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('UPDATE_SERVERS'))")
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('UPDATE_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
     public EmailServer updateEmailServer(EmailServer emailServer) throws BusinessException
     {
         validateEmailServer(emailServer);
@@ -90,7 +90,7 @@ public class EmailServerServiceImpl implements EmailServerService
      * @see com.bluespacetech.notifications.email.service.EmailServerService#findEmailServerByName(java.lang.String)
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS'))")
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
     public EmailServer findEmailServerByName(String emailServerName) throws BusinessException
     {
         return emailServerRepository.findByName(emailServerName);
@@ -101,7 +101,7 @@ public class EmailServerServiceImpl implements EmailServerService
      * @see com.bluespacetech.notifications.email.service.EmailServerService#getEmailServerById(java.lang.Long)
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS'))")
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
     public EmailServer getEmailServerById(Long id) throws BusinessException
     {
         return emailServerRepository.findOne(id);
@@ -112,7 +112,7 @@ public class EmailServerServiceImpl implements EmailServerService
      * @see com.bluespacetech.notifications.email.service.EmailServerService#getDefaultEmailServer()
      */
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS'))")
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
     public EmailServer getDefaultEmailServer() throws BusinessException
     {
         final List<EmailServer> emailServers = emailServerRepository.findByDefaultServer(true);

@@ -55,7 +55,7 @@ public interface JobExecutionRepository extends JpaRepository<JobExecutionEntity
      * @param status the status
      * @return the list
      */
-    public List<JobExecutionEntity> findByRequestIdAndStatusIgnoreCase(String requestId,String status);
+    public List<JobExecutionEntity> findByRequestIdAndStatusIgnoreCaseOrderByCreationDateDesc(String requestId,String status);
     
     /* (non-Javadoc)
      * @see org.springframework.data.jpa.repository.JpaRepository#findAll()
@@ -68,7 +68,7 @@ public interface JobExecutionRepository extends JpaRepository<JobExecutionEntity
      * @param userName the user name
      * @return the list
      */
-    public List<JobExecutionEntity> findBySender(String userName);
+    public List<JobExecutionEntity> findBySenderOrderByCreationDateDesc(String userName);
     
     /**
      * Find by sender and status ignore case.
@@ -77,5 +77,5 @@ public interface JobExecutionRepository extends JpaRepository<JobExecutionEntity
      * @param status the status
      * @return the list
      */
-    public List<JobExecutionEntity> findBySenderAndStatusIgnoreCase(String userName,String status);
+    public List<JobExecutionEntity> findBySenderAndStatusIgnoreCaseOrderByCreationDateDesc(String userName,String status);
 }

@@ -20,8 +20,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.bluespacetech.contact.repository.BlockedContactRepository;
-import com.bluespacetech.contact.repository.ContactRepository;
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.notifications.email.controller.EmailController;
 

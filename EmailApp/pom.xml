@@ -131,6 +131,11 @@
 			<artifactId>hadoop-core</artifactId>
 			<version>1.0.0</version>
 		</dependency-->
+		<dependency>
+			<groupId>org.opensaml</groupId>
+			<artifactId>openws</artifactId>
+			<version>1.4.2-1</version>
+		</dependency>
 	</dependencies>
 	<build>
 	<plugins>

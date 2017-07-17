@@ -53,9 +53,23 @@ public class QueryStringConstants
             "and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY group by cg.unsubscribed_date; ";
     }
     
+    public static final String getQuery_RecentlyUnsubscribedUserCountDistribution(int age,String username)
+    {
+        return 
+            "select date_format(cg.unsubscribed_date,'%M %D, %Y') as date, sum(cg.unsubscribed) as count "+
+            "from contacts c,contact_group cg where c.id=cg.contact_id and cg.unsubscribed >= 0 and upper(c.created_user)='"+username.toUpperCase()+
+            "' and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY group by cg.unsubscribed_date; ";
+    }
+    
     public static final String getQuery_RecentlyUnsubscribedUsers(int age)
     {
         return "select distinct c.first_name,c.last_name,c.email,date_format(cg.unsubscribed_date,'%M %D, %Y') as unsubscribedOn from contacts c,contact_group cg where c.id=cg.contact_id and cg.unsubscribed > 0 and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY;";
+    }
+    
+    public static final String getQuery_RecentlyUnsubscribedUsers(int age,String username)
+    {
+        return "select distinct c.first_name,c.last_name,c.email,date_format(cg.unsubscribed_date,'%M %D, %Y') as unsubscribedOn from contacts c,contact_group cg where "
+                + "c.id=cg.contact_id and cg.unsubscribed > 0 and upper(c.created_user) = '"+username.toUpperCase()+"' and cg.unsubscribed_date > NOW() - INTERVAL "+age+" DAY;";
     }
 
     /**

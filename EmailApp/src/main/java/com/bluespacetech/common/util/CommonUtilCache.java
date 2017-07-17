@@ -1,5 +1,6 @@
 package com.bluespacetech.common.util;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,6 @@ import com.bluespacetech.group.entity.Group;
 import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class CommonUtilCache.
  */
@@ -20,34 +20,80 @@ public class CommonUtilCache
 {
 
     /** The Constant LOGGER. */
-    private static final Logger LOGGER = LogManager.getLogger(CommonUtilCache.class);
-    
+   // private static final Logger LOGGER = LogManager.getLogger(CommonUtilCache.class);
+
     /** The group name to group map. */
     private static Map<String, Group> groupNameToGroupMap = new HashMap<>();
-    
+
     /** The black listed domains. */
     private static List<String> blackListedDomains = new ArrayList<>(1000);
-    
+
     /** The ignore list. */
     private static List<String> ignoreList = new ArrayList<>();
-    
+
     /** The ignore list. */
     private static List<String> prohibitedContentList = new ArrayList<>();
-    
-    private static Map<String,List<EmailContactGroupVO>> batchIdToEmailListMap = new HashMap<>();
-    
-    private static Map<String,EmailJobEndpoint> batchIdToEmailJobEndpointMap = new HashMap<>();   
 
+    /** The batch id to email list map. */
+    private static Map<String, List<EmailContactGroupVO>> batchIdToEmailListMap = new HashMap<>();
+    
+    private static Map<Long,List<Path>> tempFileCleanupMap = new HashMap<>();
+
+    /** The batch id to email job endpoint map. */
+    private static Map<String, EmailJobEndpoint> batchIdToEmailJobEndpointMap = new HashMap<>();
+
+    /** The bounced emails cache. */
+    private static Map<String, List<String>> bouncedEmailsCache = new HashMap<>();
+    
+    public static Map<Long, List<Path>> getTempFileCleanupMap()
+    {
+        return tempFileCleanupMap;
+    }
+
+    /**
+     * Gets the bounced email cache.
+     *
+     * @return the bounced email cache
+     */
+    public static Map<String, List<String>> getBouncedEmailCache()
+    {
+        if (!bouncedEmailsCache.containsKey("HARD_BOUNCE"))
+        {
+            bouncedEmailsCache.put("HARD_BOUNCE", new ArrayList<>());
+        }
+        if (!bouncedEmailsCache.containsKey("SOFT_BOUNCE"))
+        {
+            bouncedEmailsCache.put("SOFT_BOUNCE", new ArrayList<>());
+        }
+
+        return bouncedEmailsCache;
+    }
+
+    /**
+     * Gets the batch id to email job endpoint map.
+     *
+     * @return the batch id to email job endpoint map
+     */
     public static Map<String, EmailJobEndpoint> getBatchIdToEmailJobEndpointMap()
     {
         return batchIdToEmailJobEndpointMap;
     }
 
+    /**
+     * Gets the batch id to email list map.
+     *
+     * @return the batch id to email list map
+     */
     public static Map<String, List<EmailContactGroupVO>> getBatchIdToEmailListMap()
     {
         return batchIdToEmailListMap;
     }
 
+    /**
+     * Gets the prohibited content list.
+     *
+     * @return the prohibited content list
+     */
     public static List<String> getProhibitedContentList()
     {
         return prohibitedContentList;
@@ -68,7 +114,7 @@ public class CommonUtilCache
      */
     public static Map<String, Group> getGroupNameToGroupMap()
     {
-        //LOGGER.debug("Returning groupNameToGroupMap");
+        // LOGGER.debug("Returning groupNameToGroupMap");
         return groupNameToGroupMap;
     }
 
@@ -81,8 +127,12 @@ public class CommonUtilCache
     {
         return blackListedDomains;
     }
-    
-    
+
+    /**
+     * Gets the ignore list.
+     *
+     * @return the ignore list
+     */
     public static List<String> getIgnoreList()
     {
         return ignoreList;

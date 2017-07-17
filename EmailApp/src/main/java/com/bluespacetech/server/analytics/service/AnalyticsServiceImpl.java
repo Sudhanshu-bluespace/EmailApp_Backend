@@ -100,9 +100,9 @@ public class AnalyticsServiceImpl implements AnalyticsService
      * @see com.bluespacetech.server.analytics.service.AnalyticsService#getRecentUnsubscribes(int)
      */
     @Override
-    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOfDays)
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOfDays,boolean isAdmin)
     {
-        return analyticsRepository.getRecentUnsubscribes(numberOfDays);
+        return analyticsRepository.getRecentUnsubscribes(numberOfDays,isAdmin);
     }
 
     /*
@@ -110,9 +110,9 @@ public class AnalyticsServiceImpl implements AnalyticsService
      * @see com.bluespacetech.server.analytics.service.AnalyticsService#getRecentUnsuscribedCount(int)
      */
     @Override
-    public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age)
+    public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age,boolean isAdmin)
     {
-        return analyticsRepository.getRecentlyUnsubscribedCount(age);
+        return analyticsRepository.getRecentlyUnsubscribedCount(age,isAdmin);
     }
 
     /*
@@ -129,7 +129,7 @@ public class AnalyticsServiceImpl implements AnalyticsService
         }
         else
         {
-            list = jobExecutionRepository.findBySender(userName);
+            list = jobExecutionRepository.findBySenderOrderByCreationDateDesc(userName);
         }
         List<JobStatusResource> resourceList = new ArrayList<>();
         if (list != null)
@@ -157,7 +157,7 @@ public class AnalyticsServiceImpl implements AnalyticsService
     @Override
     public List<JobStatusResource> getJobStatusDataByStatus(String userName, String status)
     {
-        List<JobExecutionEntity> list = jobExecutionRepository.findBySenderAndStatusIgnoreCase(userName, status);
+        List<JobExecutionEntity> list = jobExecutionRepository.findBySenderAndStatusIgnoreCaseOrderByCreationDateDesc(userName, status);
         List<JobStatusResource> resourceList = new ArrayList<>();
         if (list != null)
         {

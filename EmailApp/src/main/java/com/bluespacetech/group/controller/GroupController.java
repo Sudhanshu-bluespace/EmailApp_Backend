@@ -16,9 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,9 +45,9 @@ public class GroupController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Group>> getGroups() {
-		final List<Group> groups = groupService.findAll();
+	@PostMapping(value = "/searchAll", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Group>> getGroups(@RequestParam("username") String username) {
+		final List<Group> groups = groupService.findByCreatedUser(username);
 		//groups.parallelStream().forEach(group -> group.setContactCount(group.getContactGroups().size()));
 		return new ResponseEntity<List<Group>>(groups, HttpStatus.OK);
 	}

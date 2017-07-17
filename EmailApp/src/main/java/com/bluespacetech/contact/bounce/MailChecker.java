@@ -14,7 +14,6 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -23,11 +22,13 @@ import javax.mail.search.FlagTerm;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.bluespacetech.common.util.CommonUtilCache;
 import com.bluespacetech.contact.entity.BlockedContacts;
 import com.bluespacetech.contact.entity.Contact;
 import com.bluespacetech.contact.fileupload.batch.EmailListener;
-import com.bluespacetech.contact.repository.BlockedContactRepository;
 import com.bluespacetech.contact.repository.ContactRepository;
+import com.bluespacetech.contact.service.BlockedContactService;
 
 /**
  * The Class MailChecker.
@@ -39,7 +40,7 @@ public class MailChecker
     private ContactRepository contactRepository;
 
     /** The blocked contacts repository. */
-    private BlockedContactRepository blockedContactsRepository;
+    private BlockedContactService blockedContactService;
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(MailChecker.class);
@@ -50,10 +51,10 @@ public class MailChecker
      * @param contactRepository the contact repository
      * @param blockedContactRepository the blocked contact repository
      */
-    public MailChecker(ContactRepository contactRepository, BlockedContactRepository blockedContactRepository)
+    public MailChecker(ContactRepository contactRepository, BlockedContactService blockedContactService)
     {
         this.contactRepository = contactRepository;
-        this.blockedContactsRepository = blockedContactRepository;
+        this.blockedContactService = blockedContactService;
     }
 
     /**
@@ -135,7 +136,7 @@ public class MailChecker
 
                 if (subject.toLowerCase().equalsIgnoreCase("successful mail delivery report"))
                 {
-                    LOGGER.info("Delivery Status Notification (Success), Skip Scan for Bounce..");
+                    LOGGER.debug("Delivery Status Notification (Success), Skip Scan for Bounce..");
                     continue;
                 }
 
@@ -165,7 +166,7 @@ public class MailChecker
                             }
                             else
                             {
-                                LOGGER.info("Email Delivery Status : " + res);
+                                LOGGER.debug("Email Delivery Status : " + res);
                             }
                         }
                         else
@@ -185,17 +186,9 @@ public class MailChecker
             store.close();
 
         }
-        catch (NoSuchProviderException e)
+        catch ( Exception e)
         {
-            e.printStackTrace();
-        }
-        catch (MessagingException e)
-        {
-            e.printStackTrace();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+            LOGGER.error("Failed to process scan, reason: ["+e.getLocalizedMessage()+"]");
         }
     }
 
@@ -216,10 +209,10 @@ public class MailChecker
             Matcher match = pattern.matcher(scanString);
             if (match.find())
             {
-                LOGGER.info("Recovered bounced recipient email " + match.group());
+                LOGGER.debug("Recovered bounced recipient email " + match.group());
                 String email = match.group();
-                BlockedContacts blockedEmail = blockedContactsRepository.findByEmailIgnoreCase(email);
-                if (blockedEmail == null)
+
+                if (!CommonUtilCache.getBouncedEmailCache().get("HARD_BOUNCE").contains(email))
                 {
                     Contact contact = contactRepository.findByEmailIgnoreCase(email);
                     // System.out.println("Res : "+res);
@@ -233,7 +226,7 @@ public class MailChecker
                     }
                     if (contact != null)
                     {
-                        LOGGER.info("Contact retrieved from DB. Adding it to Blocked list");
+                        LOGGER.debug("Contact retrieved from DB. Adding it to Blocked list");
                         BlockedContacts blocked = new BlockedContacts();
                         blocked.setEmail(email);
                         blocked.setAutoRunEnabled(true);
@@ -241,13 +234,25 @@ public class MailChecker
                         blocked.setFirstName(contact.getFirstName());
                         blocked.setLastName(contact.getLastName());
                         blocked.setResponseCode(resCode);
-                        blockedContactsRepository.save(blocked);
-                        LOGGER.info("Email blacklisted successfully");
+
+                        BlockedContacts blockedEmail = blockedContactService.findBlockedContactByEmailAndReason(email,
+                                reason);
+                        if (blockedEmail == null)
+                        {
+                            blockedContactService.addBlockedContact(blocked);
+                            if (CommonUtilCache.getBouncedEmailCache().containsKey(reason))
+                            {
+                                CommonUtilCache.getBouncedEmailCache().get(reason).add(email);
+                            }
+                        }
+
+                        LOGGER.debug("Email blacklisted successfully");
                     }
                 }
+
                 else
                 {
-                    LOGGER.warn("Skip processing already blacklisted email : " + email);
+                    LOGGER.debug("Skip processing already blacklisted email : " + email);
                 }
             }
         }

@@ -184,9 +184,16 @@ public class ContactServiceImpl implements ContactService
     }
     
     @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACC_TYPE_ADMIN'))")
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACC_TYPE_ADMIN')) or (hasAuthority('ACCESS_CONTACTS'))")
     public List<BlockedContacts> getBlockedContacts()
     {
         return blockedContactsRepository.findAll();
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACC_TYPE_ADMIN')) or (hasAuthority('ACCESS_CONTACTS'))")
+    public List<Contact> findByCreatedUser(String username)
+    {
+        return contactRepository.findByCreatedUser(username);
     }
 }

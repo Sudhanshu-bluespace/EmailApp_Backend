@@ -7,19 +7,19 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
-import com.bluespacetech.contact.repository.BlockedContactRepository;
 import com.bluespacetech.contact.repository.ContactRepository;
+import com.bluespacetech.contact.service.BlockedContactService;
 
 public class BouncedEmailReaderTasklet implements Tasklet
 {
     private ContactRepository contactRepository;
-    private BlockedContactRepository blockedContactRepository;
+    private BlockedContactService blockedContactService;
     private static final Logger LOGGER = LogManager.getLogger(BouncedEmailReaderTasklet.class);
     
-    public BouncedEmailReaderTasklet(ContactRepository contactRepository, BlockedContactRepository blockedContactRepository)
+    public BouncedEmailReaderTasklet(ContactRepository contactRepository, BlockedContactService blockedContactService)
     {
         this.contactRepository = contactRepository;
-        this.blockedContactRepository = blockedContactRepository;
+        this.blockedContactService = blockedContactService;
     }
    
 
@@ -35,7 +35,7 @@ public class BouncedEmailReaderTasklet implements Tasklet
         String user = chunkContext.getStepContext().getStepExecution().getJobParameters().getString("username");
         String password = chunkContext.getStepContext().getStepExecution().getJobParameters().getString("password");
         String startTlsEnabled = chunkContext.getStepContext().getStepExecution().getJobParameters().getString("starttlsEnabled");
-        new MailChecker(contactRepository,blockedContactRepository).check(host, storeType, user, password,port,storeProtocol,startTlsEnabled);
+        new MailChecker(contactRepository,blockedContactService).check(host, storeType, user, password,port,storeProtocol,startTlsEnabled);
         return RepeatStatus.FINISHED;
     }
 }

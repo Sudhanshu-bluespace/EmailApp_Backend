@@ -38,4 +38,6 @@ public interface ContactService {
     List<Contact> findBySearchCriteria(final ContactSearchCriteria contactSearchCriteria);
     
     public List<BlockedContacts> getBlockedContacts();
+    
+    public List<Contact> findByCreatedUser(String username);
 }

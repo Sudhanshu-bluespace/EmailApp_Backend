@@ -38,9 +38,11 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -168,6 +170,7 @@ public class ContactController
         }
 
         final Contact contactUpdated = contactService.updateContact(contact);
+        
         contactUpdated.getContactGroups().stream().forEach(contactGroup -> {
             contactGroup.setContact(null);
         });
@@ -202,10 +205,10 @@ public class ContactController
      *
      * @return the contacts
      */
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Contact>> getContacts()
+    @PostMapping(value = "/getAllByCreatedUser", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Contact>> getContactsByCreatedUser(@RequestParam("username") String username)
     {
-        final List<Contact> contacts = contactService.findAll();
+        final List<Contact> contacts = contactService.findByCreatedUser(username);
         contacts.stream().forEach(contact -> {
             contact.getContactGroups().stream().forEach(contactGroup -> {
                 contactGroup.setContact(null);

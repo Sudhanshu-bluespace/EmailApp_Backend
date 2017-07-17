@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.bluespacetech.common.util.CommonUtilCache;
-import com.bluespacetech.common.util.ContactUtilService;
+import com.bluespacetech.contact.entity.BlockedContacts;
 import com.bluespacetech.contact.entity.Contact;
 import com.bluespacetech.contact.fileupload.dto.ContactUploadDTO;
+import com.bluespacetech.contact.service.BlockedContactService;
 import com.bluespacetech.contactgroup.entity.ContactGroup;
 import com.bluespacetech.group.entity.Group;
 import com.bluespacetech.notifications.email.validators.EmailMXRecordDNSValidator;
@@ -26,13 +31,24 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(ContactItemProcessor.class);
 
-    private ContactUtilService contactUtilService;
-
-    private List<String> validatedDomains = new ArrayList<>();
+    /** The blocked contact service. */
+    private BlockedContactService blockedContactService;
     
-    public ContactItemProcessor(ContactUtilService contactUtilService)
+   // @Autowired
+   // @PersistenceContext
+   // EntityManager em;
+
+    /** The validated domains. */
+    private List<String> validatedDomains = new ArrayList<>();
+
+    /**
+     * Instantiates a new contact item processor.
+     *
+     * @param blockedContactService the blocked contact service
+     */
+    public ContactItemProcessor(BlockedContactService blockedContactService)
     {
-        this.contactUtilService = contactUtilService;
+        this.blockedContactService = blockedContactService;
     }
 
     /*
@@ -55,25 +71,18 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         else if (CommonUtilCache.getIgnoreList().contains(email.substring(0, email.indexOf("@") + 1)))
         {
             LOGGER.warn("Email " + email + " falls under IGNORED LIST, will be skipped");
-           // contactUtilService.addEmailToBlockedList(email, contactDTO, "IGNORED");
+            addEmailToBlockedList(email, contactDTO, "IGNORED");
             return null;
         }
-        /*else if (CommonUtilCache.getIgnoreList().contains(firstName))
-        {
-            LOGGER.warn("First Name " + firstName + " falls under IGNORED LIST, will be skipped");
-            contactUtilService.addEmailToBlockedList(email, contactDTO, "IGNORED");
-            return null;
-        }
-        else if (CommonUtilCache.getIgnoreList().contains(lastName))
-        {
-            LOGGER.warn("Last Name " + lastName + " falls under IGNORED LIST, will be skipped");
-            contactUtilService.addEmailToBlockedList(email, contactDTO, "IGNORED");
-            return null;
-        }*/
+        /*
+         * else if (CommonUtilCache.getIgnoreList().contains(firstName)) { LOGGER.warn("First Name " + firstName + " falls under IGNORED LIST, will be skipped");
+         * contactUtilService.addEmailToBlockedList(email, contactDTO, "IGNORED"); return null; } else if (CommonUtilCache.getIgnoreList().contains(lastName)) { LOGGER.warn("Last Name " + lastName +
+         * " falls under IGNORED LIST, will be skipped"); contactUtilService.addEmailToBlockedList(email, contactDTO, "IGNORED"); return null; }
+         */
         else if (CommonUtilCache.getBlacklistedDomainList().contains(email.split("@")[1].trim()))
         {
             LOGGER.warn("Email " + email + " detected to be BLACKLISTED. Will be added to the blacklisted group");
-            //contactUtilService.addEmailToBlockedList(email, contactDTO, "BLACKLISTED");
+            addEmailToBlockedList(email, contactDTO, "BLACKLISTED");
             return null;
         }
         else if (!validatedDomains.contains(email.split("@")[1]))
@@ -82,14 +91,14 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
             if (mxRecords == null || mxRecords.isEmpty())
             {
                 LOGGER.warn("No MX records found for email " + email + ", Potential candidate for blacklist");
-                //TODO fix logic to add to blacklist..
-                //contactUtilService.addEmailToBlockedList(email, contactDTO, "INVALID_MX_RECORDS");
+                addEmailToBlockedList(email, contactDTO, "INVALID_MX_RECORDS");
                 return null;
             }
             else
             {
                 validatedDomains.add(email.split("@")[1]);
-                LOGGER.info("Validated domain "+email.split("@")[1]+" for MX reords successfully. Added to local cache");
+                LOGGER.info("Validated domain " + email.split("@")[1]
+                        + " for MX reords successfully. Added to local cache");
             }
         }
 
@@ -143,5 +152,33 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         }
 
         return cg;
+    }
+
+    /**
+     * Adds the email to blocked list.
+     *
+     * @param email the email
+     * @param contactUploadDTO the contact upload DTO
+     * @param reason the reason
+     */
+    private void addEmailToBlockedList(String email, ContactUploadDTO contactUploadDTO, String reason)
+    {
+        //Query query = em.createNativeQuery("select * from blocked_contacts b where upper(b.email)='"+email.toUpperCase()+"' and upper(b.reason) = '"+reason.toUpperCase()+"'");
+        //BlockedContacts blocked = (BlockedContacts)query.getSingleResult();
+        
+        //BlockedContacts contacts = blockedContactService.findBlockedContactByEmailAndReason(email,reason);
+        //if (blocked == null)
+        //{
+            BlockedContacts contactToBlock = new BlockedContacts();
+            contactToBlock.setEmail(email);
+            contactToBlock.setFirstName(contactUploadDTO.getFirstName());
+            contactToBlock.setLastName(contactUploadDTO.getLastName());
+            contactToBlock.setReason(reason);
+            blockedContactService.addBlockedContact(contactToBlock);
+       // }
+       // else
+       // {
+         //   LOGGER.warn("Contact is already in blacklisted");
+        //}
     }
 }

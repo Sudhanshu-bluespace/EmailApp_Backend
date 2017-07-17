@@ -1,10 +1,18 @@
 package com.bluespacetech.notifications.email.batch;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,19 +21,27 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+
+import com.bluespacetech.common.util.Base64ToImageDecodeHelper;
 import com.bluespacetech.common.util.CommonUtilCache;
 import com.bluespacetech.contact.entity.BlockedContacts;
-import com.bluespacetech.contact.repository.BlockedContactRepository;
+import com.bluespacetech.contact.service.BlockedContactService;
+import com.bluespacetech.notifications.email.entity.Email;
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
+import com.bluespacetech.notifications.email.repository.EmailRepository;
 import com.bluespacetech.notifications.email.util.ContactGroupMailMessage;
 import com.bluespacetech.notifications.email.util.EmailUtils;
-import com.bluespacetech.notifications.email.util.MailConfiguration;
 import com.bluespacetech.notifications.email.util.MailTemplateConfiguration;
 import com.bluespacetech.notifications.email.validators.EmailMXRecordDNSValidator;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
+import com.bluespacetech.security.model.UserAccount;
+import com.bluespacetech.security.repository.UserAccountRepository;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class GroupContactEmailItemProcessor.
  */
@@ -45,13 +61,17 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
     @Autowired
     private VelocityEngine velocityEngine;
 
-    /** The mail config. */
-    @Autowired
-    private MailConfiguration mailConfig;
-
     /** The blocked contact repository. */
     @Autowired
-    private BlockedContactRepository blockedContactRepository;
+    private BlockedContactService blockedContactService;
+
+    /** The email repository. */
+    @Autowired
+    private EmailRepository emailRepository;
+
+    /** The user account repo. */
+    @Autowired
+    private UserAccountRepository userAccountRepo;
 
     /** The template configuration. */
     @Autowired
@@ -74,10 +94,10 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
         }
         else
         {
-            BlockedContacts blocked = blockedContactRepository.findByEmailIgnoreCase(email);
-            if (blocked != null)
+            List<BlockedContacts> blocked = blockedContactService.findByEmail(email);
+            if (blocked != null &&!blocked.isEmpty())
             {
-                String reason = blocked.getReason();
+                String reason = blocked.get(0).getReason();
                 LOGGER.warn("Blocking send emails to Contact " + email + " as it is blacklisted, reason : [" + reason
                         + "]");
                 return null;
@@ -90,7 +110,7 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 return null;
             }
             else
-            {   
+            {
                 String[] splitEmail = email.split("@");
                 if (splitEmail.length == 2 && CommonUtilCache.getBlacklistedDomainList().contains(splitEmail[1].trim()))
                 {
@@ -116,7 +136,8 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
 
                 String splitRef = emailRequestURL.substring(0, emailRequestURL.indexOf("/emails"));
                 final String unsubscribeLink = EmailUtils.generateUnsubscribeLink(emailContactGroupVO, splitRef);
-                final String fullUnsubscribeLink = EmailUtils.generateFullUnsubscribeLink(emailContactGroupVO, splitRef);
+                final String fullUnsubscribeLink = EmailUtils.generateFullUnsubscribeLink(emailContactGroupVO,
+                        splitRef);
                 final String subscribeLink = EmailUtils.generateSubscribeLink(emailContactGroupVO, splitRef);
                 final String readMailImageSRC = EmailUtils.generateReadMailImageSRC(emailContactGroupVO, splitRef,
                         value);
@@ -125,8 +146,50 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 LOGGER.debug("footerDarkText : " + templateConfiguration.getFooterDarkText());
 
                 VelocityContext context = new VelocityContext();
+                String message = emailContactGroupVO.getMessage();
+
+                final ContactGroupMailMessage contactGroupMailMessage = new ContactGroupMailMessage();
+                final MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+                final MimeMessageHelper simpleMailMessage = new MimeMessageHelper(mimeMessage, true);
+                FileSystemResource resource = null;
+                List<Base64ToImageDecodeHelper> objList = null;
+                if (message.contains("<img src="))
+                {
+                    LOGGER.info("Found image.. resolving and setting as inline in mime message");
+                    objList = getFormattedEmailForImages(message, emailContactGroupVO.getEmailId());
+
+                    if (objList != null)
+                    {
+                        for (Base64ToImageDecodeHelper obj : objList)
+                        {
+                            LOGGER.info("Object successfully populated after image formatting.. : " + obj);
+                            message = message.replace(obj.getReplacedText(),
+                                    "<img src=\"cid:" + obj.getImageIdentifierKey() + "\">");
+                            
+                            if(!CommonUtilCache.getTempFileCleanupMap().containsKey(emailContactGroupVO.getEmailId()))
+                            {
+                                CommonUtilCache.getTempFileCleanupMap().put(emailContactGroupVO.getEmailId(), new ArrayList<>());
+                            }
+                            CommonUtilCache.getTempFileCleanupMap().get(emailContactGroupVO.getEmailId()).add(obj.getClasspathToImage());
+                            LOGGER.info("Temp Image path "+obj.getClasspathToImage()+" saved to cleanup cache..");
+                        }
+                    }
+                }
+
+                LOGGER.info("Re-Formatted email text : " + message);
+
+                Long emailId = emailContactGroupVO.getEmailId();
+                Email emailObj = emailRepository.findById(emailId);
+                String sender = emailObj.getCreatedUser();
+                UserAccount senderAccount = userAccountRepo.findUserAccountByUsername(sender);
+                String splitEmailAddress = senderAccount.getEmail().split("@")[1];
+                String computedFromId = splitEmailAddress.split("\\.")[0];
+                // String senderMailAddress = userAccountRepo.findUserAccountByUsername(sender).getEmail();
+                // System.out.println("Sender emall address : "+senderMailAddress);
+
                 context.put("userName", emailContactGroupVO.getContactFirstName());
-                context.put("emailText", emailContactGroupVO.getMessage());
+                context.put("emailText", message);
                 context.put("unsubscribe", unsubscribeLink);
                 context.put("fullUnsubscribe", fullUnsubscribeLink);
                 context.put("subscribe", subscribeLink);
@@ -138,20 +201,27 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 velocityEngine.mergeTemplate("velocityTemplates/SimpleEmail.vm", "UTF-8", context, writer);
                 final String text = writer.toString();
 
-                final ContactGroupMailMessage contactGroupMailMessage = new ContactGroupMailMessage();
-                final MimeMessage mimeMessage = mailSender.createMimeMessage();
-
-                final MimeMessageHelper simpleMailMessage = new MimeMessageHelper(mimeMessage, true);
                 simpleMailMessage.setTo(emailContactGroupVO.getContactEmail());
                 /*
                  * if (mailSender instanceof JavaMailSenderImpl) { System.out.println(((JavaMailSenderImpl) mailSender).getHost() + " | " + ((JavaMailSenderImpl) mailSender).getJavaMailProperties());
                  * String fromAddress = ((JavaMailSenderImpl) mailSender).getJavaMailProperties().getProperty("mail.from"); simpleMailMessage.setFrom(fromAddress); }
                  */
 
-                simpleMailMessage.setFrom(mailConfig.getMailFrom());
+                simpleMailMessage.getMimeMessage().setFrom(new InternetAddress(computedFromId + "@contactswing.com"));
+                // simpleMailMessage.setFrom(senderMailAddress);
                 simpleMailMessage.setSubject(emailContactGroupVO.getSubject());
                 simpleMailMessage.setSentDate(new Date());
                 simpleMailMessage.setText(text, true);
+
+                if (objList != null)
+                {
+                    for (Base64ToImageDecodeHelper obj : objList)
+                    {
+                        resource = new FileSystemResource(obj.getClasspathToImage().toString());
+                        LOGGER.debug(resource.getPath() + " | " + resource.exists() + " | " + resource.getFilename());
+                        simpleMailMessage.addInline(obj.getImageIdentifierKey(), resource);
+                    }
+                }
 
                 final EmailContactGroup emailContactGroup = new EmailContactGroup();
                 emailContactGroup.setContactId(emailContactGroupVO.getContactId());
@@ -183,6 +253,56 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
     }
 
     /**
+     * Gets the formatted email for images.
+     *
+     * @param message the message
+     * @param emailId the email id
+     * @return the formatted email for images
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private List<Base64ToImageDecodeHelper> getFormattedEmailForImages(String message, Long emailId) throws IOException
+    {
+        LOGGER.debug("Message : " + message);
+        String regex = "<img([\\w\\W]+?)>";
+        Pattern pattern = Pattern.compile(regex);
+        List<Base64ToImageDecodeHelper> objList = new ArrayList<>();
+        java.util.regex.Matcher matcher = pattern.matcher(message);
+        int i = 0;
+        while (matcher.find())
+        {
+            i++;
+            Base64ToImageDecodeHelper obj = new Base64ToImageDecodeHelper();
+            String res = matcher.group();
+            LOGGER.debug(res);
+            String encodedString = res.split(",")[1];
+            if (encodedString.endsWith("\">"))
+            {
+                encodedString = encodedString.substring(0, encodedString.length() - 2);
+            }
+            else
+            {
+                encodedString = encodedString.substring(0, encodedString.length() - 1);
+            }
+
+            LOGGER.debug("Encoded : " + encodedString);
+            byte[] decodedImg = Base64.getDecoder().decode(encodedString.getBytes(StandardCharsets.UTF_8));
+            Resource resource = new FileSystemResource("/opt/packages/Oracle/BluespaceMailer/temp");
+            LOGGER.debug("File System resource exists : " + resource.exists());
+            File file = new File(resource.getFile(), "/tempImage_" + emailId + "_" + i + ".jpg");
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(decodedImg);
+            fos.close();
+            obj.setImageIdentifierKey("image_" + i);
+            obj.setClasspathToImage(file.toPath());
+            // String output = message.replace(res, "<img src=\"cid:image_" + i + "\">");
+            obj.setReplacedText(res);
+            objList.add(obj);
+        }
+
+        return objList;
+    }
+
+    /**
      * Adds the email to blocked list.
      *
      * @param email the email
@@ -190,15 +310,16 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
      */
     private void addEmailToBlockedList(String email, EmailContactGroupVO emailContactGroupVO)
     {
-        BlockedContacts contacts = blockedContactRepository.findByEmailIgnoreCase(email);
+        String reason = "INVALID_MX_RECORDS";
+        BlockedContacts contacts = blockedContactService.findBlockedContactByEmailAndReason(email, reason);
         if (contacts == null)
         {
             BlockedContacts contactToBlock = new BlockedContacts();
             contactToBlock.setEmail(email);
             contactToBlock.setFirstName(emailContactGroupVO.getContactFirstName());
             contactToBlock.setLastName(emailContactGroupVO.getContactLastName());
-            contactToBlock.setReason("INVALID_MX_RECORDS");
-            blockedContactRepository.save(contactToBlock);
+            contactToBlock.setReason(reason);
+            blockedContactService.addBlockedContact(contactToBlock);
         }
         else
         {

@@ -37,6 +37,8 @@ public class Group extends BaseEntity implements Serializable
     @JsonIgnore
     @OneToMany(mappedBy = "contactGroupPK.group", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ContactGroup> contactGroups = new ArrayList<>();
+    
+    
 
     @Override
     public int hashCode()
@@ -44,7 +46,6 @@ public class Group extends BaseEntity implements Serializable
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((contactCount == null) ? 0 : contactCount.hashCode());
-        result = prime * result + ((contactGroups == null) ? 0 : contactGroups.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
@@ -65,13 +66,6 @@ public class Group extends BaseEntity implements Serializable
                 return false;
         }
         else if (!contactCount.equals(other.contactCount))
-            return false;
-        if (contactGroups == null)
-        {
-            if (other.contactGroups != null)
-                return false;
-        }
-        else if (!contactGroups.equals(other.contactGroups))
             return false;
         if (name == null)
         {

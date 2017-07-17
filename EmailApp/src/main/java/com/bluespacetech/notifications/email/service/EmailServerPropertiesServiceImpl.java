@@ -35,39 +35,39 @@ public class EmailServerPropertiesServiceImpl implements EmailServerPropertiesSe
 	private EmailServerPropertiesRepository emailServerPropertiesRepository;
 
 	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS'))")
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
 	public List<EmailServerProperties> findByEmailServer(EmailServer emailServer) {
 		return emailServerPropertiesRepository.findEmailServerPropertiesByEmailServer(emailServer);
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('CREATE_SERVERS'))")
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('CREATE_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
 	public EmailServerProperties createEmailServerProperty(EmailServerProperties emailServerProperties)
 			throws BusinessException {
 		return emailServerPropertiesRepository.save(emailServerProperties);
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('DELETE_SERVERS'))")
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('DELETE_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
 	public void deleteEmailServerProperty(Long emailServerPropertiesId) throws BusinessException {
 		emailServerPropertiesRepository.delete(emailServerPropertiesId);
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('UPDATE_SERVERS'))")
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('UPDATE_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
 	public EmailServerProperties updateEmailServerProperty(EmailServerProperties emailServerProperties)
 			throws BusinessException {
 		return emailServerPropertiesRepository.save(emailServerProperties);
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS'))")
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
 	public EmailServerProperties getEmailServerPropertiesById(Long id) throws BusinessException {
 		return emailServerPropertiesRepository.findOne(id);
 	}
 
 	@Override
-	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS'))")
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_SERVERS') or hasAuthority('ACCESS_SEND_EMAIL'))")
 	public List<EmailServerProperties> findByEmailServers(List<EmailServer> emailServers) {
 		return emailServerPropertiesRepository.findByEmailServerIn(emailServers);
 	}

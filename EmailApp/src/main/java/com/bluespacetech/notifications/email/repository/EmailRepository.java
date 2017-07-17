@@ -17,4 +17,5 @@ import com.bluespacetech.notifications.email.entity.Email;
 @Repository
 public interface EmailRepository extends JpaRepository<Email, Long>
 {
+    Email findById(final Long id );
 }

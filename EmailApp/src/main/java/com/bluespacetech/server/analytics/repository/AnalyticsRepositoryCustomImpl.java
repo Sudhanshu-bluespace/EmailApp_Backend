@@ -15,6 +15,7 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.bluespacetech.core.utility.ViewUtil;
 import com.bluespacetech.server.analytics.query.QueryStringConstants;
 
 /**
@@ -166,9 +167,9 @@ public class AnalyticsRepositoryCustomImpl implements AnalyticsRepositoryCustom
     }
 
     @Override
-    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOfDays)
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOfDays,boolean isAdmin)
     {
-        String queryString = QueryStringConstants.getQuery_RecentlyUnsubscribedUsers(numberOfDays);
+        String queryString = isAdmin ? QueryStringConstants.getQuery_RecentlyUnsubscribedUsers(numberOfDays):QueryStringConstants.getQuery_RecentlyUnsubscribedUsers(numberOfDays,ViewUtil.getPrincipal());
         List<RecentUnsubscribesDTO> RecentUnsubscribes = new ArrayList<>();
         Query query = em.createNativeQuery(queryString);
         List<Object[]> responseList = query.getResultList();
@@ -188,9 +189,9 @@ public class AnalyticsRepositoryCustomImpl implements AnalyticsRepositoryCustom
     }
     
     @Override
-    public List<RecentlyUnsubscribedCountDTO> getRecentlyUnsubscribedCount(int numberOfDays)
+    public List<RecentlyUnsubscribedCountDTO> getRecentlyUnsubscribedCount(int numberOfDays,boolean isAdmin)
     {
-        String queryString = QueryStringConstants.getQuery_RecentlyUnsubscribedUserCountDistribution(numberOfDays);
+        String queryString = isAdmin?QueryStringConstants.getQuery_RecentlyUnsubscribedUserCountDistribution(numberOfDays):QueryStringConstants.getQuery_RecentlyUnsubscribedUserCountDistribution(numberOfDays,ViewUtil.getPrincipal());
         List<RecentlyUnsubscribedCountDTO> RecentUnsubscribes = new ArrayList<>();
         Query query = em.createNativeQuery(queryString);
         List<Object[]> responseList = query.getResultList();

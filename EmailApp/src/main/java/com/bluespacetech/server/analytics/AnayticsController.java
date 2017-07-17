@@ -156,9 +156,14 @@ public class AnayticsController
      * @return the pending approvals
      */
     @PostMapping(value = "getRecentUnsubscribes", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(@RequestParam("age") String age)
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(@RequestParam("age") String age,@RequestParam("isAdmin")String isAdmin)
     {
-        List<RecentUnsubscribesDTO> response = analyticsService.getRecentUnsubscribes(Integer.parseInt(age));
+        boolean admin = false;
+        if(Boolean.TRUE.toString().equalsIgnoreCase(isAdmin))
+        {
+            admin=true;
+        }
+        List<RecentUnsubscribesDTO> response = analyticsService.getRecentUnsubscribes(Integer.parseInt(age),admin);
         LOGGER.debug("response : " + response);
         return response;
     }
@@ -170,9 +175,14 @@ public class AnayticsController
      * @return the pending approvals
      */
     @PostMapping(value = "getRecentUnsubscribedCount", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<RecentlyUnsubscribedCountDTO> getRecentUnsubscribedCount(@RequestParam("age") String age)
+    public List<RecentlyUnsubscribedCountDTO> getRecentUnsubscribedCount(@RequestParam("age") String age,@RequestParam("isAdmin")String isAdmin)
     {
-        List<RecentlyUnsubscribedCountDTO> response = analyticsService.getRecentUnsuscribedCount(Integer.parseInt(age));
+        boolean admin = false;
+        if(Boolean.TRUE.toString().equalsIgnoreCase(isAdmin))
+        {
+            admin=true;
+        }
+        List<RecentlyUnsubscribedCountDTO> response = analyticsService.getRecentUnsuscribedCount(Integer.parseInt(age),admin);
         LOGGER.debug("response : " + response);
         return response;
     }

@@ -93,22 +93,50 @@ public class ContactGroup implements Serializable
         this.getContactGroupPK().setGroup(group);
     }
 
-    public boolean equals(Object o)
+    
+    @Override
+    public int hashCode()
     {
-        if (this == o)
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((contactGroupPK == null) ? 0 : contactGroupPK.hashCode());
+        result = prime * result + (isActive ? 1231 : 1237);
+        result = prime * result + (unSubscribed ? 1231 : 1237);
+        result = prime * result + ((unsubscribedDate == null) ? 0 : unsubscribedDate.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (obj == null)
             return false;
-
-        ContactGroup that = (ContactGroup) o;
-
-        if (getContactGroupPK() != null ? !getContactGroupPK().equals(that.getContactGroupPK())
-                : that.getContactGroupPK() != null)
+        if (getClass() != obj.getClass())
             return false;
-
+        ContactGroup other = (ContactGroup) obj;
+        if (contactGroupPK == null)
+        {
+            if (other.contactGroupPK != null)
+                return false;
+        }
+        else if (!contactGroupPK.equals(other.contactGroupPK))
+            return false;
+        if (isActive != other.isActive)
+            return false;
+        if (unSubscribed != other.unSubscribed)
+            return false;
+        if (unsubscribedDate == null)
+        {
+            if (other.unsubscribedDate != null)
+                return false;
+        }
+        else if (!unsubscribedDate.equals(other.unsubscribedDate))
+            return false;
         return true;
     }
-    
+
     /**
      * Pre persist.
      */
@@ -119,11 +147,6 @@ public class ContactGroup implements Serializable
         //final java.util.Date date = new java.util.Date();
             // last updated time stamp
         unsubscribedDate = null;
-    }
-
-    public int hashCode()
-    {
-        return (getContactGroupPK() != null ? getContactGroupPK().hashCode() : 0);
     }
 
 }

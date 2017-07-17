@@ -105,7 +105,7 @@ public class UserAccount extends BaseEntity implements Serializable
     private String street;
     
     /** The city. */
-    @Column(name="CITY",nullable = false, unique=true)
+    @Column(name="CITY",nullable = false)
     private String city;
     
     /** The state. */

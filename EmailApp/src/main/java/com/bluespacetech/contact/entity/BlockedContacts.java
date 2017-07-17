@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.bluespacetech.core.model.BaseEntity;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class BlockedContacts.
  *
@@ -22,47 +23,65 @@ import com.bluespacetech.core.model.BaseEntity;
 @Table(name = "BLOCKED_CONTACTS")
 public class BlockedContacts extends BaseEntity implements Serializable
 {
-    /**
-     * 
-     */
+
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -920295196248477456L;
 
     /** The first name. */
-    @Column(name = "FIRST_NAME")
+    @Column(name = "FIRST_NAME",nullable=false)
     private String firstName;
 
     /** The last name. */
-    @Column(name = "LAST_NAME")
+    @Column(name = "LAST_NAME",nullable=false)
     private String lastName;
 
     /** The email. */
-    @NotEmpty(message = "Email is mandatory.")
-    @Column(name = "EMAIL")
+    @Column(name = "EMAIL",nullable=false)
     private String email;
-    
-    @NotEmpty(message = "Reasons for blocking is mandatory")
-    @Column(name="REASON")
-    private String reason;
-    
-    @Column(name="RESPONSE_CODE")
-    private String responseCode;
-    
 
+    /** The reason. */
+    @Column(name = "REASON")
+    private String reason;
+
+    /** The response code. */
+    @Column(name = "RESPONSE_CODE")
+    private String responseCode;
+
+    /**
+     * Gets the response code.
+     *
+     * @return the response code
+     */
     public String getResponseCode()
     {
         return responseCode;
     }
 
+    /**
+     * Sets the response code.
+     *
+     * @param responseCode the new response code
+     */
     public void setResponseCode(String responseCode)
     {
         this.responseCode = responseCode;
     }
 
+    /**
+     * Gets the reason.
+     *
+     * @return the reason
+     */
     public String getReason()
     {
         return reason;
     }
 
+    /**
+     * Sets the reason.
+     *
+     * @param reason the new reason
+     */
     public void setReason(String reason)
     {
         this.reason = reason;
@@ -128,6 +147,10 @@ public class BlockedContacts extends BaseEntity implements Serializable
         this.email = email;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {

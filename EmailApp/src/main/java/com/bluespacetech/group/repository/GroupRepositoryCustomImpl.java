@@ -19,39 +19,70 @@ import com.bluespacetech.group.searchcriteria.GroupSearchCriteria;
  * @author sandeep created date 24-Aug-2016
  */
 @Repository
-public class GroupRepositoryCustomImpl implements GroupRepositoryCustom {
+public class GroupRepositoryCustomImpl implements GroupRepositoryCustom
+{
 
-	@PersistenceContext
-	private EntityManager entityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-	@Override
-	public List<Group> findGroupsBySearchCriteria(GroupSearchCriteria groupSearchCriteria) {
-		StringBuilder queryString = new StringBuilder("select G from Group G ");
-		boolean whereClasuseAdded = false;
-		if (groupSearchCriteria.getName() != null) {
-			if (!whereClasuseAdded) {
-				queryString = queryString.append(" where ");
-			} else {
-				queryString = queryString.append(" and ");
-			}
-			queryString = queryString.append(" G.name like :name ");
-		}
-		if (groupSearchCriteria.getComments() != null) {
-			if (!whereClasuseAdded) {
-				queryString = queryString.append(" where ");
-			} else {
-				queryString = queryString.append(" and ");
-			}
-			queryString = queryString.append(" G.comments like :comments ");
-		}
-		TypedQuery<Group> query = entityManager.createQuery(queryString.toString(), Group.class);
-		if (groupSearchCriteria.getName() != null) {
-			query.setParameter("name", "%" + groupSearchCriteria.getName() + "%");
-		}
-		if (groupSearchCriteria.getComments() != null) {
-			query.setParameter("comments", groupSearchCriteria.getComments());
-		}
-		return query.getResultList();
-	}
+    @Override
+    public List<Group> findGroupsBySearchCriteria(GroupSearchCriteria groupSearchCriteria)
+    {
+        StringBuilder queryString = new StringBuilder("select G from Group G ");
+        boolean whereClasuseAdded = false;
+        if (groupSearchCriteria.getName() != null)
+        {
+            if (!whereClasuseAdded)
+            {
+                queryString = queryString.append(" where ");
+                whereClasuseAdded = true;
+            }
+            else
+            {
+                queryString = queryString.append(" and ");
+            }
+            queryString = queryString.append(" G.name like :name ");
+        }
+        if (groupSearchCriteria.getComments() != null)
+        {
+            if (!whereClasuseAdded)
+            {
+                queryString = queryString.append(" where ");
+                whereClasuseAdded = true;
+            }
+            else
+            {
+                queryString = queryString.append(" and ");
+            }
+            queryString = queryString.append(" G.comments like :comments ");
+        }
+        if (groupSearchCriteria.getUsername() != null)
+        {
+            if (!whereClasuseAdded)
+            {
+                queryString = queryString.append(" where ");
+                whereClasuseAdded = true;
+            }
+            else
+            {
+                queryString = queryString.append(" and ");
+            }
+            queryString = queryString.append(" upper(G.createdUser) = :createdUser ");
+        }
+        TypedQuery<Group> query = entityManager.createQuery(queryString.toString(), Group.class);
+        if (groupSearchCriteria.getName() != null)
+        {
+            query.setParameter("name", "%" + groupSearchCriteria.getName() + "%");
+        }
+        if (groupSearchCriteria.getComments() != null)
+        {
+            query.setParameter("comments", groupSearchCriteria.getComments());
+        }
+        if (groupSearchCriteria.getUsername() != null)
+        {
+            query.setParameter("createdUser", groupSearchCriteria.getUsername().toUpperCase());
+        }
+        return query.getResultList();
+    }
 
 }
