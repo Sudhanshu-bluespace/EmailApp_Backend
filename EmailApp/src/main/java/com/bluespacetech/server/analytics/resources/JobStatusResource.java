@@ -29,6 +29,18 @@ public class JobStatusResource extends ResourceSupport
     /** The status. */
     private String status;
     
+    private String comments;
+    
+    public String getComments()
+    {
+        return comments;
+    }
+
+    public void setComments(String comments)
+    {
+        this.comments = comments;
+    }
+
     /**
      * Gets the job id.
      *

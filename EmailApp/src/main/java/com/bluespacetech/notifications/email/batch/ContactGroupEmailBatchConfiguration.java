@@ -2,9 +2,8 @@ package com.bluespacetech.notifications.email.batch;
 
 import javax.sql.DataSource;
 
+import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -131,6 +130,14 @@ public class ContactGroupEmailBatchConfiguration
         writer.setEmailServerPropertiesService(emailServerPropertiesService);
         return writer;
     }
+    
+    @Bean
+    @StepScope
+    public ItemWriteListener<ContactGroupMailMessage> listener(@Value("#{jobParameters[request_batch_id]}") String request_batch_id)
+    {
+        final EmailWriterListener listener = new EmailWriterListener(request_batch_id);
+        return listener;
+    }
 
     /**
      * Processor.
@@ -156,7 +163,7 @@ public class ContactGroupEmailBatchConfiguration
     @Bean(name = "contactGroupEmailJob")
     public Job contactGroupEmailJob()
     {
-        //LOGGER.info("Triggering Job (contactGroupEmailJob) from Contact Group Batch Config");
+        LOGGER.debug("Triggering Job (contactGroupEmailJob) from Contact Group Batch Config");
         return jobBuilderFactory.get("contactGroupEmailJob").incrementer(new RunIdIncrementer()).flow(step1()).end()
                 .build();
     }
@@ -169,11 +176,12 @@ public class ContactGroupEmailBatchConfiguration
     @Bean
     public Step step1()
     {
-        //LOGGER.info("Executing Batch Job for email processing");
-        return stepBuilderFactory.get("step1").<EmailContactGroupVO, ContactGroupMailMessage> chunk(10)
+        LOGGER.debug("Executing Batch Job for email processing");
+        return stepBuilderFactory.get("step1").<EmailContactGroupVO, ContactGroupMailMessage> chunk(50)
                 .reader(emailContactGroupItemReader(null))
                 .processor(processor(null))
                 .writer(simpleEmailWriter(emailContactGroupService))
+                .listener(listener(null))
                 .build();
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.bluespacetech.common.util.CommonUtilCache;
-import com.bluespacetech.notifications.email.entity.JobExecutionEntity;
 import com.bluespacetech.notifications.email.repository.JobExecutionRepository;
 
 /**

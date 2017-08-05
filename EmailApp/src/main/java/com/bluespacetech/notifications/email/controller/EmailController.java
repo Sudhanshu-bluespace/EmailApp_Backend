@@ -9,6 +9,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.tomcat.util.file.Matcher;
 import org.springframework.batch.core.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -81,11 +84,15 @@ public class EmailController
     @Autowired
     private EmailService emailService;
 
+    /** The job execution repository. */
     @Autowired
     private JobExecutionRepository jobExecutionRepository;
 
+    /** The consumer. */
     @Autowired
     private Consumer consumer;
+
+    private Path reportsFilePath;
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(EmailController.class);
@@ -100,6 +107,7 @@ public class EmailController
      *
      * @param emailVO the email VO
      * @param request the request
+     * @param response the response
      */
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void job(@RequestBody final EmailVO emailVO, HttpServletRequest request, HttpServletResponse response)
@@ -180,6 +188,61 @@ public class EmailController
 
             List<EmailContactGroupVO> recipientList = emailService.getEmailContactGroups(queryGetContacts, emailVO,
                     emailId);
+
+            FileSystemResource reportsDir = new FileSystemResource("/opt/packages/Oracle/BluespaceMailer/reports");
+            if (!reportsDir.exists())
+            {
+                try
+                {
+                    Files.createDirectory(Paths.get(reportsDir.getPath()));
+                }
+                catch (IOException ex)
+                {
+                    LOGGER.error("Failed to create new reports directory " + reportsDir.getPath()
+                            + ", reports will not be generated for this campaign");
+                }
+            }
+
+            String fileName = email.getCreatedUser() + "_" + emailVO.getSubject().replaceAll("\\s", "\\-") + "_"
+                    + getCurrentDate() + "_" + emailId + ".csv";
+            this.reportsFilePath = Paths.get(reportsDir.getPath(), fileName);
+            
+            try
+            {
+                Files.createFile(reportsFilePath);
+                StringBuilder sb = new StringBuilder();
+                sb.append(",,,,,")
+                .append("Generated Report for Campaign")
+                .append(",")
+                .append(email.getSubject())
+                .append(System.lineSeparator())
+                .append(",,,,,")
+                .append("Campaign Date : ").append(",")
+                .append(getCurrentDateWithSpaces())
+                .append(System.lineSeparator())
+                .append(",,,,,")
+                .append("Generated Campaign ID : ")
+                .append(",")
+                .append(email.getId())
+                .append(System.lineSeparator())
+                .append(",,,,,")
+                .append("Campaign Sender username")
+                .append(",")
+                .append(email.getCreatedUser())
+                .append(System.lineSeparator())
+                .append(System.lineSeparator())
+                .append(System.lineSeparator())
+                .append("JOB_ID,BATCH_ID,REQUEST_ID,CONTACT_EMAIL,FIRST_NAME,LAST_NAME,SEND_EMAIL_STATUS,COMMENTS")
+                .append(System.lineSeparator());
+                
+                Files.write(reportsFilePath, sb.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+            }
+            catch (IOException ex)
+            {
+                LOGGER.error("Failed to create new reports file " + fileName + " in " + reportsDir.getPath()
+                        + ", reports will not be generated for this campaign");
+            }
+
             if (recipientList == null)
             {
                 LOGGER.warn("No recipients found");
@@ -202,6 +265,7 @@ public class EmailController
                     endpoint.setCampaignName(emailVO.getSubject());
                     endpoint.setSender(ViewUtil.getPrincipal());
                     endpoint.setRequestUrl(request.getRequestURL().toString());
+                    endpoint.setReportsFilePath(reportsFilePath);
 
                     Producer producer = new Producer(endpoint, queueInstance, jobExecutionRepository);
                     // Consumer consumer = new Consumer(queueInstance, contactGroupEmailJob, jobLauncher);
@@ -242,6 +306,7 @@ public class EmailController
                 endpoint.setCampaignName(emailVO.getSubject());
                 endpoint.setSender(ViewUtil.getPrincipal());
                 endpoint.setRequestUrl(request.getRequestURL().toString());
+                endpoint.setReportsFilePath(reportsFilePath);
 
                 Producer producer = new Producer(endpoint, queueInstance, jobExecutionRepository);
                 // Consumer consumer = new Consumer(queueInstance, contactGroupEmailJob, jobLauncher);
@@ -258,17 +323,33 @@ public class EmailController
             try
             {
                 emailService.deleteEmail(email);
-                LOGGER.info("Email record rolled back successfully");
+                LOGGER.info("Email record rolled back successfully, Deleting reports file if already generated..");
+                try
+                {
+                    Files.deleteIfExists(reportsFilePath);
+                }
+                catch (IOException e1)
+                {
+                    LOGGER.warn("Failed to delete reports file "+reportsFilePath+", please delete manually");
+                }
             }
             catch (BusinessException e1)
             {
                 LOGGER.error("Failed to rollback transaction, reason : [" + e1.getMessage() + "]");
             }
             throw new RuntimeException(e);
-
         }
     }
 
+    /**
+     * Attach file.
+     *
+     * @param file the file
+     * @param id the id
+     * @param response the response
+     * @param request the request
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @PutMapping(value = "/attachFile", produces = MediaType.APPLICATION_JSON_VALUE)
     public void attachFile(@RequestParam("file") MultipartFile file, @RequestParam("id") String id,
             HttpServletResponse response, HttpServletRequest request) throws IOException
@@ -313,7 +394,7 @@ public class EmailController
 
                     System.out.println("Resource : " + resource.getFilename() + " | " + resource.exists());
                     String originalFileName = file.getOriginalFilename().replaceAll("\\s", "_");
-                    String date = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+                    String date = getCurrentDate();
                     String fileName = id + "_" + date + "_" + originalFileName;
 
                     File tempFile = new File(resource.getFile() + File.separator + fileName);
@@ -356,10 +437,10 @@ public class EmailController
         }
         else
         {
-            //res.setError(HttpStatus.BAD_REQUEST + " No input file found");
-            //response.setStatus(HttpStatus.BAD_REQUEST.value());
-            //response.getWriter().write(new Gson().toJson(res));
-            
+            // res.setError(HttpStatus.BAD_REQUEST + " No input file found");
+            // response.setStatus(HttpStatus.BAD_REQUEST.value());
+            // response.getWriter().write(new Gson().toJson(res));
+
             Map<Object, Object> responseData = new HashMap<>();
             responseData.put("error", HttpStatus.BAD_REQUEST + " No input file found");
             String jsonResponseData = new Gson().toJson(responseData);
@@ -370,10 +451,20 @@ public class EmailController
         }
     }
 
+    private String getCurrentDate()
+    {
+        return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+    }
+    
+    private String getCurrentDateWithSpaces()
+    {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+    }
+
     /**
      * Persist job execution to DB.
      *
-     * @param jobEndPoint2 the job end point 2
+     * @param jobEndPoint the job end point
      */
     private void persistJobExecutionToDB(EmailJobEndpoint jobEndPoint)
     {
@@ -390,6 +481,14 @@ public class EmailController
                 + " saved successfully");
     }
 
+    /**
+     * Chopped.
+     *
+     * @param <T> the generic type
+     * @param list the list
+     * @param L the l
+     * @return the list
+     */
     // chops a list into non-view sublists of length L
     <T> List<List<T>> chopped(List<T> list, final int L)
     {

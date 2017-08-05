@@ -144,6 +144,7 @@ public class AnalyticsServiceImpl implements AnalyticsService
                 res.setEmailCount(ent.getEmailCount());
                 res.setSender(ent.getSender());
                 res.setStatus(ent.getStatus());
+                res.setComments(ent.getComments()==null||ent.getComments().trim().isEmpty()?"-":ent.getComments());
                 resourceList.add(res);
             }
         }

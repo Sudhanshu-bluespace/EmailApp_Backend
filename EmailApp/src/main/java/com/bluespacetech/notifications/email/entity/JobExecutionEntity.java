@@ -43,6 +43,19 @@ public class JobExecutionEntity extends BaseEntity implements Serializable
     /** The status. */
     @Column(name = "STATUS", nullable = false)
     private String status;
+    
+    @Column(name="COMMENTS", nullable = true,length = 400)
+    private String comments;
+
+    public String getComments()
+    {
+        return comments;
+    }
+
+    public void setComments(String comments)
+    {
+        this.comments = comments;
+    }
 
     /** The email count. */
     @Column(name = "EMAIL_COUNT", nullable = false)
@@ -198,14 +211,11 @@ public class JobExecutionEntity extends BaseEntity implements Serializable
         return serialVersionUID;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString()
     {
         return "JobExecutionEntity [requestId=" + requestId + ", batchId=" + batchId + ", jobId=" + jobId + ", sender="
-                + sender + ", campaignName=" + campaignName + ", status=" + status + ", emailCount=" + emailCount + "]";
+                + sender + ", campaignName=" + campaignName + ", status=" + status + ", comments=" + comments
+                + ", emailCount=" + emailCount + "]";
     }
 }

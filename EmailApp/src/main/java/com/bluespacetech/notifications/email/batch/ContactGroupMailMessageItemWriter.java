@@ -1,12 +1,8 @@
 package com.bluespacetech.notifications.email.batch;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +16,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -320,16 +315,17 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
         catch (final MailSendException e)
         {
             LOGGER.error("Mail send exception : " + e.getMessage());
-            throw new RuntimeException("Job execution Failed");
+            throw new RuntimeException("Job execution Failed",e);
         }
         catch (final BusinessException e)
         {
             LOGGER.error("Business Exception : " + e.getMessage());
-            throw new RuntimeException("Job execution Failed");
+            throw new RuntimeException("Job execution Failed",e);
         }
         catch (final Exception e)
         {
             LOGGER.error("Exception : " + e.getMessage());
+            throw new RuntimeException("Job execution Failed",e);
         }
 
     }

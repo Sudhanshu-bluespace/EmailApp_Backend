@@ -24,15 +24,24 @@ public class ContactGroupMailMessage implements Serializable
     /** The mime message. */
     private MimeMessage mimeMessage;
     
-    /** The Mime message preparator */
+    /**  The Mime message preparator. */
     private MimeMessagePreparator preparator;
-    
 
+    /**
+     * Gets the preparator.
+     *
+     * @return the preparator
+     */
     public MimeMessagePreparator getPreparator()
     {
         return preparator;
     }
 
+    /**
+     * Sets the preparator.
+     *
+     * @param preparator the new preparator
+     */
     public void setPreparator(MimeMessagePreparator preparator)
     {
         this.preparator = preparator;

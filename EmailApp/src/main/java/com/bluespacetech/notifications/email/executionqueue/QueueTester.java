@@ -1,6 +1,6 @@
 package com.bluespacetech.notifications.email.executionqueue;
 
-import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
+//import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
 /*public class QueueTester
 {

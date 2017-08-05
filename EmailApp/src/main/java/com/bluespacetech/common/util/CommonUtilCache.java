@@ -45,6 +45,13 @@ public class CommonUtilCache
     /** The bounced emails cache. */
     private static Map<String, List<String>> bouncedEmailsCache = new HashMap<>();
     
+    private static Map<String,String> requestIdVsErrorMap = new HashMap<>();
+    
+    public static Map<String, String> getRequestIdVsErrorMap()
+    {
+        return requestIdVsErrorMap;
+    }
+
     public static Map<Long, List<Path>> getTempFileCleanupMap()
     {
         return tempFileCleanupMap;

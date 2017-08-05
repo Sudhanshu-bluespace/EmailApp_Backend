@@ -1,7 +1,11 @@
 package com.bluespacetech.notifications.email.executionqueue;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -23,8 +27,8 @@ import org.springframework.stereotype.Component;
 import com.bluespacetech.common.util.CommonUtilCache;
 import com.bluespacetech.notifications.email.entity.JobExecutionEntity;
 import com.bluespacetech.notifications.email.repository.JobExecutionRepository;
+import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Consumer.
  */
@@ -68,6 +72,12 @@ public class Consumer implements Callable<String>
         this.jobLauncher = jobLauncher;
     }
 
+    /**
+     * Call.
+     *
+     * @return the string
+     * @throws Exception the exception
+     */
     /*
      * (non-Javadoc)
      * @see java.util.concurrent.Callable#call()
@@ -102,7 +112,7 @@ public class Consumer implements Callable<String>
 
             synchronized(this)
             {
-                persistJobExecutionToDB(endpoint.getBatchId(), endpoint.getRequestId(), "PROCESSING", null);
+                persistJobExecutionToDB(endpoint.getBatchId(), endpoint.getRequestId(), "PROCESSING", null,"");
             }
 
             if (!CommonUtilCache.getBatchIdToEmailListMap().containsKey(request_batch_id))
@@ -118,12 +128,21 @@ public class Consumer implements Callable<String>
             JobExecution execution = jobLauncher.run(contactGroupEmailJob, new JobParameters(jobParametersMap));
             LOGGER.info("Job Complete notification for campaign : " + endpoint.getCampaignName() + " | Job Id - "
                     + execution.getJobId() + " | Status - " + execution.getExitStatus());
+            
+            String errors = "";
+            if("FAILED".equalsIgnoreCase(execution.getExitStatus().getExitCode())&&CommonUtilCache.getRequestIdVsErrorMap().containsKey(request_batch_id))
+            {
+                errors = CommonUtilCache.getRequestIdVsErrorMap().get(request_batch_id);
+                LOGGER.info("Errors retrieved from Cache for "+request_batch_id+" : "+errors);
+                CommonUtilCache.getRequestIdVsErrorMap().remove(request_batch_id);
+            }
 
             synchronized(this)
             {
                 LOGGER.info("Persisting job cmompletion records for campaign : "+endpoint.getCampaignName()+", job ID : "+execution.getJobId()+", batch : "+endpoint.getBatchId()+" to Database from synchronized context");
                 persistJobExecutionToDB(endpoint.getRequestId(), endpoint.getBatchId(),
-                    execution.getExitStatus().getExitCode(), execution.getJobId());
+                    execution.getExitStatus().getExitCode(), execution.getJobId(),errors);
+                generateReport(endpoint,execution.getExitStatus().getExitCode(),execution.getJobId(),errors);
             }
             
             if(blockingQueue.isEmpty())
@@ -142,7 +161,7 @@ public class Consumer implements Callable<String>
      * @param exitCode the exit code
      * @param jobId the job id
      */
-    private void persistJobExecutionToDB(String requestId, String batchId, String exitCode, Long jobId)
+    private void persistJobExecutionToDB(String requestId, String batchId, String exitCode, Long jobId,String comments)
     {
         LOGGER.debug("Updating Job status on completion");
         JobExecutionEntity entity = jobExecutionRepository.findByRequestIdAndBatchIdIgnoreCase(requestId, batchId);
@@ -150,6 +169,7 @@ public class Consumer implements Callable<String>
         {
             entity.setJobId(jobId.toString());
             entity.setStatus(exitCode);
+            entity.setComments(comments);
             jobExecutionRepository.save(entity);
         }
 
@@ -164,7 +184,60 @@ public class Consumer implements Callable<String>
             }
         }
     }
+    
+    /**
+     * Generate report.
+     *
+     * @param endpoint the endpoint
+     * @param status the status
+     * @param jobId the job id
+     */
+    private void generateReport(EmailJobEndpoint endpoint, String status, Long jobId,String comments)
+    {
+        try
+        {
+            StringBuilder builder = new StringBuilder();
+            if(Files.exists(endpoint.getReportsFilePath()))
+            {
+                List<EmailContactGroupVO> list = endpoint.getEmailContactGroupList();
+                for(EmailContactGroupVO vo : list)
+                {
+                    builder.append(jobId)
+                    .append(",")
+                    .append(endpoint.getBatchId())
+                    .append(",")
+                    .append(endpoint.getRequestId())
+                    .append(",")
+                    .append(vo.getContactEmail())
+                    .append(",")
+                    .append(vo.getContactFirstName()==null||vo.getContactFirstName().trim().isEmpty()?"-":vo.getContactFirstName())
+                    .append(",")
+                    .append(vo.getContactLastName()==null||vo.getContactLastName().trim().isEmpty()?"-":vo.getContactLastName())
+                    .append(",")
+                    .append(status)
+                    .append(",")
+                    .append(comments==null||comments.trim().isEmpty()?"-":comments);
+                    builder.append(System.lineSeparator());
+                }
+                Files.write(endpoint.getReportsFilePath(), builder.toString().getBytes(),StandardOpenOption.APPEND);
+            }
+            else
+            {
+                LOGGER.error("Report file does not exist. Skipping data generation");
+            }
+        }
+        catch (IOException ex)
+        {
+            LOGGER.error("Failed to write data into report, reason : "+ex.getMessage());
+        }
 
+    }
+
+    /**
+     * To string.
+     *
+     * @return the string
+     */
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
