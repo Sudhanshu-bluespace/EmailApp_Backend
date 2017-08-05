@@ -25,7 +25,7 @@ public class PendingAccountApprovalsDTO
     /** The registration request date. */
     private String registrationRequestDate;
     
-    private String street;
+    private String address;
     
     private String city;
     
@@ -71,14 +71,14 @@ public class PendingAccountApprovalsDTO
         this.rejected = rejected;
     }
 
-    public String getStreet()
+    public String getAddress()
     {
-        return street;
+        return address;
     }
 
-    public void setStreet(String street)
+    public void setAddress(String address)
     {
-        this.street = street;
+        this.address = address;
     }
 
     public String getCity()
@@ -268,8 +268,8 @@ public class PendingAccountApprovalsDTO
     public String toString()
     {
         return "PendingAccountApprovalsDTO [serialNo=" + serialNo + ", id=" + id + ", name=" + name + ", email=" + email
-                + ", companyName=" + companyName + ", registrationRequestDate=" + registrationRequestDate + ", street="
-                + street + ", city=" + city + ", state=" + state + ", country=" + country + ", zipcode=" + zipcode
+                + ", companyName=" + companyName + ", registrationRequestDate=" + registrationRequestDate + ", address="
+                + address + ", city=" + city + ", state=" + state + ", country=" + country + ", zipcode=" + zipcode
                 + ", approved=" + approved + ", onHold=" + onHold + ", rejected=" + rejected + ", status=" + status
                 + "]";
     }

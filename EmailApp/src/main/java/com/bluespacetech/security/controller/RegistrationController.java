@@ -327,15 +327,18 @@ public class RegistrationController
             String emailAdress = (String) registrationDetails.get("email");
             String companyName = (String) registrationDetails.get("companyName");
             String phoneNumber = (String) registrationDetails.get("phone");
-            String address = (String) registrationDetails.get("address");
-            String street = (String) registrationDetails.get("street");
+            String addressLine1 = (String) registrationDetails.get("addressLine1");
+            String addressLine2 = (String) registrationDetails.get("addressLine2");
+            String firstName = (String) registrationDetails.get("firstName");
+            String middleName = (String) registrationDetails.get("middleName");
+            String lastName = (String) registrationDetails.get("lastName");
             String country = (String) registrationDetails.get("country");
             String state = (String) registrationDetails.get("state");
             String city = (String) registrationDetails.get("city");
             String zipcode = (String) registrationDetails.get("zipcode");
             String federalId = (String) registrationDetails.get("federalId");
             
-            System.out.println("params : "+address+" | "+street+" | "+country+" | "+state+" | "+city);
+            //System.out.println("params : "+address+" | "+street+" | "+country+" | "+state+" | "+city);
 
             UserAccount userDetails = userAccountRepository.findUserAccountByUsername(userName);
             if (userDetails != null)
@@ -394,6 +397,9 @@ public class RegistrationController
                         userAccount.setPassword(encodedPassword);
                         userAccount.setEmail(emailAdress);
                         userAccount.setActive(false);
+                        userAccount.setFirstName(firstName);
+                        userAccount.setMiddleName(middleName);
+                        userAccount.setLastName(lastName);
                         userAccount.setVerifiedByAdmin(false);
                         userAccount.setUserAccountType(UserAccountTypeConstant.ACC_TYPE_EMPLOYEE);
                         userAccount.setPhoneNumber(phoneNumber);
@@ -401,9 +407,9 @@ public class RegistrationController
                         userAccount.setCity(city);
                         userAccount.setState(state);
                         userAccount.setCountry(country);
-                        userAccount.setAddress(address);
-                        userAccount.setStreet(street);
-                        userAccount.setFederalId(federalId);
+                        userAccount.setAddressLine1(addressLine1);
+                        userAccount.setAddressLine2(addressLine2);
+                        userAccount.setFederalId(federalId==null||federalId.trim().isEmpty()?"-":federalId);
                         userAccount.setZipCode(zipcode);
                         userAccount.setAutoRenew(false);
                         
@@ -423,12 +429,12 @@ public class RegistrationController
 
                         AccountCreationEmail mail = new AccountCreationEmail();
                         mail.setMailTo(mailTemplateConfiguration.getMailSuperAdmins());
-                        mail.setMailFrom("<no-reply>@hireswing.net");
+                        mail.setMailFrom("<no-reply>@hireswing.com");
                         mail.setMailSubject("New User Accout Created");
 
                         Map<String, Object> model = new HashMap<String, Object>();
                         model.put("userName", retrievedUser.getUsername());
-                        model.put("signature", "www.hireswing.net");
+                        model.put("signature", "www.hireswing.com");
                         mail.setModel(model);
 
                         emailHandler.sendEmailToAdmin(mail);

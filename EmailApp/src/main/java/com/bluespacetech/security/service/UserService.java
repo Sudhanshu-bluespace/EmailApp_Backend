@@ -159,7 +159,7 @@ public class UserService implements UserDetailsService
         //System.out.println("User returned : " + userDetails.getUsername() + "|" + userDetails.getPassword());
         // pageLinksService.getPageLinksAllowedForUser();
         LOGGER.info("User retrieved successfully");
-        System.out.println("User : "+userDetails.isAccountNonExpired()+ " | "+userDetails.isAccountNonLocked()+" | "+userDetails.isEnabled()+" | "+userDetails.isCredentialsNonExpired());
+        //System.out.println("User : "+userDetails.isAccountNonExpired()+ " | "+userDetails.isAccountNonLocked()+" | "+userDetails.isEnabled()+" | "+userDetails.isCredentialsNonExpired());
         return userDetails;
     }
 

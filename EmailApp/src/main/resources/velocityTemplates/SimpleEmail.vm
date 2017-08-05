@@ -1,10 +1,26 @@
 <html>
+<head>
+<style>
+	thead th td, tbody tr td {
+	border:1px solid #E4E6E9;
+ }
+ 
+    thead th {
+	 background:#E6E6E6;
+ }
+ 
+    thead th, tbody tr {
+	 height:25px;
+ }
+</style>
+</head>
     <body>
         <div>Hello ${userName},<br/><br/>Just a reminder that you are receiving this email because you have expressed interest
-         in ContactSwing. Please add 'bounces@hireswing.net' to your address book so that our messages land in your inbox.
+         in hireswing. Please add ${domainName} to your address book so that our messages land in your inbox.
          You may <a href="${unsubscribe}">Unsubscribe</a> if you no longer wish to receive our emails.<br/><br/>
          <span>
 			<label style="border-right:2px solid red;padding:0 10px 0 0px;"><a style="color:red;text-decoration:none;" href=${fullUnsubscribe}>REMOVE</a>  my contact and send me no more emails</label>
+			<label style="border-right:2px solid red;padding:0 10px 0 10px;"><a href="${unsubscribe}">Unsubscribe</a></label>
 			<!--label style="border-right:2px solid red;padding:0 10px 0 10px;"><a style="color:blue;text-decoration:none;" href=${update}>UPDATE</a>  my contact/membership info</label>
 			<label style="padding-left:10px;"><a style="color:green;text-decoration:none;" href=${add}>ADD</a> a contact to receive requirements/hotlist</label-->
 		 </span>
@@ -12,24 +28,35 @@
  		<br>
  		<div style="width:90%;height:3px;background-color:red;"></div>
        <div style="width:100%;min-height:200px;margin-top:11px;">
-            ${emailText}.
+       	<p style="font-weight:bold;margin:10px 10px 5px 0px;">${senderName}</p>
+       	<p style="font-weight:bold;margin:5px 10px 5px 0px;">${companyName}</p>
+       	<p style="font-weight:bold;margin:5px 10px 5px 0px;">${senderEmail}</p>
+       	<p style="font-weight:bold;margin:5px 10px 15px 0px;">Mail-to : ${senderEmail}</p>
+            ${emailText}
         </div>
 		<br>
         <div>
             <img src="${readMailImageSRC}" height="1" width="1"/>
         </div>
+        <div style="width:90%;height:3px;background-color:#448FB4;margin-top:10px;"></div>
         <div style="margin-top:20px;">
+        	<div style="padding:10px;width:95%;">
+        		<label style="margin:5px 5px 5px 40%;text-align:center;font-weight:bold;">${addressAndName}</label>
+        	</div>				    
 			<div style="width:38%;display:inline-block;text-align:justify;">
 				${footerLightText}
 				${footerDarkText}
 			</div>
         	<div style="width:52%;display:inline-block;">
-			    <p style="float:right;text-align:right-justify;line-height:23px;font-size:12px;">- Sent from</br>CONTACT<label style="color:blue;font-weight:bold;">SWING</label>....tag-line<br/><label style="text-decoration:Italic;font-weight:bold;font-size:12px;">Some description for contactswing to be put in here</label></p>
+			    <p style="float:right;text-align:right-justify;line-height:23px;font-size:12px;">- Sent via Hireswing<br/><label style="text-decoration:Italic;font-weight:bold;font-size:12px;">Enable your business with Digital Marketing</label></p>
 			</div>
         </div>
-        <div style="width:90%;height:3px;background-color:#448FB4;margin-top:10px;"></div>
+        <div style="width:60%;margin:15px 0px 15px 45%;">
+        	<p><img src="cid:logo" style="width:40px;height:40px;margin-left:2%;"/></p>
+        	<p><a href="${contextRoot}" style="text-decoration:none;margin-left:5px;">Try it for free</a></p>
+        </div>
         <div style="margin-top:15px;">
-            <a href="${subscribe}">Re-subscribe</a>
+            <span><a href="${subscribe}">Re-subscribe</a> | <a href="${unsubscribe}">Unsubscribe</a></span>
         </div>
     </body>
 </html>

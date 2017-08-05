@@ -1,8 +1,12 @@
 package com.bluespacetech.notifications.email.batch;
 
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -275,6 +280,40 @@ public class ContactGroupMailMessageItemWriter implements ItemWriter<ContactGrou
                         }
                     }
                 }
+
+                // Clean the temp folder directly
+              /*  try
+                {
+                    Files.walkFileTree(
+                            new FileSystemResource("/opt/packages/Oracle/BluespaceMailer/temp").getFile().toPath(),
+                            new SimpleFileVisitor<Path>() {
+                                @Override
+                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                                        throws IOException
+                                {
+                                    if (attrs.isDirectory())
+                                    {
+                                        return FileVisitResult.CONTINUE;
+                                    }
+
+                                    Files.deleteIfExists(file);
+                                    return FileVisitResult.CONTINUE;
+                                }
+
+                                @Override
+                                public FileVisitResult postVisitDirectory(Path arg0, IOException arg1)
+                                        throws IOException
+                                {
+                                    // TODO Auto-generated method stub
+                                    Files.deleteIfExists(arg0);
+                                    return FileVisitResult.CONTINUE;
+                                }
+                            });
+                }
+                catch (IOException e)
+                {
+                    LOGGER.error("Error getting all individuals");
+                }*/
             }
 
         }

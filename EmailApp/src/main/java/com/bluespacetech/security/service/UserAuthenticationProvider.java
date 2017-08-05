@@ -33,7 +33,7 @@ public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticatio
     protected void additionalAuthenticationChecks(UserDetails userDetails,
             UsernamePasswordAuthenticationToken authentication) throws AuthenticationException
     {
-        System.out.println("Authentication check additional");
+        //System.out.println("Authentication check additional");
 
         if (authentication.getCredentials() == null || userDetails.getPassword() == null)
         {
@@ -55,7 +55,7 @@ public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticatio
             throws AuthenticationException
     {
         final UserDetails userDetails = userService.loadUserByUsername(username);
-        System.out.println("Retreived User : " + userDetails);
+        //System.out.println("Retreived User : " + userDetails);
         return userDetails;
     }
 

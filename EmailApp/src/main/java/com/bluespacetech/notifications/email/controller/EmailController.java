@@ -4,9 +4,17 @@
  */
 package com.bluespacetech.notifications.email.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
@@ -15,21 +23,28 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tomcat.util.file.Matcher;
 import org.springframework.batch.core.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bluespacetech.common.util.CommonUtilCache;
+import com.bluespacetech.core.crypto.Encryptor;
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.core.utility.ViewUtil;
 import com.bluespacetech.notifications.email.entity.Email;
@@ -42,7 +57,9 @@ import com.bluespacetech.notifications.email.repository.JobExecutionRepository;
 import com.bluespacetech.notifications.email.service.EmailService;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 import com.bluespacetech.notifications.email.valueobjects.EmailVO;
+import com.bluespacetech.notifications.email.valueobjects.FileAttachResponse;
 import com.bluespacetech.server.analytics.query.QueryStringConstants;
+import com.google.gson.Gson;
 
 /**
  * The Class EmailController.
@@ -57,8 +74,8 @@ public class EmailController
 {
 
     /** The job launcher. */
-   // @Autowired
-   // private JobLauncher jobLauncher;
+    // @Autowired
+    // private JobLauncher jobLauncher;
 
     /** The email service. */
     @Autowired
@@ -100,49 +117,25 @@ public class EmailController
             String requestId = "RQ_" + email.getCreatedUser() + "_" + createdDate;
 
             String emailBody = emailVO.getMessage();
-            String formattedBody = "";
-          /*  if (emailBody.contains("<img src="))
+            // String formattedBody = "";
+            /*
+             * if (emailBody.contains("<img src=")) { String regex = "<img([\\w\\W]+?)>"; Pattern pattern = Pattern.compile(regex); java.util.regex.Matcher matcher = pattern.matcher(emailBody); while
+             * (matcher.find()) { String res = matcher.group(); if(res.contains("+")) { res = res.replaceAll("+", "\\+"); } formattedBody = emailBody.replace(res, "<img src=\"cid:image\">"); } } if
+             * ("".equalsIgnoreCase(formattedBody.trim())) { for (String blocked : CommonUtilCache.getProhibitedContentList()) { if (emailBody.toLowerCase().contains(blocked.toLowerCase())) {
+             * LOGGER.error( "Found Prohibited content in email body even after formatting. The campaign cannot be triggered."); response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+             * response.getOutputStream().println( "{ \"Error\": \"Email campaign has been blocked as it was found to contain prohibited content. \"}"); } } } else {
+             */
+            for (String blocked : CommonUtilCache.getProhibitedContentList())
             {
-                String regex = "<img([\\w\\W]+?)>";
-                Pattern pattern = Pattern.compile(regex);
-                java.util.regex.Matcher matcher = pattern.matcher(emailBody);
-                while (matcher.find())
+                if (emailBody.toLowerCase().contains(blocked.toLowerCase()))
                 {
-                    String res = matcher.group();
-                    if(res.contains("+"))
-                    {
-                        res = res.replaceAll("+", "\\+");
-                    }
-                    formattedBody = emailBody.replace(res, "<img src=\"cid:image\">");
+                    LOGGER.error("Found Prohibited content in email body. The campaign cannot be triggered.");
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.getOutputStream().println(
+                            "{ \"Error\": \"Email campaign has been blocked as it was found to contain prohibited content. \"}");
                 }
             }
-            if ("".equalsIgnoreCase(formattedBody.trim()))
-            {
-                for (String blocked : CommonUtilCache.getProhibitedContentList())
-                {
-                    if (emailBody.toLowerCase().contains(blocked.toLowerCase()))
-                    {
-                        LOGGER.error(
-                                "Found Prohibited content in email body even after formatting. The campaign cannot be triggered.");
-                        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                        response.getOutputStream().println(
-                                "{ \"Error\": \"Email campaign has been blocked as it was found to contain prohibited content. \"}");
-                    }
-                }
-            }
-            else
-            {*/
-                for (String blocked : CommonUtilCache.getProhibitedContentList())
-                {
-                    if (emailBody.toLowerCase().contains(blocked.toLowerCase()))
-                    {
-                        LOGGER.error("Found Prohibited content in email body. The campaign cannot be triggered.");
-                        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                        response.getOutputStream().println(
-                                "{ \"Error\": \"Email campaign has been blocked as it was found to contain prohibited content. \"}");
-                    }
-                }
-            //}
+            // }
 
             String queryGetContacts = QueryStringConstants.getQuery_QUERY_FIND_CONTACTS();
 
@@ -273,6 +266,107 @@ public class EmailController
             }
             throw new RuntimeException(e);
 
+        }
+    }
+
+    @PutMapping(value = "/attachFile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void attachFile(@RequestParam("file") MultipartFile file, @RequestParam("id") String id,
+            HttpServletResponse response, HttpServletRequest request) throws IOException
+    {
+        // HttpHeaders headers = new HttpHeaders();
+        FileAttachResponse res = new FileAttachResponse();
+        if (!file.isEmpty())
+        {
+
+            // String fileFilerNegativeRegex = "^(.*\\.(?!(exe|mp3|mp4|java|js|ts|zip|7z|gz|tar|bin|bat|sh)$))?[^.]*$";
+            String fileFilterRegex = "^(.*\\.(exe|mp3|mp4|java|js|ts|zip|7z|gz|tar|bin|bat|mkv|avi|3gp|aac|wmv|sh)$)?[^.]*$";
+            Pattern patternFileFilter = Pattern.compile(fileFilterRegex);
+            java.util.regex.Matcher matcher = patternFileFilter.matcher(file.getOriginalFilename());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+            if (matcher.find())
+            {
+                LOGGER.info("Restricted File detected - match = [" + matcher.group() + "]"
+                        + ", attachment will not be allowed..");
+                String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+                /*
+                 * res.setError("Files of type (" + ext + ") cannot be sent as attachment due to security reasons"); response.setStatus(HttpStatus.BAD_REQUEST.value()); response.getWriter().write(new
+                 * Gson().toJson(res));
+                 */
+
+                Map<Object, Object> responseData = new HashMap<>();
+                responseData.put("error",
+                        "Files of type (" + ext + ") cannot be sent as attachment due to security reasons");
+                String jsonResponseData = new Gson().toJson(responseData);
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.getWriter().write(jsonResponseData);
+            }
+            else
+            {
+                try
+                {
+                    // Get the file and save it somewhere
+                    byte[] bytes = file.getBytes();
+                    Resource resource = new FileSystemResource("/opt/packages/Oracle/BluespaceMailer/temp");
+
+                    System.out.println("Resource : " + resource.getFilename() + " | " + resource.exists());
+                    String originalFileName = file.getOriginalFilename().replaceAll("\\s", "_");
+                    String date = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+                    String fileName = id + "_" + date + "_" + originalFileName;
+
+                    File tempFile = new File(resource.getFile() + File.separator + fileName);
+
+                    FileOutputStream fos = new FileOutputStream(tempFile);
+                    fos.write(bytes);
+                    fos.close();
+                    response.setStatus(200);
+
+                    URL url = new URL(request.getRequestURL().toString());
+                    String host = url.getHost();
+                    String scheme = url.getProtocol();
+                    int port = url.getPort();
+                    URI uri = new URI(scheme, null, host, port, null, null, null);
+
+                    String encryptedPath = Encryptor.Encrypt(tempFile.getPath());
+                    String link = uri.toString() + "/products/downloadFile?path=" + encryptedPath;
+
+                    // FileAttachResponse res = new FileAttachResponse();
+                    res.setLink(link);
+
+                    response.getWriter().write(new Gson().toJson(res));
+
+                }
+                catch (Exception e)
+                {
+                    // res.setError("Failed to transfer file to temp location, reason :" + e.getMessage());
+                    // response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    // response.getWriter().write(new Gson().toJson(res));
+
+                    Map<Object, Object> responseData = new HashMap<>();
+                    responseData.put("error", e.getMessage());
+                    String jsonResponseData = new Gson().toJson(responseData);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.getWriter().write(jsonResponseData);
+                }
+            }
+        }
+        else
+        {
+            //res.setError(HttpStatus.BAD_REQUEST + " No input file found");
+            //response.setStatus(HttpStatus.BAD_REQUEST.value());
+            //response.getWriter().write(new Gson().toJson(res));
+            
+            Map<Object, Object> responseData = new HashMap<>();
+            responseData.put("error", HttpStatus.BAD_REQUEST + " No input file found");
+            String jsonResponseData = new Gson().toJson(responseData);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.getWriter().write(jsonResponseData);
         }
     }
 

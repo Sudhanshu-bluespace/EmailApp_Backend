@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
@@ -30,6 +31,7 @@ import com.bluespacetech.common.util.Base64ToImageDecodeHelper;
 import com.bluespacetech.common.util.CommonUtilCache;
 import com.bluespacetech.contact.entity.BlockedContacts;
 import com.bluespacetech.contact.service.BlockedContactService;
+import com.bluespacetech.core.crypto.Decryptor;
 import com.bluespacetech.notifications.email.entity.Email;
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 import com.bluespacetech.notifications.email.repository.EmailRepository;
@@ -38,10 +40,10 @@ import com.bluespacetech.notifications.email.util.EmailUtils;
 import com.bluespacetech.notifications.email.util.MailTemplateConfiguration;
 import com.bluespacetech.notifications.email.validators.EmailMXRecordDNSValidator;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
+import com.bluespacetech.security.model.CompanyRegistration;
 import com.bluespacetech.security.model.UserAccount;
 import com.bluespacetech.security.repository.UserAccountRepository;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class GroupContactEmailItemProcessor.
  */
@@ -95,7 +97,7 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
         else
         {
             List<BlockedContacts> blocked = blockedContactService.findByEmail(email);
-            if (blocked != null &&!blocked.isEmpty())
+            if (blocked != null && !blocked.isEmpty())
             {
                 String reason = blocked.get(0).getReason();
                 LOGGER.warn("Blocking send emails to Contact " + email + " as it is blacklisted, reason : [" + reason
@@ -164,15 +166,25 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                         for (Base64ToImageDecodeHelper obj : objList)
                         {
                             LOGGER.info("Object successfully populated after image formatting.. : " + obj);
-                            message = message.replace(obj.getReplacedText(),
-                                    "<img src=\"cid:" + obj.getImageIdentifierKey() + "\">");
                             
-                            if(!CommonUtilCache.getTempFileCleanupMap().containsKey(emailContactGroupVO.getEmailId()))
+                            if(obj.getReplacedText().startsWith("<img"))
                             {
-                                CommonUtilCache.getTempFileCleanupMap().put(emailContactGroupVO.getEmailId(), new ArrayList<>());
+                                message = message.replace(obj.getReplacedText(),
+                                    "<img src=\"cid:" + obj.getImageIdentifierKey() + "\">");
                             }
-                            CommonUtilCache.getTempFileCleanupMap().get(emailContactGroupVO.getEmailId()).add(obj.getClasspathToImage());
-                            LOGGER.info("Temp Image path "+obj.getClasspathToImage()+" saved to cleanup cache..");
+                            else
+                            {
+                                message = message.replace(obj.getReplacedText(), "src=\"cid:"+obj.getImageIdentifierKey()+"\"");
+                            }
+
+                            if (!CommonUtilCache.getTempFileCleanupMap().containsKey(emailContactGroupVO.getEmailId()))
+                            {
+                                CommonUtilCache.getTempFileCleanupMap().put(emailContactGroupVO.getEmailId(),
+                                        new ArrayList<>());
+                            }
+                            CommonUtilCache.getTempFileCleanupMap().get(emailContactGroupVO.getEmailId())
+                                    .add(obj.getClasspathToImage());
+                            LOGGER.info("Temp Image path " + obj.getClasspathToImage() + " saved to cleanup cache..");
                         }
                     }
                 }
@@ -183,8 +195,23 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 Email emailObj = emailRepository.findById(emailId);
                 String sender = emailObj.getCreatedUser();
                 UserAccount senderAccount = userAccountRepo.findUserAccountByUsername(sender);
-                String splitEmailAddress = senderAccount.getEmail().split("@")[1];
-                String computedFromId = splitEmailAddress.split("\\.")[0];
+                String senderEmail = senderAccount.getEmail();
+                String senderAddress = senderAccount.getAddressLine1()+" "+senderAccount.getAddressLine2();
+                String companyName = "";
+                String computedFromId = "";
+
+                CompanyRegistration company = senderAccount.getCompanyRegistration();
+                if (company != null)
+                {
+                    companyName = company.getCompanyName();
+                }
+                String[] splitEmailAddress = senderEmail.split("@");
+                String senderName = senderAccount.getFirstName()+" "+senderAccount.getLastName();//splitEmailAddress[0];
+
+                if (splitEmailAddress.length > 1)
+                {
+                    computedFromId = splitEmailAddress[1].split("\\.")[0];
+                }
                 // String senderMailAddress = userAccountRepo.findUserAccountByUsername(sender).getEmail();
                 // System.out.println("Sender emall address : "+senderMailAddress);
 
@@ -196,18 +223,26 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                 context.put("readMailImageSRC", readMailImageSRC);
                 context.put("footerLightText", templateConfiguration.getFooterLightText());
                 context.put("footerDarkText", templateConfiguration.getFooterDarkText());
+                context.put("domainName", computedFromId + "@hireswing.net");
+                context.put("senderName", senderName);
+                context.put("companyName", companyName);
+                context.put("senderAddress", senderAddress);
+                context.put("senderEmail", senderEmail);
+                context.put("addressAndName", senderAddress + " - " + companyName);
+                context.put("contextRoot", "http://www.hireswing.com");
 
                 StringWriter writer = new StringWriter();
                 velocityEngine.mergeTemplate("velocityTemplates/SimpleEmail.vm", "UTF-8", context, writer);
                 final String text = writer.toString();
 
                 simpleMailMessage.setTo(emailContactGroupVO.getContactEmail());
+
                 /*
                  * if (mailSender instanceof JavaMailSenderImpl) { System.out.println(((JavaMailSenderImpl) mailSender).getHost() + " | " + ((JavaMailSenderImpl) mailSender).getJavaMailProperties());
                  * String fromAddress = ((JavaMailSenderImpl) mailSender).getJavaMailProperties().getProperty("mail.from"); simpleMailMessage.setFrom(fromAddress); }
                  */
 
-                simpleMailMessage.getMimeMessage().setFrom(new InternetAddress(computedFromId + "@contactswing.com"));
+                simpleMailMessage.getMimeMessage().setFrom(new InternetAddress(computedFromId + "@hireswing.com"));
                 // simpleMailMessage.setFrom(senderMailAddress);
                 simpleMailMessage.setSubject(emailContactGroupVO.getSubject());
                 simpleMailMessage.setSentDate(new Date());
@@ -222,6 +257,10 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
                         simpleMailMessage.addInline(obj.getImageIdentifierKey(), resource);
                     }
                 }
+                
+                FileSystemResource logo = new FileSystemResource("/opt/packages/Oracle/BluespaceMailer/data/newlogo.png");
+                LOGGER.info("Logo : "+logo.getFilename()+" | Exists ? "+logo.exists());
+                simpleMailMessage.addInline("logo", logo);
 
                 final EmailContactGroup emailContactGroup = new EmailContactGroup();
                 emailContactGroup.setContactId(emailContactGroupVO.getContactId());
@@ -274,29 +313,57 @@ public class GroupContactEmailItemProcessor implements ItemProcessor<EmailContac
             Base64ToImageDecodeHelper obj = new Base64ToImageDecodeHelper();
             String res = matcher.group();
             LOGGER.debug(res);
-            String encodedString = res.split(",")[1];
-            if (encodedString.endsWith("\">"))
+
+            String[] splitEncoded = res.split(",");
+            if (splitEncoded.length == 1)
             {
-                encodedString = encodedString.substring(0, encodedString.length() - 2);
+                // actual url.. not byte encoded..
+                LOGGER.info("Found an image with actual url, not Base64 encoded : "+res);
+                String newRegex = "src=\".*?\"";
+                Pattern patternNew = Pattern.compile(newRegex);
+                java.util.regex.Matcher matcherNew = patternNew.matcher(res);
+                if(matcherNew.find())
+                {
+                    String match = matcherNew.group();
+                    //System.out.println("Match found : "+match);
+                    String[] split = match.split("path=");
+                    
+                    LOGGER.debug("Split text : " + split[0] + " | " + split[1]);
+                    String path = Decryptor.Decrypt(split[1].substring(0, split[1].length() - 1));
+                    
+                    obj.setImageIdentifierKey("image_" + i);
+                    obj.setClasspathToImage(Paths.get(path));
+                    obj.setReplacedText(match);
+                    objList.add(obj);
+                }
             }
             else
             {
-                encodedString = encodedString.substring(0, encodedString.length() - 1);
-            }
 
-            LOGGER.debug("Encoded : " + encodedString);
-            byte[] decodedImg = Base64.getDecoder().decode(encodedString.getBytes(StandardCharsets.UTF_8));
-            Resource resource = new FileSystemResource("/opt/packages/Oracle/BluespaceMailer/temp");
-            LOGGER.debug("File System resource exists : " + resource.exists());
-            File file = new File(resource.getFile(), "/tempImage_" + emailId + "_" + i + ".jpg");
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(decodedImg);
-            fos.close();
-            obj.setImageIdentifierKey("image_" + i);
-            obj.setClasspathToImage(file.toPath());
-            // String output = message.replace(res, "<img src=\"cid:image_" + i + "\">");
-            obj.setReplacedText(res);
-            objList.add(obj);
+                String encodedString = splitEncoded[1];
+                if (encodedString.endsWith("\">"))
+                {
+                    encodedString = encodedString.substring(0, encodedString.length() - 2);
+                }
+                else
+                {
+                    encodedString = encodedString.substring(0, encodedString.length() - 1);
+                }
+
+                LOGGER.debug("Encoded : " + encodedString);
+                byte[] decodedImg = Base64.getDecoder().decode(encodedString.getBytes(StandardCharsets.UTF_8));
+                Resource resource = new FileSystemResource("/opt/packages/Oracle/BluespaceMailer/temp");
+                LOGGER.debug("File System resource exists : " + resource.exists());
+                File file = new File(resource.getFile(), "/tempImage_" + emailId + "_" + i + ".jpg");
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(decodedImg);
+                fos.close();
+                obj.setImageIdentifierKey("image_" + i);
+                obj.setClasspathToImage(file.toPath());
+                // String output = message.replace(res, "<img src=\"cid:image_" + i + "\">");
+                obj.setReplacedText(res);
+                objList.add(obj);
+            }
         }
 
         return objList;

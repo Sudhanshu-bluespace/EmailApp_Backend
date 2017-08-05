@@ -42,13 +42,43 @@ public class UserAccount extends BaseEntity implements Serializable
      */
     private static final long serialVersionUID = 8617426954436904583L;
 
+    /**
+     * Gets the serialversionuid.
+     *
+     * @return the serialversionuid
+     */
+    public static long getSerialversionuid()
+    {
+        return serialVersionUID;
+    }
+
     /** The username. */
     @Column(name = "USERNAME", nullable = false, length = 40, unique = true)
     private String username;
-
+    
     /** The password. */
     @Column(name = "PASSWORD", nullable = false, length = 1000)
     private String password;
+    
+    /** The first name. */
+    @Column(name = "FIRST_NAME", nullable = false, length = 20)
+    private String firstName;
+    
+    /** The middle name. */
+    @Column(name = "MIDDLE_NAME", nullable = true, length = 20)
+    private String middleName;
+    
+    /** The last name. */
+    @Column(name = "LAST_NAME", nullable = false, length = 20)
+    private String lastName;
+    
+    /** The adress line 1. */
+    @Column(name = "ADDRESS_LINE1", nullable = false, length = 250)
+    private String addressLine1;
+
+    /** The address line 2. */
+    @Column(name = "ADDRESS_LINE2", nullable = true, length = 150)
+    private String addressLine2;
 
     /** The active. */
     @Column(name = "ACTIVE", nullable = false)
@@ -91,60 +121,130 @@ public class UserAccount extends BaseEntity implements Serializable
     /** The email. */
     @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
-    
+
     /** The federal id. */
-    @Column(name="FEDERAL_ID",nullable = false, unique=true)
+    @Column(name="FEDERAL_ID",nullable = false)
     private String federalId;
-    
-    /** The address. */
-    @Column(name="ADDRESS")
-    private String address;
-    
-    /** The street. */
-    @Column(name="STREET")
-    private String street;
-    
+
     /** The city. */
     @Column(name="CITY",nullable = false)
     private String city;
-    
+
     /** The state. */
     @Column(name="STATE",nullable = false)
     private String state;
-    
+
     /** The country. */
     @Column(name="COUNTRY",nullable = false)
     private String country;
-    
+
     /** The zip code. */
     @Column(name="ZIP_CODE",nullable = false)
     private String zipCode;
-    
+
     /** The auto renew. */
     @Column(name="AUTO_RENEW")
     private Boolean autoRenew = false;
-    
+
     /** The comments. */
     @Column(name="COMMENTS")
     private String comments;
-    
+
     /** The payment plan. */
     @Column(name="PAYMENT_PLAN")
     private String paymentPlan;
-    
+
     /** The valid to. */
     @Column(name="VALID_TO")
     private String validTo;
-    
+
     /** The payment info. */
     @Column(name="PAYMENT_INFO")
     private String paymentInfo;
-    
+
     /** The trial period. */
     @Column(name="TRIAL_PERIOD")
     private String trialPeriod;
     
+    /**
+     * Gets the address line 2.
+     *
+     * @return the address line 2
+     */
+    public String getAddressLine2()
+    {
+        return addressLine2;
+    }
     
+    /**
+     * Gets the adress line 1.
+     *
+     * @return the adress line 1
+     */
+    public String getAddressLine1()
+    {
+        return addressLine1;
+    }
+    
+    /**
+     * Gets the auto renew.
+     *
+     * @return the auto renew
+     */
+    public Boolean getAutoRenew()
+    {
+        return autoRenew;
+    }
+    
+    /**
+     * Gets the city.
+     *
+     * @return the city
+     */
+    public String getCity()
+    {
+        return city;
+    }
+    
+    /**
+     * Gets the comments.
+     *
+     * @return the comments
+     */
+    public String getComments()
+    {
+        return comments;
+    }
+    
+    /**
+     * Gets the company registration.
+     *
+     * @return the company registration
+     */
+    public CompanyRegistration getCompanyRegistration()
+    {
+        return companyRegistration;
+    }
+    
+    /**
+     * Gets the country.
+     *
+     * @return the country
+     */
+    public String getCountry()
+    {
+        return country;
+    }
+    
+    /**
+     * Gets the email.
+     *
+     * @return the email
+     */
+    public String getEmail()
+    {
+        return email;
+    }
     
     /**
      * Gets the federal id.
@@ -155,335 +255,37 @@ public class UserAccount extends BaseEntity implements Serializable
     {
         return federalId;
     }
-
+    
     /**
-     * Sets the federal id.
+     * Gets the first name.
      *
-     * @param federalId the new federal id
+     * @return the first name
      */
-    public void setFederalId(String federalId)
+    public String getFirstName()
     {
-        this.federalId = federalId;
+        return firstName;
     }
-
+    
     /**
-     * Gets the address.
+     * Gets the last name.
      *
-     * @return the address
+     * @return the last name
      */
-    public String getAddress()
+    public String getLastName()
     {
-        return address;
+        return lastName;
     }
-
+    
+    
+    
     /**
-     * Sets the address.
+     * Gets the middle name.
      *
-     * @param address the new address
+     * @return the middle name
      */
-    public void setAddress(String address)
+    public String getMiddleName()
     {
-        this.address = address;
-    }
-
-    /**
-     * Gets the street.
-     *
-     * @return the street
-     */
-    public String getStreet()
-    {
-        return street;
-    }
-
-    /**
-     * Sets the street.
-     *
-     * @param street the new street
-     */
-    public void setStreet(String street)
-    {
-        this.street = street;
-    }
-
-    /**
-     * Gets the city.
-     *
-     * @return the city
-     */
-    public String getCity()
-    {
-        return city;
-    }
-
-    /**
-     * Sets the city.
-     *
-     * @param city the new city
-     */
-    public void setCity(String city)
-    {
-        this.city = city;
-    }
-
-    /**
-     * Gets the state.
-     *
-     * @return the state
-     */
-    public String getState()
-    {
-        return state;
-    }
-
-    /**
-     * Sets the state.
-     *
-     * @param state the new state
-     */
-    public void setState(String state)
-    {
-        this.state = state;
-    }
-
-    /**
-     * Gets the country.
-     *
-     * @return the country
-     */
-    public String getCountry()
-    {
-        return country;
-    }
-
-    /**
-     * Sets the country.
-     *
-     * @param country the new country
-     */
-    public void setCountry(String country)
-    {
-        this.country = country;
-    }
-
-    /**
-     * Gets the zip code.
-     *
-     * @return the zip code
-     */
-    public String getZipCode()
-    {
-        return zipCode;
-    }
-
-    /**
-     * Sets the zip code.
-     *
-     * @param zipCode the new zip code
-     */
-    public void setZipCode(String zipCode)
-    {
-        this.zipCode = zipCode;
-    }
-
-    /**
-     * Checks if is auto renew.
-     *
-     * @return true, if is auto renew
-     */
-    public boolean isAutoRenew()
-    {
-        return autoRenew;
-    }
-
-    /**
-     * Sets the auto renew.
-     *
-     * @param autoRenew the new auto renew
-     */
-    public void setAutoRenew(boolean autoRenew)
-    {
-        this.autoRenew = autoRenew;
-    }
-
-    /**
-     * Gets the comments.
-     *
-     * @return the comments
-     */
-    public String getComments()
-    {
-        return comments;
-    }
-
-    /**
-     * Sets the comments.
-     *
-     * @param comments the new comments
-     */
-    public void setComments(String comments)
-    {
-        this.comments = comments;
-    }
-
-    /**
-     * Gets the payment plan.
-     *
-     * @return the payment plan
-     */
-    public String getPaymentPlan()
-    {
-        return paymentPlan;
-    }
-
-    /**
-     * Sets the payment plan.
-     *
-     * @param paymentPlan the new payment plan
-     */
-    public void setPaymentPlan(String paymentPlan)
-    {
-        this.paymentPlan = paymentPlan;
-    }
-
-    /**
-     * Gets the valid to.
-     *
-     * @return the valid to
-     */
-    public String getValidTo()
-    {
-        return validTo;
-    }
-
-    /**
-     * Sets the valid to.
-     *
-     * @param validTo the new valid to
-     */
-    public void setValidTo(String validTo)
-    {
-        this.validTo = validTo;
-    }
-
-    /**
-     * Gets the payment info.
-     *
-     * @return the payment info
-     */
-    public String getPaymentInfo()
-    {
-        return paymentInfo;
-    }
-
-    /**
-     * Sets the payment info.
-     *
-     * @param paymentInfo the new payment info
-     */
-    public void setPaymentInfo(String paymentInfo)
-    {
-        this.paymentInfo = paymentInfo;
-    }
-
-    /**
-     * Gets the trial period.
-     *
-     * @return the trial period
-     */
-    public String getTrialPeriod()
-    {
-        return trialPeriod;
-    }
-
-    /**
-     * Sets the trial period.
-     *
-     * @param trialPeriod the new trial period
-     */
-    public void setTrialPeriod(String trialPeriod)
-    {
-        this.trialPeriod = trialPeriod;
-    }
-
-    /**
-     * Gets the phone number.
-     *
-     * @return the phone number
-     */
-    public String getPhoneNumber()
-    {
-        return phoneNumber;
-    }
-
-    /**
-     * Sets the phone number.
-     *
-     * @param phoneNumber the new phone number
-     */
-    public void setPhoneNumber(String phoneNumber)
-    {
-        this.phoneNumber = phoneNumber;
-    }
-
-    /**
-     * Gets the serialversionuid.
-     *
-     * @return the serialversionuid
-     */
-    public static long getSerialversionuid()
-    {
-        return serialVersionUID;
-    }
-
-    /**
-     * Sets the username.
-     *
-     * @param username the new username
-     */
-    public void setUsername(final String username)
-    {
-        this.username = username;
-    }
-
-    /**
-     * Gets the username.
-     *
-     * @return the username
-     */
-    public String getUsername()
-    {
-        return username;
-    }
-
-    /**
-     * Checks if is verified by admin.
-     *
-     * @return true, if is verified by admin
-     */
-    public boolean isVerifiedByAdmin()
-    {
-        return verifiedByAdmin;
-    }
-
-    /**
-     * Sets the verified by admin.
-     *
-     * @param verifiedByAdmin the new verified by admin
-     */
-    public void setVerifiedByAdmin(boolean verifiedByAdmin)
-    {
-        this.verifiedByAdmin = verifiedByAdmin;
-    }
-
-    /**
-     * Sets the password.
-     *
-     * @param password the new password
-     */
-    public void setPassword(final String password)
-    {
-        this.password = password;
+        return middleName;
     }
 
     /**
@@ -497,103 +299,53 @@ public class UserAccount extends BaseEntity implements Serializable
     }
 
     /**
-     * Sets the active.
+     * Gets the payment info.
      *
-     * @param active the new active
+     * @return the payment info
      */
-    public void setActive(final boolean active)
+    public String getPaymentInfo()
     {
-        this.active = active;
+        return paymentInfo;
     }
 
     /**
-     * Checks if is active.
+     * Gets the payment plan.
      *
-     * @return true, if is active
+     * @return the payment plan
      */
-    public boolean isActive()
+    public String getPaymentPlan()
     {
-        return active;
+        return paymentPlan;
     }
 
     /**
-     * Checks if is account expired.
+     * Gets the phone number.
      *
-     * @return true, if is account expired
+     * @return the phone number
      */
-    public boolean isAccountExpired()
+    public String getPhoneNumber()
     {
-        return accountExpired;
+        return phoneNumber;
     }
 
     /**
-     * Sets the account expired.
+     * Gets the state.
      *
-     * @param accountExpired the new account expired
+     * @return the state
      */
-    public void setAccountExpired(final boolean accountExpired)
+    public String getState()
     {
-        this.accountExpired = accountExpired;
+        return state;
     }
 
     /**
-     * Checks if is credentials expired.
+     * Gets the trial period.
      *
-     * @return true, if is credentials expired
+     * @return the trial period
      */
-    public boolean isCredentialsExpired()
+    public String getTrialPeriod()
     {
-        return credentialsExpired;
-    }
-
-    /**
-     * Sets the credentials expired.
-     *
-     * @param credentialsExpired the new credentials expired
-     */
-    public void setCredentialsExpired(final boolean credentialsExpired)
-    {
-        this.credentialsExpired = credentialsExpired;
-    }
-
-    /**
-     * Checks if is account locked.
-     *
-     * @return true, if is account locked
-     */
-    public boolean isAccountLocked()
-    {
-        return accountLocked;
-    }
-
-    /**
-     * Gets the company registration.
-     *
-     * @return the company registration
-     */
-    public CompanyRegistration getCompanyRegistration()
-    {
-        return companyRegistration;
-    }
-
-    /**
-     * Sets the company registration.
-     *
-     * @param companyRegistration the new company registration
-     */
-    public void setCompanyRegistration(CompanyRegistration companyRegistration)
-    {
-        this.companyRegistration = companyRegistration;
-    }
-
-    /**
-     * Sets the account locked.
-     *
-     * @param accountLocked the new account locked
-     */
-    public void setAccountLocked(final boolean accountLocked)
-    {
-        this.accountLocked = accountLocked;
+        return trialPeriod;
     }
 
     /**
@@ -607,16 +359,6 @@ public class UserAccount extends BaseEntity implements Serializable
     }
 
     /**
-     * Sets the user account type.
-     *
-     * @param userAccountType the new user account type
-     */
-    public void setUserAccountType(final UserAccountTypeConstant userAccountType)
-    {
-        this.userAccountType = userAccountType;
-    }
-
-    /**
      * Gets the user account user groups.
      *
      * @return the userAccountUserGroups
@@ -624,6 +366,336 @@ public class UserAccount extends BaseEntity implements Serializable
     public Collection<UserAccountUserGroup> getUserAccountUserGroups()
     {
         return userAccountUserGroups;
+    }
+
+    /**
+     * Gets the username.
+     *
+     * @return the username
+     */
+    public String getUsername()
+    {
+        return username;
+    }
+
+    /**
+     * Gets the valid to.
+     *
+     * @return the valid to
+     */
+    public String getValidTo()
+    {
+        return validTo;
+    }
+
+    /**
+     * Gets the zip code.
+     *
+     * @return the zip code
+     */
+    public String getZipCode()
+    {
+        return zipCode;
+    }
+
+    /**
+     * Checks if is account expired.
+     *
+     * @return true, if is account expired
+     */
+    public boolean isAccountExpired()
+    {
+        return accountExpired;
+    }
+
+    /**
+     * Checks if is account locked.
+     *
+     * @return true, if is account locked
+     */
+    public boolean isAccountLocked()
+    {
+        return accountLocked;
+    }
+
+    /**
+     * Checks if is active.
+     *
+     * @return true, if is active
+     */
+    public boolean isActive()
+    {
+        return active;
+    }
+
+    /**
+     * Checks if is auto renew.
+     *
+     * @return true, if is auto renew
+     */
+    public boolean isAutoRenew()
+    {
+        return autoRenew;
+    }
+
+    /**
+     * Checks if is credentials expired.
+     *
+     * @return true, if is credentials expired
+     */
+    public boolean isCredentialsExpired()
+    {
+        return credentialsExpired;
+    }
+
+    /**
+     * Checks if is verified by admin.
+     *
+     * @return true, if is verified by admin
+     */
+    public boolean isVerifiedByAdmin()
+    {
+        return verifiedByAdmin;
+    }
+
+    /**
+     * Sets the account expired.
+     *
+     * @param accountExpired the new account expired
+     */
+    public void setAccountExpired(final boolean accountExpired)
+    {
+        this.accountExpired = accountExpired;
+    }
+
+    /**
+     * Sets the account locked.
+     *
+     * @param accountLocked the new account locked
+     */
+    public void setAccountLocked(final boolean accountLocked)
+    {
+        this.accountLocked = accountLocked;
+    }
+
+    /**
+     * Sets the active.
+     *
+     * @param active the new active
+     */
+    public void setActive(final boolean active)
+    {
+        this.active = active;
+    }
+
+    /**
+     * Sets the address line 2.
+     *
+     * @param addressLine2 the new address line 2
+     */
+    public void setAddressLine2(String addressLine2)
+    {
+        this.addressLine2 = addressLine2;
+    }
+
+    /**
+     * Sets the adress line 1.
+     *
+     * @param adressLine1 the new adress line 1
+     */
+    public void setAddressLine1(String addressLine1)
+    {
+        this.addressLine1 = addressLine1;
+    }
+
+    /**
+     * Sets the auto renew.
+     *
+     * @param autoRenew the new auto renew
+     */
+    public void setAutoRenew(boolean autoRenew)
+    {
+        this.autoRenew = autoRenew;
+    }
+
+    /**
+     * Sets the auto renew.
+     *
+     * @param autoRenew the new auto renew
+     */
+    public void setAutoRenew(Boolean autoRenew)
+    {
+        this.autoRenew = autoRenew;
+    }
+
+    /**
+     * Sets the city.
+     *
+     * @param city the new city
+     */
+    public void setCity(String city)
+    {
+        this.city = city;
+    }
+
+    /**
+     * Sets the comments.
+     *
+     * @param comments the new comments
+     */
+    public void setComments(String comments)
+    {
+        this.comments = comments;
+    }
+
+    /**
+     * Sets the company registration.
+     *
+     * @param companyRegistration the new company registration
+     */
+    public void setCompanyRegistration(CompanyRegistration companyRegistration)
+    {
+        this.companyRegistration = companyRegistration;
+    }
+
+    /**
+     * Sets the country.
+     *
+     * @param country the new country
+     */
+    public void setCountry(String country)
+    {
+        this.country = country;
+    }
+
+    /**
+     * Sets the credentials expired.
+     *
+     * @param credentialsExpired the new credentials expired
+     */
+    public void setCredentialsExpired(final boolean credentialsExpired)
+    {
+        this.credentialsExpired = credentialsExpired;
+    }
+
+    /**
+     * Sets the email.
+     *
+     * @param email the email to set
+     */
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
+
+    /**
+     * Sets the federal id.
+     *
+     * @param federalId the new federal id
+     */
+    public void setFederalId(String federalId)
+    {
+        this.federalId = federalId;
+    }
+
+    /**
+     * Sets the first name.
+     *
+     * @param firstName the new first name
+     */
+    public void setFirstName(String firstName)
+    {
+        this.firstName = firstName;
+    }
+
+    /**
+     * Sets the last name.
+     *
+     * @param lastName the new last name
+     */
+    public void setLastName(String lastName)
+    {
+        this.lastName = lastName;
+    }
+
+    /**
+     * Sets the middle name.
+     *
+     * @param middleName the new middle name
+     */
+    public void setMiddleName(String middleName)
+    {
+        this.middleName = middleName;
+    }
+
+    /**
+     * Sets the password.
+     *
+     * @param password the new password
+     */
+    public void setPassword(final String password)
+    {
+        this.password = password;
+    }
+
+    /**
+     * Sets the payment info.
+     *
+     * @param paymentInfo the new payment info
+     */
+    public void setPaymentInfo(String paymentInfo)
+    {
+        this.paymentInfo = paymentInfo;
+    }
+
+    /**
+     * Sets the payment plan.
+     *
+     * @param paymentPlan the new payment plan
+     */
+    public void setPaymentPlan(String paymentPlan)
+    {
+        this.paymentPlan = paymentPlan;
+    }
+
+    /**
+     * Sets the phone number.
+     *
+     * @param phoneNumber the new phone number
+     */
+    public void setPhoneNumber(String phoneNumber)
+    {
+        this.phoneNumber = phoneNumber;
+    }
+
+    /**
+     * Sets the state.
+     *
+     * @param state the new state
+     */
+    public void setState(String state)
+    {
+        this.state = state;
+    }
+
+    /**
+     * Sets the trial period.
+     *
+     * @param trialPeriod the new trial period
+     */
+    public void setTrialPeriod(String trialPeriod)
+    {
+        this.trialPeriod = trialPeriod;
+    }
+
+    /**
+     * Sets the user account type.
+     *
+     * @param userAccountType the new user account type
+     */
+    public void setUserAccountType(final UserAccountTypeConstant userAccountType)
+    {
+        this.userAccountType = userAccountType;
     }
 
     /**
@@ -637,23 +709,43 @@ public class UserAccount extends BaseEntity implements Serializable
     }
 
     /**
-     * Gets the email.
+     * Sets the username.
      *
-     * @return the email
+     * @param username the new username
      */
-    public String getEmail()
+    public void setUsername(final String username)
     {
-        return email;
+        this.username = username;
     }
 
     /**
-     * Sets the email.
+     * Sets the valid to.
      *
-     * @param email the email to set
+     * @param validTo the new valid to
      */
-    public void setEmail(String email)
+    public void setValidTo(String validTo)
     {
-        this.email = email;
+        this.validTo = validTo;
+    }
+
+    /**
+     * Sets the verified by admin.
+     *
+     * @param verifiedByAdmin the new verified by admin
+     */
+    public void setVerifiedByAdmin(boolean verifiedByAdmin)
+    {
+        this.verifiedByAdmin = verifiedByAdmin;
+    }
+
+    /**
+     * Sets the zip code.
+     *
+     * @param zipCode the new zip code
+     */
+    public void setZipCode(String zipCode)
+    {
+        this.zipCode = zipCode;
     }
 
     /* (non-Javadoc)
@@ -662,12 +754,13 @@ public class UserAccount extends BaseEntity implements Serializable
     @Override
     public String toString()
     {
-        return "UserAccount [username=" + username + ", password=" + password + ", active=" + active
-                + ", verifiedByAdmin=" + verifiedByAdmin + ", accountExpired=" + accountExpired
+        return "UserAccount [username=" + username + ", firstName=" + firstName + ", middleName=" + middleName
+                + ", lastName=" + lastName + ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2
+                + ", active=" + active + ", verifiedByAdmin=" + verifiedByAdmin + ", accountExpired=" + accountExpired
                 + ", credentialsExpired=" + credentialsExpired + ", accountLocked=" + accountLocked + ", phoneNumber="
                 + phoneNumber + ", userAccountType=" + userAccountType + ", userAccountUserGroups="
                 + userAccountUserGroups + ", companyRegistration=" + companyRegistration + ", email=" + email
-                + ", federalId=" + federalId + ", address=" + address + ", street=" + street + ", city=" + city
+                + ", federalId=" + federalId + ", city=" + city
                 + ", state=" + state + ", country=" + country + ", zipCode=" + zipCode + ", autoRenew=" + autoRenew
                 + ", comments=" + comments + ", paymentPlan=" + paymentPlan + ", validTo=" + validTo + ", paymentInfo="
                 + paymentInfo + ", trialPeriod=" + trialPeriod + "]";

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -148,10 +149,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.csrf().csrfTokenRepository(this.csrfTokenRepository()).and()
 		.exceptionHandling()
 		.authenticationEntryPoint(unauthorizedHandler).and().formLogin().successHandler(authenticationSuccess)
-		.failureHandler(authenticationFailure).and().logout().permitAll().and().authorizeRequests()
+		.failureHandler(authenticationFailure).and().logout()
+		.permitAll().and()
+		.authorizeRequests()
+		.antMatchers(HttpMethod.GET, "/products/downloadFile").permitAll()
 		.antMatchers("/app/resources/**","/index.html", "/**/*.js", "/**/app/resources/css/**.css", "/**/app/resources/js/**.js",
 						"/**/app/resources/fonts/*.*", "/**/app/resources/css/fonts/*.*", "/","/analytics/recentSummary","/new",
-						"/new/register","/new/**","/about/**","/track/**")//.authenticated().
+						"/new/register","/new/**","/about/**","/track/**")
+		//.authenticated().
 		.permitAll().anyRequest().authenticated()
 		.and()
 		.csrf().disable();

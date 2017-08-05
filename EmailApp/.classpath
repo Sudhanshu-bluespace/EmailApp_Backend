@@ -24,5 +24,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/sudhanshu/Downloads/wysiwyg-editor-java-sdk-master/wysiwyg-editor-java-sdk-master/Lib/wysiwyg-editor-java-sdk.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

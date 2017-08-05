@@ -58,11 +58,11 @@ public class AccountActivationListener implements ApplicationListener<OnRegistra
         LOGGER.debug("Listening to the publish token event...");
 
         String recipientAddress = user.getEmail();
-        String subject = "Bluespace Mailer Registration | Account Created";
+        String subject = "ContactSwing User Registration | Account Created";
 
         AccountCreationEmail mail = new AccountCreationEmail();
         mail.setMailTo(recipientAddress);
-        mail.setMailFrom("bluespaceadmin@gmail.com");
+        mail.setMailFrom("no-reply@hireswing.com");
         mail.setMailSubject(subject);
         if (!event.isAccountCreatedByAdmin())
         {

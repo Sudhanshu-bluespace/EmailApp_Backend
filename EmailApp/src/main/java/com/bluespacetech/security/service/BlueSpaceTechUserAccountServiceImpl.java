@@ -121,7 +121,8 @@ public class BlueSpaceTechUserAccountServiceImpl implements BlueSpaceTechUserAcc
         userAccount.setAccountExpired(false);
         userAccount.setAccountLocked(false);
         userAccount.setActive(true);
-        userAccount.setAddress("-");
+        userAccount.setAddressLine1("-");
+        userAccount.setAddressLine2("-");
         userAccount.setAutoRenew(false);
         userAccount.setCity("-");
         userAccount.setCountry("-");

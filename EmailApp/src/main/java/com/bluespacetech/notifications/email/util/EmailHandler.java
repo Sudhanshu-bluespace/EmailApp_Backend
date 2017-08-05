@@ -3,6 +3,7 @@ package com.bluespacetech.notifications.email.util;
 import java.io.IOException;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,9 @@ public class EmailHandler {
              MimeMessage mimeMessage = sender.createMimeMessage();
              MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
              ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
-             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success.png");
+             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(mail.getMailFrom());
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -68,16 +69,16 @@ public class EmailHandler {
              						+ "on the left hand side of the dashbard. Upon your approval, a verification email will be sent to the user "
              						+ "and on self verification, appropriate grants would be provided.</p>"+
              						"<p>Thanks</p>"
-             						+"<p>Bluespace Mailer Team</p>"
+             						+"<p>ContactSwing Support Team</p>"
              			+ "</div>"
              	+ "</div>"
              + "</body>"
            + "</html>";
-             System.out.println("Text : "+text);
+             //System.out.println("Text : "+text);
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              
-             System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             //System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              //mimeMessageHelper.addInline("style", style);
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
@@ -101,9 +102,9 @@ public class EmailHandler {
          	MimeMessage mimeMessage = sender.createMimeMessage();
              MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
-            ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success.png");
+            ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(mail.getMailFrom());
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -116,7 +117,7 @@ public class EmailHandler {
             		+" -webkit-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);-moz-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);}"
             		+".verifyAccountDiv a{color:white;margin-top:15px;text-decoration:none;}"
             		+".verifyAccountDiv p{padding:7px;}"
-            		+".footer {margin-top:31%;margin-left:31%;width:254px;height:40px;background-color:#5F5F5E;border:1px solid #f2f2f2;"
+            		+".footer {margin-top:31%;margin-left:38%;width:75px;height:40px;background-color:#5F5F5E;border:1px solid #f2f2f2;"
             		+" border-radius: 6px 6px 6px 6px; -moz-border-radius: 6px 6px 6px 6px; -webkit-border-radius: 6px 6px 6px 6px; border: 0px solid #000000;"
             		+" -webkit-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);-moz-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);}"
             		+".footer a{color:white;margin-top:15px;text-decoration:none;}"
@@ -126,31 +127,30 @@ public class EmailHandler {
              + "<body>"+
              		"<div class=\"container\">"
              			+ "<div class=\"mainMessageDiv\">"
-             				+ "	<p>Welcome "+mail.getModel().get("userName")+", your account for Bluespacemailer has been created "
+             				+ "	<p>Welcome "+mail.getModel().get("userName")+", your account for ContactSwing has been created "
              						+ "successfully and is pending self-verification and approval. The activation process "
              						+ "mandates that you verify your email by clicking on the 'Verify my account' "
              						+ "link given below. Upon your acount verification, the account will be reviewed by our team "
              						+ "and you will be granted access to the feaures accordingly."+
              					"</p>"+
              					"<p>Thanks</p>"+
-             					"<p>Bluespace Mailer Team</p>"
+             					"<p>ContactSwing Support Team</p>"
              			+ "</div>"
              			+ "<div class=\"verifyAccountDiv\">"
              			    + "<p><a href=\""+mail.getVerificationUrl()+"\">Verify your Account</a></p>"
              			+ "</div>"
              			+ "<div class=\"footer\">"
-             			    + "<p><a href=\"#\">Visit Bluespacemailer.com</a> | " 
-             				+ "<a href=\""+mail.getUnsubscribeUrl()+"\">Unsubscribe</a>"
+             			    + "<p><a href=\"http://www.hireswing.com\">Visit Us"
              			    + "</p>"
              			+ "</div>"
              		+ "</div>"
              + "</body>"
            + "</html>";
-             System.out.println("Text : "+text);
+             //System.out.println("Text : "+text);
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              
-             System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             //System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              //mimeMessageHelper.addInline("style", style);
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
@@ -174,9 +174,9 @@ public class EmailHandler {
     	     MimeMessage mimeMessage = sender.createMimeMessage();
              MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
              ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
-             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success.png");
+             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(mail.getMailFrom());
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -189,7 +189,7 @@ public class EmailHandler {
             		+" -webkit-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);-moz-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);}"
             		+".verifyAccountDiv a{color:white;margin-top:15px;text-decoration:none;}"
             		+".verifyAccountDiv p{padding:7px;}"
-            		+".footer {margin-top:31%;margin-left:31%;width:254px;height:40px;background-color:#5F5F5E;border:1px solid #f2f2f2;"
+            		+".footer {margin-top:31%;margin-left:38%;width:75px;height:40px;background-color:#5F5F5E;border:1px solid #f2f2f2;"
             		+" border-radius: 6px 6px 6px 6px; -moz-border-radius: 6px 6px 6px 6px; -webkit-border-radius: 6px 6px 6px 6px; border: 0px solid #000000;"
             		+" -webkit-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);-moz-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);}"
             		+".footer a{color:white;margin-top:15px;text-decoration:none;}"
@@ -199,17 +199,16 @@ public class EmailHandler {
              + "<body>"+
              		"<div class=\"container\">"
              			+ "<div class=\"mainMessageDiv\">"
-             				+ "	<p>Welcome "+mail.getModel().get("userName")+", your account for Bluespacemailer has been created "
+             				+ "	<p>Welcome "+mail.getModel().get("userName")+", your account for ContactSwing has been created "
              						+ "successfully. You can login to your account with "+username+" as the username and "+password+" as the password"
              						+ ". We strongly advise you to change your password on the first login. Based on your subscription plan, "
              						+ "you have been granted access to the features available."+
              					"</p>"+
              					"<p>Thanks</p>"
-             					+"<p>Bluespace Mailer Team</p>"
+             					+"<p>ContactSwing Support Team</p>"
              			+ "</div>"
                  		+ "<div class=\"footer\">"
-                 			+ "<p><a href=\"#\">Visit Bluespacemailer.com</a> | " 
-                 				+ "<a href=\""+mail.getUnsubscribeUrl()+"\">Unsubscribe</a>"
+                 		         + "<p><a href=\"http://www.hireswing.com\">Visit Us</a>"
                  			+ "</p>"
                  		+ "</div>"+
                  	"</div>"
@@ -218,7 +217,7 @@ public class EmailHandler {
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              //mimeMessageHelper.addInline("style", style);
-             System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             //System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
          } catch (MessagingException e) {
@@ -242,9 +241,9 @@ public class EmailHandler {
              MimeMessage mimeMessage = sender.createMimeMessage();
              MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
              ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
-             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success.png");
+             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(mail.getMailFrom());
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -257,7 +256,7 @@ public class EmailHandler {
                         +" -webkit-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);-moz-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);}"
                         +".verifyAccountDiv a{color:white;margin-top:15px;text-decoration:none;}"
                         +".verifyAccountDiv p{padding:7px;}"
-                        +".footer {margin-top:31%;margin-left:31%;width:254px;height:40px;background-color:#5F5F5E;border:1px solid #f2f2f2;"
+                        +".footer {margin-top:31%;margin-left:38%;width:75px;height:40px;background-color:#5F5F5E;border:1px solid #f2f2f2;"
                         +" border-radius: 6px 6px 6px 6px; -moz-border-radius: 6px 6px 6px 6px; -webkit-border-radius: 6px 6px 6px 6px; border: 0px solid #000000;"
                         +" -webkit-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);-moz-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);}"
                         +".footer a{color:white;margin-top:15px;text-decoration:none;}"
@@ -271,10 +270,10 @@ public class EmailHandler {
                                                         + "by the administrator. Please contact our customer support for further details."+
                                                 "</p>"+
                                                 "<p>Thanks</p>"
-                                                +"<p>Bluespace Mailer Team</p>"
+                                                +"<p>ContactSwing Support Team</p>"
                                 + "</div>"
                                 + "<div class=\"footer\">"
-                                        + "<p><a href=\"#\">Visit Bluespacemailer.com</a>" 
+                                        + "<p><a href=\"http://www.hireswing.com\">Visit Us</a>"
                                         + "</p>"
                                 + "</div>"+
                         "</div>"
@@ -307,9 +306,9 @@ public class EmailHandler {
              MimeMessage mimeMessage = sender.createMimeMessage();
              MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
              ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
-             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success.png");
+             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(mail.getMailFrom());
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -322,7 +321,7 @@ public class EmailHandler {
                         +" -webkit-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);-moz-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);}"
                         +".verifyAccountDiv a{color:white;margin-top:15px;text-decoration:none;}"
                         +".verifyAccountDiv p{padding:7px;}"
-                        +".footer {margin-top:31%;margin-left:31%;width:254px;height:40px;background-color:#5F5F5E;border:1px solid #f2f2f2;"
+                        +".footer {margin-top:31%;margin-left:38%;width:75px;height:40px;background-color:#5F5F5E;border:1px solid #f2f2f2;"
                         +" border-radius: 6px 6px 6px 6px; -moz-border-radius: 6px 6px 6px 6px; -webkit-border-radius: 6px 6px 6px 6px; border: 0px solid #000000;"
                         +" -webkit-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);-moz-box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);box-shadow: -2px 9px 23px -8px rgba(0,0,0,0.75);}"
                         +".footer a{color:white;margin-top:15px;text-decoration:none;}"
@@ -336,10 +335,10 @@ public class EmailHandler {
                                                         + "by the administrator. Please contact our customer support for further details."+
                                                 "</p>"+
                                                 "<p>Thanks</p>"
-                                                +"<p>Bluespace Mailer Team</p>"
+                                                +"<p>ContactSwing Support Team</p>"
                                 + "</div>"
                                 + "<div class=\"footer\">"
-                                        + "<p><a href=\"#\">Visit Bluespacemailer.com</a>"
+                                        + "<p><a href=\"http://www.hireswing.com\">Visit Us</a>"
                                         + "</p>"
                                 + "</div>"+
                         "</div>"
@@ -348,7 +347,7 @@ public class EmailHandler {
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              //mimeMessageHelper.addInline("style", style);
-             System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             //System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
          } catch (MessagingException e) {
