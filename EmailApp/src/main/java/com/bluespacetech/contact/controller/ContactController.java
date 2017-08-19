@@ -6,8 +6,14 @@ package com.bluespacetech.contact.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,6 +37,7 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,19 +56,23 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.bluespacetech.common.util.CommonUtilCache;
+import com.bluespacetech.common.util.ExceptionUtil;
 import com.bluespacetech.contact.entity.Contact;
 import com.bluespacetech.contact.repository.ContactRepository;
 import com.bluespacetech.contact.searchcriteria.ContactSearchCriteria;
 import com.bluespacetech.contact.service.ContactService;
 import com.bluespacetech.contactgroup.entity.ContactGroup;
+import com.bluespacetech.contactgroup.repository.ContactGroupRepository;
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.core.exceptions.InvalidUploadFileTypeException;
 import com.bluespacetech.core.exceptions.MaximumFileSizeExceededException;
 import com.bluespacetech.core.exceptions.UploadedFileDataCorruptException;
+import com.bluespacetech.core.utility.ViewUtil;
 import com.bluespacetech.group.entity.Group;
 import com.bluespacetech.group.repository.GroupRepository;
 import com.bluespacetech.group.service.GroupService;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class ContactController.
  *
@@ -89,6 +100,10 @@ public class ContactController
     /** The group repository. */
     @Autowired
     GroupRepository groupRepository;
+    
+    /** The contact group repository. */
+    @Autowired
+    ContactGroupRepository contactGroupRepository;
 
     /** The job launcher. */
     @Autowired
@@ -109,11 +124,8 @@ public class ContactController
     /**
      * Creates the.
      *
-     * @param contact
-     *            the contact
+     * @param contact            the contact
      * @return the response entity
-     * @throws BusinessException
-     *             the business exception
      */
     @ResponseStatus(HttpStatus.CREATED)
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -203,6 +215,7 @@ public class ContactController
     /**
      * Retrieve All Financial Years.
      *
+     * @param username the username
      * @return the contacts
      */
     @PostMapping(value = "/getAllByCreatedUser", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -405,7 +418,16 @@ public class ContactController
                         }
                         try
                         {
-                            List<String> content = Files.readAllLines(origFile.toPath());
+                            Charset charset = Charset.forName("Cp1252");
+                            List<ContactGroup> contactGroups = contactGroupRepository.findAll();
+                            for(ContactGroup grp : contactGroups)
+                            {
+                                Contact contact = grp.getContact();
+                                Group group = grp.getGroup();
+                                CommonUtilCache.getExistingContacts().add((contact.getFirstName()+","+contact.getLastName()+","+contact.getEmail()+","+group.getName()).toLowerCase());
+                            }
+
+                            List<String> content = Files.readAllLines(origFile.toPath(),charset);
                             for (String data : content)
                             {
                                 if(data.trim().isEmpty())
@@ -415,8 +437,17 @@ public class ContactController
                                 String[] values = data.split(",");
                                 if (values.length != 4)
                                 {
+                                    List<String> valueList = new ArrayList<>();
+                                    for(String value : values)
+                                    {
+                                       valueList.add(value);
+                                    }
+                                    if(valueList.isEmpty())
+                                    {
+                                        valueList.add("Empty Row!");
+                                    }
                                     Files.deleteIfExists(origFile.toPath());
-                                    message = "File data does not match the expected column format [firstname,lastname,email,group]";
+                                    message = "File data does not match the expected column format [firstname,lastname,email,group], Failed for entry : "+valueList;
                                     LOGGER.error(message);
                                     throw new UploadedFileDataCorruptException(message);
                                 }
@@ -452,6 +483,8 @@ public class ContactController
 
                             JobExecution execution = jobLauncher.run(job, new JobParameters(jobParametersMap));
                             LOGGER.info("Job Execution Status : " + execution.getExitStatus());
+                            
+                            
 
                             if ("FAILED".equalsIgnoreCase(execution.getExitStatus().getExitCode()))
                             {
@@ -479,24 +512,28 @@ public class ContactController
                             else
                             {
                                 res.setStatus(HttpServletResponse.SC_OK);
-                                message = "Contacts uploaded successfully";
+                                message = "Finished processing contacts list. Contacts that were duplicates / already associated with the group or had failed validation have been skipped";
                                 LOGGER.info(message);
                                 res.getOutputStream().print(message);
                             }
+                            
+                            generateContactUploadReport(origFile.getName());
+                            CommonUtilCache.getFailedValidationContacts().clear();
                         }
                         catch (Exception ex)
                         {
+
                             if (ex instanceof UploadedFileDataCorruptException)
                             {
                                 res.setStatus(HttpServletResponse.SC_EXPECTATION_FAILED);
-                                LOGGER.error(ex.fillInStackTrace());
+                                LOGGER.error(ex.getLocalizedMessage());
                                 res.getOutputStream().print(ex.getMessage());
                             }
                             else
                             {
                                 res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                LOGGER.error(ex.fillInStackTrace());
-                                res.getOutputStream().print("Internal Server Error: " + ex.getMessage());
+                                LOGGER.error(ExceptionUtil.getErrorRootCause(ex));
+                                res.getOutputStream().print("Internal Server Error: " + ExceptionUtil.getErrorRootCause(ex));
                             }
                         }
                     }
@@ -547,6 +584,71 @@ public class ContactController
     }
 
     /**
+     * Generate contact upload report.
+     *
+     * @param uploadFileName the upload file name
+     */
+    private void generateContactUploadReport(String uploadFileName)
+    {
+        FileSystemResource reportsDir = new FileSystemResource("/opt/packages/Oracle/BluespaceMailer/reports");
+        if (!reportsDir.exists())
+        {
+            try
+            {
+                Files.createDirectory(Paths.get(reportsDir.getPath()));
+            }
+            catch (IOException ex)
+            {
+                LOGGER.error("Failed to create new reports directory " + reportsDir.getPath()
+                        + ", reports will not be generated for this bulk upload");
+            }
+        }
+
+        String uploader = ViewUtil.getPrincipal();
+        if (uploader == null || uploader.trim().isEmpty())
+        {
+            uploader = "guest";
+        }
+        String fileName = "FailedContactUpload_" + uploadFileName.replaceAll("\\.", "") + "_" + uploader + "_" + getCurrentDate() + ".csv";
+        Path reportsFilePath = Paths.get(reportsDir.getPath(), fileName);
+
+        if (!CommonUtilCache.getFailedValidationContacts().isEmpty())
+        {
+            try
+            {
+                Files.createFile(reportsFilePath);
+                StringBuilder sb = new StringBuilder();
+                sb.append(",,,,,")
+                .append("Generated Report for Failed Bulk Contact Upload")
+                .append(",")
+                        .append(uploadFileName).append(System.lineSeparator())
+                        .append(",,,,,")
+                        .append("Upload Date : ")
+                        .append(",")
+                        .append(getCurrentDateWithSpaces())
+                        .append(System.lineSeparator())
+                        .append(System.lineSeparator())
+                        .append(System.lineSeparator())
+                        .append("SERIAL_NO,UPLOADER,EMAIL,FAILURE_REASON")
+                        .append(System.lineSeparator());
+
+                int i = 0;
+                for(String data : CommonUtilCache.getFailedValidationContacts())
+                {
+                    sb.append(++i).append(",").append(data).append(System.lineSeparator());
+                }
+                Files.write(reportsFilePath, sb.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+                LOGGER.info("Report for failed contacts has been generated in "+reportsFilePath);
+            }
+            catch (IOException ex)
+            {
+                LOGGER.error("Failed to create new reports file " + fileName + " in " + reportsDir.getPath()
+                        + ", reports will not be generated for this campaign");
+            }
+        }
+    }
+
+    /**
      * Creates the group name to group map.
      *
      * @param groupList
@@ -593,6 +695,26 @@ public class ContactController
         File tempFile = new File(env.getProperty("mutipart.location"), multipartFile.getOriginalFilename());
         FileCopyUtils.copy(multipartFile.getBytes(), tempFile);
         return tempFile.getAbsolutePath();
+    }
+    
+    /**
+     * Gets the current date.
+     *
+     * @return the current date
+     */
+    private String getCurrentDate()
+    {
+        return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+    }
+    
+    /**
+     * Gets the current date with spaces.
+     *
+     * @return the current date with spaces
+     */
+    private String getCurrentDateWithSpaces()
+    {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
     }
 
 }

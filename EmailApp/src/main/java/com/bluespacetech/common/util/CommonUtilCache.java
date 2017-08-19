@@ -3,11 +3,10 @@ package com.bluespacetech.common.util;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import java.util.Set;
 
 import com.bluespacetech.group.entity.Group;
 import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
@@ -24,6 +23,8 @@ public class CommonUtilCache
 
     /** The group name to group map. */
     private static Map<String, Group> groupNameToGroupMap = new HashMap<>();
+    
+    private static Set<String> failedValidationContacts = new HashSet<>();
 
     /** The black listed domains. */
     private static List<String> blackListedDomains = new ArrayList<>(1000);
@@ -47,6 +48,8 @@ public class CommonUtilCache
     
     private static Map<String,String> requestIdVsErrorMap = new HashMap<>();
     
+    private static Set<String> existingContacts = new HashSet<>();
+    
     public static Map<String, String> getRequestIdVsErrorMap()
     {
         return requestIdVsErrorMap;
@@ -55,6 +58,11 @@ public class CommonUtilCache
     public static Map<Long, List<Path>> getTempFileCleanupMap()
     {
         return tempFileCleanupMap;
+    }
+    
+    public static Set<String> getExistingContacts()
+    {
+        return existingContacts;
     }
 
     /**
@@ -74,6 +82,11 @@ public class CommonUtilCache
         }
 
         return bouncedEmailsCache;
+    }
+    
+    public static Set<String> getFailedValidationContacts()
+    {
+        return failedValidationContacts;
     }
 
     /**

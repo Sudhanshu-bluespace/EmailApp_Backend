@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
@@ -125,5 +126,27 @@ public class EmailUtils
         LOGGER.debug("Read Mail Link : "+unscribeLink.toString());
         return unscribeLink.toString();
     }
+    
+    /**
+     * Checks if is email valid.
+     *
+     * @param email the email
+     * @return true, if is email valid
+     */
+    public static boolean isEmailValid(String email)
+    {
+        boolean isValid = false;
+        if (email != null && !email.trim().isEmpty())
+        {
+            String regex = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(email);
+            if (matcher.find())
+            {
+                isValid = true;
+            }
+        }
 
+        return isValid;
+    }
 }

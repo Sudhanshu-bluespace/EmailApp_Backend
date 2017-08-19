@@ -4,22 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.bluespacetech.common.util.CommonUtilCache;
 import com.bluespacetech.contact.entity.BlockedContacts;
 import com.bluespacetech.contact.entity.Contact;
 import com.bluespacetech.contact.fileupload.dto.ContactUploadDTO;
 import com.bluespacetech.contact.service.BlockedContactService;
 import com.bluespacetech.contactgroup.entity.ContactGroup;
+import com.bluespacetech.core.utility.ViewUtil;
 import com.bluespacetech.group.entity.Group;
+import com.bluespacetech.notifications.email.util.EmailUtils;
 import com.bluespacetech.notifications.email.validators.EmailMXRecordDNSValidator;
 
 /**
@@ -63,15 +59,27 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         final String firstName = contactDTO.getFirstName();
         final String lastName = contactDTO.getLastName();
         final String email = contactDTO.getEmail();
+        String uploader = ViewUtil.getPrincipal();
+        if(uploader ==null || uploader.trim().isEmpty())
+        {
+            uploader = "Guest";
+        }
 
         if (email == null || email.trim().isEmpty())
         {
+            return null;
+        }
+        else if (!EmailUtils.isEmailValid(email))
+        {
+            LOGGER.warn("Invalid Email found " + email + " , will be skipped");
+            CommonUtilCache.getFailedValidationContacts().add(uploader+","+email+",INPUT_VALIDATION_FAILED");
             return null;
         }
         else if (CommonUtilCache.getIgnoreList().contains(email.substring(0, email.indexOf("@") + 1)))
         {
             LOGGER.warn("Email " + email + " falls under IGNORED LIST, will be skipped");
             addEmailToBlockedList(email, contactDTO, "IGNORED");
+            CommonUtilCache.getFailedValidationContacts().add(uploader+","+email+",SPAM/IGNORED_LIST");
             return null;
         }
         /*
@@ -83,6 +91,7 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         {
             LOGGER.warn("Email " + email + " detected to be BLACKLISTED. Will be added to the blacklisted group");
             addEmailToBlockedList(email, contactDTO, "BLACKLISTED");
+            CommonUtilCache.getFailedValidationContacts().add(uploader+","+email+",BLACKLISTED");
             return null;
         }
         else if (!validatedDomains.contains(email.split("@")[1]))
@@ -92,12 +101,13 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
             {
                 LOGGER.warn("No MX records found for email " + email + ", Potential candidate for blacklist");
                 addEmailToBlockedList(email, contactDTO, "INVALID_MX_RECORDS");
+                CommonUtilCache.getFailedValidationContacts().add(uploader+","+email+",INVALID_MX_RECORDS");
                 return null;
             }
             else
             {
                 validatedDomains.add(email.split("@")[1]);
-                LOGGER.info("Validated domain " + email.split("@")[1]
+                LOGGER.debug("Validated domain " + email.split("@")[1]
                         + " for MX reords successfully. Added to local cache");
             }
         }
@@ -106,19 +116,43 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         contact.getContactGroups().clear();
 
         String groups = contactDTO.getGroup();
-        ContactGroup cg = null;
-
-        if (groups.contains(";"))
+        
+        List<String> validatedGroups = new ArrayList<>();
+        if(groups.contains(";"))
         {
-            for (String groupName : groups.split(";"))
+            for(String group : groups.split(":"))
             {
-                cg = createContactGroup(groupName, groupNameToGroupMap);
+                String toSearch = (contactDTO.getFirstName()+","+contactDTO.getLastName()+","+contactDTO.getEmail()+","+group).toLowerCase();
+                if(CommonUtilCache.getExistingContacts().contains(toSearch))
+                {
+                    LOGGER.warn("Contact "+contactDTO.getEmail()+" is already associated with group "+group+", will not be added again");
+                }
+                else
+                {
+                    validatedGroups.add(group);
+                }
             }
         }
         else
         {
-            cg = createContactGroup(groups, groupNameToGroupMap);
+            String toSearch = (contactDTO.getFirstName()+","+contactDTO.getLastName()+","+contactDTO.getEmail()+","+groups).toLowerCase();
+            if(CommonUtilCache.getExistingContacts().contains(toSearch))
+            {
+                LOGGER.warn("Contact "+contactDTO.getEmail()+" is already associated with group "+groups+", will not be added again");
+                return null;
+            }
+            else
+            {
+                validatedGroups.add(groups);
+            }
         }
+
+        ContactGroup cg = null;
+
+        for (String groupName : validatedGroups)
+        {
+            cg = createContactGroup(groupName, groupNameToGroupMap);
+        }        
 
         contact.getContactGroups().add(cg);
         contact.setEmail(email);
