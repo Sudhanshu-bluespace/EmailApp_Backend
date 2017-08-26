@@ -12,6 +12,7 @@ import com.bluespacetech.group.entity.Group;
 import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
 import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 
+
 /**
  * The Class CommonUtilCache.
  */
@@ -24,6 +25,7 @@ public class CommonUtilCache
     /** The group name to group map. */
     private static Map<String, Group> groupNameToGroupMap = new HashMap<>();
     
+    /** The failed validation contacts. */
     private static Set<String> failedValidationContacts = new HashSet<>();
 
     /** The black listed domains. */
@@ -38,6 +40,7 @@ public class CommonUtilCache
     /** The batch id to email list map. */
     private static Map<String, List<EmailContactGroupVO>> batchIdToEmailListMap = new HashMap<>();
     
+    /** The temp file cleanup map. */
     private static Map<Long,List<Path>> tempFileCleanupMap = new HashMap<>();
 
     /** The batch id to email job endpoint map. */
@@ -46,21 +49,38 @@ public class CommonUtilCache
     /** The bounced emails cache. */
     private static Map<String, List<String>> bouncedEmailsCache = new HashMap<>();
     
+    /** The request id vs error map. */
     private static Map<String,String> requestIdVsErrorMap = new HashMap<>();
     
-    private static Set<String> existingContacts = new HashSet<>();
+    /** The existing contacts. */
+    private static Map<String,Set<String>> existingContacts = new HashMap<>();
     
+    /**
+     * Gets the request id vs error map.
+     *
+     * @return the request id vs error map
+     */
     public static Map<String, String> getRequestIdVsErrorMap()
     {
         return requestIdVsErrorMap;
     }
 
+    /**
+     * Gets the temp file cleanup map.
+     *
+     * @return the temp file cleanup map
+     */
     public static Map<Long, List<Path>> getTempFileCleanupMap()
     {
         return tempFileCleanupMap;
     }
     
-    public static Set<String> getExistingContacts()
+    /**
+     * Gets the existing contacts.
+     *
+     * @return the existing contacts
+     */
+    public static Map<String,Set<String>> getExistingContacts()
     {
         return existingContacts;
     }
@@ -84,6 +104,11 @@ public class CommonUtilCache
         return bouncedEmailsCache;
     }
     
+    /**
+     * Gets the failed validation contacts.
+     *
+     * @return the failed validation contacts
+     */
     public static Set<String> getFailedValidationContacts()
     {
         return failedValidationContacts;

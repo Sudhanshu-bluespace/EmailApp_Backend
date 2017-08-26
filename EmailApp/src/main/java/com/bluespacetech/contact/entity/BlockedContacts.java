@@ -9,11 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 import com.bluespacetech.core.model.BaseEntity;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class BlockedContacts.
  *

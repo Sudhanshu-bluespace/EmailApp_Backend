@@ -29,10 +29,6 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
 
     /** The blocked contact service. */
     private BlockedContactService blockedContactService;
-    
-   // @Autowired
-   // @PersistenceContext
-   // EntityManager em;
 
     /** The validated domains. */
     private List<String> validatedDomains = new ArrayList<>();
@@ -60,7 +56,7 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         final String lastName = contactDTO.getLastName();
         final String email = contactDTO.getEmail();
         String uploader = ViewUtil.getPrincipal();
-        if(uploader ==null || uploader.trim().isEmpty())
+        if (uploader == null || uploader.trim().isEmpty())
         {
             uploader = "Guest";
         }
@@ -72,14 +68,14 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         else if (!EmailUtils.isEmailValid(email))
         {
             LOGGER.warn("Invalid Email found " + email + " , will be skipped");
-            CommonUtilCache.getFailedValidationContacts().add(uploader+","+email+",INPUT_VALIDATION_FAILED");
+            CommonUtilCache.getFailedValidationContacts().add(uploader + "," + email + ",INPUT_VALIDATION_FAILED");
             return null;
         }
         else if (CommonUtilCache.getIgnoreList().contains(email.substring(0, email.indexOf("@") + 1)))
         {
             LOGGER.warn("Email " + email + " falls under IGNORED LIST, will be skipped");
             addEmailToBlockedList(email, contactDTO, "IGNORED");
-            CommonUtilCache.getFailedValidationContacts().add(uploader+","+email+",SPAM/IGNORED_LIST");
+            CommonUtilCache.getFailedValidationContacts().add(uploader + "," + email + ",SPAM/IGNORED_LIST");
             return null;
         }
         /*
@@ -91,7 +87,7 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         {
             LOGGER.warn("Email " + email + " detected to be BLACKLISTED. Will be added to the blacklisted group");
             addEmailToBlockedList(email, contactDTO, "BLACKLISTED");
-            CommonUtilCache.getFailedValidationContacts().add(uploader+","+email+",BLACKLISTED");
+            CommonUtilCache.getFailedValidationContacts().add(uploader + "," + email + ",BLACKLISTED");
             return null;
         }
         else if (!validatedDomains.contains(email.split("@")[1]))
@@ -101,7 +97,7 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
             {
                 LOGGER.warn("No MX records found for email " + email + ", Potential candidate for blacklist");
                 addEmailToBlockedList(email, contactDTO, "INVALID_MX_RECORDS");
-                CommonUtilCache.getFailedValidationContacts().add(uploader+","+email+",INVALID_MX_RECORDS");
+                CommonUtilCache.getFailedValidationContacts().add(uploader + "," + email + ",INVALID_MX_RECORDS");
                 return null;
             }
             else
@@ -116,16 +112,18 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         contact.getContactGroups().clear();
 
         String groups = contactDTO.getGroup();
-        
+
         List<String> validatedGroups = new ArrayList<>();
-        if(groups.contains(";"))
+        if (groups.contains(";"))
         {
-            for(String group : groups.split(":"))
+            for (String group : groups.split(":"))
             {
-                String toSearch = (contactDTO.getFirstName()+","+contactDTO.getLastName()+","+contactDTO.getEmail()+","+group).toLowerCase();
-                if(CommonUtilCache.getExistingContacts().contains(toSearch))
+                String toSearch = (contactDTO.getFirstName() + "," + contactDTO.getLastName() + ","
+                        + contactDTO.getEmail() + "," + group).toLowerCase();
+                if (isContactAlreadyExistent(toSearch, uploader))
                 {
-                    LOGGER.warn("Contact "+contactDTO.getEmail()+" is already associated with group "+group+", will not be added again");
+                    LOGGER.warn("Contact " + contactDTO.getEmail() + " is already associated with group " + group
+                            + ", will not be added again");
                 }
                 else
                 {
@@ -135,10 +133,12 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         }
         else
         {
-            String toSearch = (contactDTO.getFirstName()+","+contactDTO.getLastName()+","+contactDTO.getEmail()+","+groups).toLowerCase();
-            if(CommonUtilCache.getExistingContacts().contains(toSearch))
+            String toSearch = (contactDTO.getFirstName() + "," + contactDTO.getLastName() + "," + contactDTO.getEmail()
+                    + "," + groups).toLowerCase();
+            if (isContactAlreadyExistent(toSearch, uploader))
             {
-                LOGGER.warn("Contact "+contactDTO.getEmail()+" is already associated with group "+groups+", will not be added again");
+                LOGGER.warn("Contact " + contactDTO.getEmail() + " is already associated with group " + groups
+                        + ", will not be added again");
                 return null;
             }
             else
@@ -149,15 +149,17 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
 
         ContactGroup cg = null;
 
-        for (String groupName : validatedGroups)
-        {
-            cg = createContactGroup(groupName, groupNameToGroupMap);
-        }        
-
-        contact.getContactGroups().add(cg);
         contact.setEmail(email);
         contact.setFirstName(firstName);
         contact.setLastName(lastName);
+
+        for (String groupName : validatedGroups)
+        {
+            LOGGER.debug("Creating new contact group for " + groupName + " and contact " + contact);
+            cg = createContactGroup(groupName, groupNameToGroupMap);
+        }
+
+        contact.getContactGroups().add(cg);
 
         for (ContactGroup cGroup : contact.getContactGroups())
         {
@@ -166,6 +168,19 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
             cGroup.getGroup().getContactGroups().addAll(contact.getContactGroups());
         }
         return contact;
+    }
+
+    /**
+     * Checks if is contact already existent.
+     *
+     * @param toSearch the to search
+     * @param uploader the uploader
+     * @return true, if is contact already existent
+     */
+    private boolean isContactAlreadyExistent(String toSearch, String uploader)
+    {
+        return CommonUtilCache.getExistingContacts().containsKey(uploader)
+                && CommonUtilCache.getExistingContacts().get(uploader).contains(toSearch);
     }
 
     /**
@@ -180,6 +195,7 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         ContactGroup cg = new ContactGroup();
         cg.setActive(true);
         cg.setUnSubscribed(false);
+
         if (groupNameToGroupMap.containsKey(groupName))
         {
             cg.setGroup(groupNameToGroupMap.get(groupName));
@@ -197,22 +213,22 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
      */
     private void addEmailToBlockedList(String email, ContactUploadDTO contactUploadDTO, String reason)
     {
-        //Query query = em.createNativeQuery("select * from blocked_contacts b where upper(b.email)='"+email.toUpperCase()+"' and upper(b.reason) = '"+reason.toUpperCase()+"'");
-        //BlockedContacts blocked = (BlockedContacts)query.getSingleResult();
-        
-        //BlockedContacts contacts = blockedContactService.findBlockedContactByEmailAndReason(email,reason);
-        //if (blocked == null)
-        //{
-            BlockedContacts contactToBlock = new BlockedContacts();
-            contactToBlock.setEmail(email);
-            contactToBlock.setFirstName(contactUploadDTO.getFirstName());
-            contactToBlock.setLastName(contactUploadDTO.getLastName());
-            contactToBlock.setReason(reason);
-            blockedContactService.addBlockedContact(contactToBlock);
-       // }
-       // else
-       // {
-         //   LOGGER.warn("Contact is already in blacklisted");
-        //}
+        // Query query = em.createNativeQuery("select * from blocked_contacts b where upper(b.email)='"+email.toUpperCase()+"' and upper(b.reason) = '"+reason.toUpperCase()+"'");
+        // BlockedContacts blocked = (BlockedContacts)query.getSingleResult();
+
+        // BlockedContacts contacts = blockedContactService.findBlockedContactByEmailAndReason(email,reason);
+        // if (blocked == null)
+        // {
+        BlockedContacts contactToBlock = new BlockedContacts();
+        contactToBlock.setEmail(email);
+        contactToBlock.setFirstName(contactUploadDTO.getFirstName());
+        contactToBlock.setLastName(contactUploadDTO.getLastName());
+        contactToBlock.setReason(reason);
+        blockedContactService.addBlockedContact(contactToBlock);
+        // }
+        // else
+        // {
+        // LOGGER.warn("Contact is already in blacklisted");
+        // }
     }
 }

@@ -4,9 +4,11 @@
  */
 package com.bluespacetech.contact.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,9 +18,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,12 +71,12 @@ import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.core.exceptions.InvalidUploadFileTypeException;
 import com.bluespacetech.core.exceptions.MaximumFileSizeExceededException;
 import com.bluespacetech.core.exceptions.UploadedFileDataCorruptException;
+import com.bluespacetech.core.utility.EncodingUtils;
 import com.bluespacetech.core.utility.ViewUtil;
 import com.bluespacetech.group.entity.Group;
 import com.bluespacetech.group.repository.GroupRepository;
 import com.bluespacetech.group.service.GroupService;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ContactController.
  *
@@ -100,7 +104,7 @@ public class ContactController
     /** The group repository. */
     @Autowired
     GroupRepository groupRepository;
-    
+
     /** The contact group repository. */
     @Autowired
     ContactGroupRepository contactGroupRepository;
@@ -118,13 +122,16 @@ public class ContactController
     @Autowired
     private Environment env;
 
+    /** The temp file path. */
+    private String tempFilePath;
+
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(ContactController.class);
 
     /**
      * Creates the.
      *
-     * @param contact            the contact
+     * @param contact the contact
      * @return the response entity
      */
     @ResponseStatus(HttpStatus.CREATED)
@@ -144,20 +151,18 @@ public class ContactController
         }
         catch (BusinessException ex)
         {
-            return new ResponseEntity<String>(String.format("{\"Error\":\"%s\"}", ex.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>(String.format("{\"Error\":\"%s\"}", ex.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Update.
      *
-     * @param id
-     *            the id
-     * @param contact
-     *            the contact
+     * @param id the id
+     * @param contact the contact
      * @return the response entity
-     * @throws BusinessException
-     *             the business exception
+     * @throws BusinessException the business exception
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Contact> update(@PathVariable final Long id, @RequestBody final Contact contact)
@@ -182,7 +187,7 @@ public class ContactController
         }
 
         final Contact contactUpdated = contactService.updateContact(contact);
-        
+
         contactUpdated.getContactGroups().stream().forEach(contactGroup -> {
             contactGroup.setContact(null);
         });
@@ -192,11 +197,9 @@ public class ContactController
     /**
      * Retrieve Financial year by Id.
      *
-     * @param id
-     *            id of Financial year to be retrieved.
+     * @param id id of Financial year to be retrieved.
      * @return the contact by id
-     * @throws BusinessException
-     *             the business exception
+     * @throws BusinessException the business exception
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Contact> getContactById(@PathVariable final Long id) throws BusinessException
@@ -233,8 +236,7 @@ public class ContactController
     /**
      * Retrieve All Financial Years.
      *
-     * @param contactSearchCriteria
-     *            the contact search criteria
+     * @param contactSearchCriteria the contact search criteria
      * @return the contacts by search criteria
      */
     @RequestMapping(value = "/searchCriteria", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -287,11 +289,9 @@ public class ContactController
     /**
      * Delete.
      *
-     * @param id
-     *            the id
+     * @param id the id
      * @return the response entity
-     * @throws BusinessException
-     *             the business exception
+     * @throws BusinessException the business exception
      */
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -304,8 +304,7 @@ public class ContactController
     /**
      * Handle contact not found exception.
      *
-     * @param e
-     *            the e
+     * @param e the e
      * @return the response entity
      */
     @ExceptionHandler(BusinessException.class)
@@ -318,8 +317,7 @@ public class ContactController
      * Creates the contacts.
      *
      * @return the response entity
-     * @throws BusinessException
-     *             the business exception
+     * @throws BusinessException the business exception
      */
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/createContacts", method = RequestMethod.GET)
@@ -358,22 +356,14 @@ public class ContactController
     /**
      * Handle file upload.
      *
-     * @param request
-     *            the request
-     * @param res
-     *            the res
-     * @throws UploadedFileDataCorruptException
-     *             the uploaded file data corrupt exception
-     * @throws JobExecutionAlreadyRunningException
-     *             the job execution already running exception
-     * @throws JobRestartException
-     *             the job restart exception
-     * @throws JobInstanceAlreadyCompleteException
-     *             the job instance already complete exception
-     * @throws JobParametersInvalidException
-     *             the job parameters invalid exception
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
+     * @param request the request
+     * @param res the res
+     * @throws UploadedFileDataCorruptException the uploaded file data corrupt exception
+     * @throws JobExecutionAlreadyRunningException the job execution already running exception
+     * @throws JobRestartException the job restart exception
+     * @throws JobInstanceAlreadyCompleteException the job instance already complete exception
+     * @throws JobParametersInvalidException the job parameters invalid exception
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     @RequestMapping(value = "/bulkupload", method = RequestMethod.POST)
     public void handleFileUpload(MultipartHttpServletRequest request, HttpServletResponse res)
@@ -403,6 +393,7 @@ public class ContactController
                 {
 
                     File origFile = multipartToFile(multipartFile);
+                    setTempFilePath(multipartFile.getOriginalFilename());
                     String extension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
                     if (extension.equalsIgnoreCase("csv"))
                     {
@@ -418,19 +409,26 @@ public class ContactController
                         }
                         try
                         {
-                            Charset charset = Charset.forName("Cp1252");
+                            // Creates a cache of the existing contact groups
                             List<ContactGroup> contactGroups = contactGroupRepository.findAll();
-                            for(ContactGroup grp : contactGroups)
+                            Set<String> existingContactSet = new HashSet<>();
+                            for (ContactGroup grp : contactGroups)
                             {
                                 Contact contact = grp.getContact();
                                 Group group = grp.getGroup();
-                                CommonUtilCache.getExistingContacts().add((contact.getFirstName()+","+contact.getLastName()+","+contact.getEmail()+","+group.getName()).toLowerCase());
+                                existingContactSet.add((contact.getFirstName() + "," + contact.getLastName() + ","
+                                        + contact.getEmail() + "," + group.getName()).toLowerCase());
                             }
 
-                            List<String> content = Files.readAllLines(origFile.toPath(),charset);
+                            if (!existingContactSet.isEmpty())
+                            {
+                                CommonUtilCache.getExistingContacts().put(ViewUtil.getPrincipal(), existingContactSet);
+                            }
+
+                            List<String> content = readAllLines(origFile);
                             for (String data : content)
                             {
-                                if(data.trim().isEmpty())
+                                if (data.trim().isEmpty())
                                 {
                                     continue;
                                 }
@@ -438,16 +436,17 @@ public class ContactController
                                 if (values.length != 4)
                                 {
                                     List<String> valueList = new ArrayList<>();
-                                    for(String value : values)
+                                    for (String value : values)
                                     {
-                                       valueList.add(value);
+                                        valueList.add(value);
                                     }
-                                    if(valueList.isEmpty())
+                                    if (valueList.isEmpty())
                                     {
                                         valueList.add("Empty Row!");
                                     }
                                     Files.deleteIfExists(origFile.toPath());
-                                    message = "File data does not match the expected column format [firstname,lastname,email,group], Failed for entry : "+valueList;
+                                    message = "File data does not match the expected column format [firstname,lastname,email,group], Failed for entry : "
+                                            + valueList;
                                     LOGGER.error(message);
                                     throw new UploadedFileDataCorruptException(message);
                                 }
@@ -475,16 +474,16 @@ public class ContactController
                             List<Group> groupList = groupRepository.findAll();
 
                             CommonUtilCache.getGroupNameToGroupMap().putAll(createGroupNameToGroupMap(groupList));
+                            if (Files.notExists(Paths.get(this.tempFilePath)))
+                            {
+                                saveBOMSkippedFileToTempLocation(origFile.getName(), content);
+                            }
 
-                            String tempFilePath = saveFileToTempLocation(multipartFile);
-                            LOGGER.info("Temporary file path: " + tempFilePath);
                             jobParametersMap.put("file", new JobParameter(tempFilePath));
                             jobParametersMap.put("dateAndTime", new JobParameter(new Date()));
 
                             JobExecution execution = jobLauncher.run(job, new JobParameters(jobParametersMap));
                             LOGGER.info("Job Execution Status : " + execution.getExitStatus());
-                            
-                            
 
                             if ("FAILED".equalsIgnoreCase(execution.getExitStatus().getExitCode()))
                             {
@@ -516,7 +515,7 @@ public class ContactController
                                 LOGGER.info(message);
                                 res.getOutputStream().print(message);
                             }
-                            
+
                             generateContactUploadReport(origFile.getName());
                             CommonUtilCache.getFailedValidationContacts().clear();
                         }
@@ -533,7 +532,8 @@ public class ContactController
                             {
                                 res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                                 LOGGER.error(ExceptionUtil.getErrorRootCause(ex));
-                                res.getOutputStream().print("Internal Server Error: " + ExceptionUtil.getErrorRootCause(ex));
+                                res.getOutputStream()
+                                        .print("Internal Server Error: " + ExceptionUtil.getErrorRootCause(ex));
                             }
                         }
                     }
@@ -564,13 +564,64 @@ public class ContactController
             LOGGER.error(ex.getMessage());
             res.getOutputStream().print(ex.getMessage());
         }
+
+        // Clear the cache for existing contacts
+        if (CommonUtilCache.getExistingContacts().containsKey(ViewUtil.getPrincipal()))
+        {
+            CommonUtilCache.getExistingContacts().remove(ViewUtil.getPrincipal());
+            LOGGER.info("Cleared the cache for existing contact groups, user : " + ViewUtil.getPrincipal());
+        }
+    }
+
+    /**
+     * Read all lines.
+     *
+     * @param file the file
+     * @return the list
+     * @throws Exception the exception
+     */
+    private List<String> readAllLines(File file) throws Exception
+    {
+        List<String> parsedData = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file)))
+        {
+            String data = "";
+            while ((data = br.readLine()) != null)
+            {
+                final byte[] bytes = data.getBytes(EncodingUtils.ISO_ENCODING);
+                if (EncodingUtils.isUTF8(bytes))
+                {
+                    data = EncodingUtils.getSkippedBomString(bytes);
+                }
+                data = data.replaceAll("\uFEFF", "");
+                data = data.replaceAll("\uFFFD", "");
+                parsedData.add(data);
+            }
+            LOGGER.debug("Parsed data : " + parsedData);
+            saveBOMSkippedFileToTempLocation(file.getName(), parsedData);
+            parsedData.clear();
+            parsedData.addAll(Files.readAllLines(Paths.get(tempFilePath)));
+        }
+        catch (FileNotFoundException e)
+        {
+            String message = "Oops, could not locate the file you wish to parse, technically : " + e.getMessage();
+            LOGGER.error(message);
+            throw new IllegalArgumentException(message);
+        }
+        catch (IOException e)
+        {
+            String message = "Oops, Failed to read the file you attached, technically : " + e.getMessage();
+            LOGGER.error(message);
+            throw new Exception(message);
+        }
+
+        return parsedData;
     }
 
     /**
      * Creates the new group.
      *
-     * @param name
-     *            the name
+     * @param name the name
      */
     private void createNewGroup(String name)
     {
@@ -609,7 +660,8 @@ public class ContactController
         {
             uploader = "guest";
         }
-        String fileName = "FailedContactUpload_" + uploadFileName.replaceAll("\\.", "") + "_" + uploader + "_" + getCurrentDate() + ".csv";
+        String fileName = "FailedContactUpload_" + uploadFileName.replaceAll("\\.", "") + "_" + uploader + "_"
+                + getCurrentDate() + ".csv";
         Path reportsFilePath = Paths.get(reportsDir.getPath(), fileName);
 
         if (!CommonUtilCache.getFailedValidationContacts().isEmpty())
@@ -618,27 +670,19 @@ public class ContactController
             {
                 Files.createFile(reportsFilePath);
                 StringBuilder sb = new StringBuilder();
-                sb.append(",,,,,")
-                .append("Generated Report for Failed Bulk Contact Upload")
-                .append(",")
-                        .append(uploadFileName).append(System.lineSeparator())
-                        .append(",,,,,")
-                        .append("Upload Date : ")
-                        .append(",")
-                        .append(getCurrentDateWithSpaces())
-                        .append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append(System.lineSeparator())
-                        .append("SERIAL_NO,UPLOADER,EMAIL,FAILURE_REASON")
-                        .append(System.lineSeparator());
+                sb.append(",,,,,").append("Generated Report for Failed Bulk Contact Upload").append(",")
+                        .append(uploadFileName).append(System.lineSeparator()).append(",,,,,").append("Upload Date : ")
+                        .append(",").append(getCurrentDateWithSpaces()).append(System.lineSeparator())
+                        .append(System.lineSeparator()).append(System.lineSeparator())
+                        .append("SERIAL_NO,UPLOADER,EMAIL,FAILURE_REASON").append(System.lineSeparator());
 
                 int i = 0;
-                for(String data : CommonUtilCache.getFailedValidationContacts())
+                for (String data : CommonUtilCache.getFailedValidationContacts())
                 {
                     sb.append(++i).append(",").append(data).append(System.lineSeparator());
                 }
                 Files.write(reportsFilePath, sb.toString().getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
-                LOGGER.info("Report for failed contacts has been generated in "+reportsFilePath);
+                LOGGER.info("Report for failed contacts has been generated in " + reportsFilePath);
             }
             catch (IOException ex)
             {
@@ -651,8 +695,7 @@ public class ContactController
     /**
      * Creates the group name to group map.
      *
-     * @param groupList
-     *            the group list
+     * @param groupList the group list
      * @return the map
      */
     private Map<String, Group> createGroupNameToGroupMap(List<Group> groupList)
@@ -669,34 +712,69 @@ public class ContactController
     /**
      * Multipart to file.
      *
-     * @param multipart
-     *            the multipart
+     * @param multipart the multipart
      * @return the file
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
+     * @throws IOException Signals that an I/O exception has occurred.
      */
     private File multipartToFile(MultipartFile multipart) throws IOException
     {
-        String tempFilePath = saveFileToTempLocation(multipart);
+        String tempFilePath = saveFileToJavaTempLocation(multipart);
         return new File(tempFilePath);
     }
 
     /**
-     * Save file to temp location.
+     * Sets the temp file path.
      *
-     * @param multipartFile
-     *            the multipart file
-     * @return the string
-     * @throws IOException
-     *             Signals that an I/O exception has occurred.
+     * @param fileName the new temp file path
      */
-    private String saveFileToTempLocation(MultipartFile multipartFile) throws IOException
+    private void setTempFilePath(String fileName)
     {
-        File tempFile = new File(env.getProperty("mutipart.location"), multipartFile.getOriginalFilename());
+        this.tempFilePath = Paths.get(env.getProperty("multipart.location"), fileName).toString();
+        LOGGER.info("Temp File Path set to " + tempFilePath);
+    }
+
+    /**
+     * Save file to java temp location.
+     *
+     * @param multipartFile the multipart file
+     * @return the string
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private String saveFileToJavaTempLocation(MultipartFile multipartFile) throws IOException
+    {
+        File tempFile = new File(env.getProperty("java.io.tmpdir"), multipartFile.getOriginalFilename());
         FileCopyUtils.copy(multipartFile.getBytes(), tempFile);
         return tempFile.getAbsolutePath();
     }
-    
+
+    /**
+     * Save BOM skipped file to temp location.
+     *
+     * @param fileName the file name
+     * @param content the content
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    private void saveBOMSkippedFileToTempLocation(String fileName, List<String> content) throws IOException
+    {
+        StringBuilder sb = new StringBuilder();
+        File tempFile = new File(this.tempFilePath);
+        if (Files.exists(tempFile.toPath()))
+        {
+            Files.delete(tempFile.toPath());
+            LOGGER.info("Deleted existing temp file : " + tempFile);
+        }
+
+        //Files.createFile(tempFile.toPath());
+        //LOGGER.info("Created new Temporary File : " + tempFile);
+
+        for (String line : content)
+        {
+            sb.append(line).append("\n");
+        }
+        FileCopyUtils.copy(sb.toString().getBytes(), tempFile);
+        LOGGER.info("Copied data to new Temporary File : " + tempFile);
+    }
+
     /**
      * Gets the current date.
      *
@@ -706,7 +784,7 @@ public class ContactController
     {
         return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
     }
-    
+
     /**
      * Gets the current date with spaces.
      *
