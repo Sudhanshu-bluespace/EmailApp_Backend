@@ -6,6 +6,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -24,6 +26,8 @@ public class EmailHandler {
     @Autowired
     private MailConfiguration mailSender;
     
+    private final static Logger LOGGER = LogManager.getLogger(EmailHandler.class); 
+    
     /**
      * Send email to admin.
      *
@@ -32,6 +36,7 @@ public class EmailHandler {
      */
     public void sendEmailToAdmin(AccountCreationEmail mail) throws IOException
     {
+         String methodName = "sendEmailToAdmin()";
     	 try 
     	 {
              JavaMailSender sender = mailSender.javaMailSender(); 
@@ -40,7 +45,7 @@ public class EmailHandler {
              ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
              ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.net"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -78,14 +83,14 @@ public class EmailHandler {
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              
-             //System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             LOGGER.debug(methodName+" | Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              //mimeMessageHelper.addInline("style", style);
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
          } 
     	 catch (MessagingException e) 
     	 {
-             e.printStackTrace();
+             LOGGER.error(methodName+" | Error : "+e.getMessage());
          }
     }
 	
@@ -97,6 +102,7 @@ public class EmailHandler {
      */
     public void sendVerificationEmail(AccountCreationEmail mail) throws IOException
     {
+         String methodName = "sendVerificationEmail()";
     	 try {
          	JavaMailSender sender = mailSender.javaMailSender(); 
          	MimeMessage mimeMessage = sender.createMimeMessage();
@@ -104,7 +110,7 @@ public class EmailHandler {
             ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
             ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.net"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -150,12 +156,14 @@ public class EmailHandler {
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              
-             //System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             LOGGER.debug(methodName+" | Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              //mimeMessageHelper.addInline("style", style);
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
-         } catch (MessagingException e) {
-             e.printStackTrace();
+         } 
+    	 catch (MessagingException e) 
+    	 {
+             LOGGER.error(methodName+" | Error : "+e.getMessage());
          }
     }
     
@@ -169,6 +177,7 @@ public class EmailHandler {
      */
     public void sendAccountCreationEmail(AccountCreationEmail mail,String username,String password) throws IOException
     {
+         String methodName = "sendAccountCreationEmail()";
     	 try {
     	     JavaMailSender sender = mailSender.javaMailSender(); 
     	     MimeMessage mimeMessage = sender.createMimeMessage();
@@ -176,7 +185,7 @@ public class EmailHandler {
              ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
              ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.net"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -217,11 +226,13 @@ public class EmailHandler {
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              //mimeMessageHelper.addInline("style", style);
-             //System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             LOGGER.debug(methodName+" | Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
-         } catch (MessagingException e) {
-             e.printStackTrace();
+         } 
+    	 catch (MessagingException e) 
+    	 {
+             LOGGER.error(methodName+" | Error : "+e.getMessage());
          }
     }
     
@@ -236,6 +247,7 @@ public class EmailHandler {
      */
     public void sendAccountCreationOnHoldEmail(AccountCreationEmail mail,String username,String password) throws IOException
     {
+         String methodName = "sendAccountCreationOnHoldEmail()";
          try {
              JavaMailSender sender = mailSender.javaMailSender(); 
              MimeMessage mimeMessage = sender.createMimeMessage();
@@ -243,7 +255,7 @@ public class EmailHandler {
              ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
              ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.net"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -282,11 +294,13 @@ public class EmailHandler {
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              //mimeMessageHelper.addInline("style", style);
-             System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             LOGGER.debug(methodName+" | Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
-         } catch (MessagingException e) {
-             e.printStackTrace();
+         } 
+         catch (MessagingException e) 
+         {
+             LOGGER.error(methodName+" | Error : "+e.getMessage());
          }
     }
     
@@ -301,6 +315,7 @@ public class EmailHandler {
      */
     public void sendAccountCreationRejectedEmail(AccountCreationEmail mail,String username,String password) throws IOException
     {
+         String methodName = "sendAccountCreationRejectedEmail()";
          try {
              JavaMailSender sender = mailSender.javaMailSender(); 
              MimeMessage mimeMessage = sender.createMimeMessage();
@@ -308,7 +323,7 @@ public class EmailHandler {
              ClassPathResource style = new ClassPathResource("/css/EmailStyles.css");
              ClassPathResource image = new ClassPathResource("/images/bluepsacemailer_createacc_success_1.png");
              mimeMessageHelper.setSubject(mail.getMailSubject());
-             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.com"));
+             mimeMessageHelper.setFrom(new InternetAddress("no-reply@hireswing.net"));
              mimeMessageHelper.setTo(mail.getMailTo());
              String text = 
              "<html>"
@@ -347,11 +362,13 @@ public class EmailHandler {
              //mail.setMailContent(geContentFromTemplate(mail.getModel()));
              mimeMessageHelper.setText(text, true);
              //mimeMessageHelper.addInline("style", style);
-             //System.out.println("Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
+             LOGGER.debug(methodName+" | Image : "+style.getFilename()+" | "+style.getPath()+ "| "+image.exists());
              mimeMessageHelper.addInline("image", image);
              sender.send(mimeMessageHelper.getMimeMessage());
-         } catch (MessagingException e) {
-             e.printStackTrace();
+         } 
+         catch (MessagingException e) 
+         {
+             LOGGER.error(methodName+" | Error : "+e.getMessage());
          }
     }
 

@@ -1,9 +1,7 @@
 package com.bluespacetech.notifications.email.batch;
-/*
+
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -12,7 +10,6 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 
-import com.bluespacetech.common.util.CommonUtilCache;
 import com.bluespacetech.notifications.email.service.EmailContactGroupService;
 import com.bluespacetech.notifications.email.service.EmailServerPropertiesService;
 import com.bluespacetech.notifications.email.service.EmailServerService;
@@ -59,13 +55,11 @@ public class EmailBatchConfiguration {
 
 	@Autowired
 	private UserAccountService userAccountService;
-	
-	 private static final Logger LOGGER = LogManager.getLogger(EmailBatchConfiguration.class);
 
 	private static String QUERY_FIND_CONTACTS = "SELECT first_name, last_name, email, group_id, contact_id FROM contacts "
 			+ "C, contact_group CG WHERE CG.contact_id = C.ID AND CG.unsubscribed = 0";
 
-	/*@Bean
+	@Bean
 	@StepScope
 	JdbcCursorItemReader<EmailContactGroupVO> databaseItemReader(DataSource dataSource,
 			@Value("#{jobParameters[groupId]}") Long groupId,@Value("#{jobParameters[emailId]}") Long emailId, @Value("#{jobParameters[message]}") String message,
@@ -79,19 +73,10 @@ public class EmailBatchConfiguration {
 			emailContactGroupRowMapper.setEmailId(emailId);
 		}
 		databaseReader.setRowMapper(emailContactGroupRowMapper);
-		String queryFindContacts = QUERY_FIND_CONTACTS + " AND CG.group_id = " + groupId;
-		databaseReader.setSql(queryFindContacts);
+		QUERY_FIND_CONTACTS = QUERY_FIND_CONTACTS + " AND CG.group_id = " + groupId;
+		databaseReader.setSql(QUERY_FIND_CONTACTS);
 		return databaseReader;
-	}*/
-	
-	    
-	/*    @Bean
-	    @StepScope
-	    public ItemReader<EmailContactGroupVO> emailContactGroupItemReader(@Value("#{jobParameters[request_batch_id]}") String request_batch_id)
-	    {
-	        LOGGER.info("Inside my custom reader for batch request id : "+request_batch_id);
-	        return new EmailContactGroupItemReader(CommonUtilCache.getBatchIdToEmailListMap().get(request_batch_id));
-	    }
+	}
 
 	@Bean
 	public ItemWriter<ContactGroupMailMessage> simpleEmailWriter(
@@ -119,15 +104,15 @@ public class EmailBatchConfiguration {
 
 	@Bean(name = "groupEmailJob")
 	public Job groupEmailJob() {
-		return jobBuilderFactory.get("groupEmailJob").incrementer(new RunIdIncrementer()).flow(stepEmailBatch()).end().build();
+		return jobBuilderFactory.get("groupEmailJob").incrementer(new RunIdIncrementer()).flow(step1()).end().build();
 	}
 
 	@Bean
-	public Step stepEmailBatch() {
-		return stepBuilderFactory.get("stepEmailBatch").<EmailContactGroupVO, ContactGroupMailMessage> chunk(10000)
-				//.reader(emailContactGroupItemReader(null))
+	public Step step1() {
+		return stepBuilderFactory.get("step1").<EmailContactGroupVO, ContactGroupMailMessage> chunk(10000)
+				.reader(databaseItemReader(dataSource, null, null, null, null))
 				.processor(processor(null))
 				.writer(simpleEmailWriter(emailContactGroupService)).build();
 	}
 
-}*/
+}

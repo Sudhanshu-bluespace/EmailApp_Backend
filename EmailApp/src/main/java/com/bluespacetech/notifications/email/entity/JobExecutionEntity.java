@@ -8,7 +8,6 @@ import javax.persistence.Table;
 
 import com.bluespacetech.core.model.BaseEntity;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class JobExecutionEntity.
  */

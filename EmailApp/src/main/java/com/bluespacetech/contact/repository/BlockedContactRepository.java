@@ -27,7 +27,9 @@ public interface BlockedContactRepository extends JpaRepository<BlockedContacts,
      * @param reason the reason
      * @return the list
      */
-    BlockedContacts findByEmailAndReasonAllIgnoreCase(final String email, final String reason);
+    List<BlockedContacts> findByEmailAndReasonAllIgnoreCase(final String email, final String reason);
+    
+    List<BlockedContacts> findByEmailAndReason(final String email, final String reason);
 
     /**
      * Find by email ignore case.

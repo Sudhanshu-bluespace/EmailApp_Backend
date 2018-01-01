@@ -3,6 +3,7 @@ package com.bluespacetech;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +14,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import com.bluespacetech.common.util.CommonUtilCache;
+import com.bluespacetech.common.util.ExceptionUtil;
+import com.bluespacetech.contact.entity.BlockedContacts;
+import com.bluespacetech.contact.service.BlockedContactService;
 import com.bluespacetech.core.repository.CityRepository;
 import com.bluespacetech.core.repository.CountryRepository;
 import com.bluespacetech.core.repository.StateRepository;
@@ -34,12 +38,19 @@ public class CustomApplicationListener implements ApplicationListener<Applicatio
     @Autowired
     MailTemplateConfiguration templateConfiguration;
 
+    /** The country repository. */
     @Autowired
     CountryRepository countryRepository;
 
+    /** The state repository. */
     @Autowired
     StateRepository stateRepository;
+    
+    /** The blocked contact service. */
+    @Autowired
+    private BlockedContactService blockedContactService;
 
+    /** The city repository. */
     @Autowired
     CityRepository cityRepository;
 
@@ -53,6 +64,7 @@ public class CustomApplicationListener implements ApplicationListener<Applicatio
         populateIgnoreList();
         populateBlacklistedDomainList();
         populateProhibtedContentList();
+        populatedBouncedEmailsCache();
     }
 
     /**
@@ -68,6 +80,9 @@ public class CustomApplicationListener implements ApplicationListener<Applicatio
         LOGGER.info("Populated Ignore List successfully : " + CommonUtilCache.getIgnoreList());
     }
     
+    /**
+     * Populate prohibted content list.
+     */
     private void populateProhibtedContentList()
     {
         String[] prohibited = templateConfiguration.getProhibitedContent().split("\\,");
@@ -94,6 +109,42 @@ public class CustomApplicationListener implements ApplicationListener<Applicatio
         catch (IOException e)
         {
             LOGGER.error("Failed to read black listed domains list, reason: [" + e.getMessage() + "]");
+        }
+    }
+    
+    /**
+     * Populated bounced emails cache.
+     */
+    private void populatedBouncedEmailsCache()
+    {
+        LOGGER.info("Populating Bounced Email Cache");
+        try
+        {
+            List<BlockedContacts> blockedContacts = blockedContactService.findAll();
+            for (BlockedContacts contact : blockedContacts)
+            {
+                String reason = contact.getReason();
+                if (!CommonUtilCache.getBouncedEmailCache().containsKey(reason))
+                {
+                    CommonUtilCache.getBouncedEmailCache().put(reason, new ArrayList<String>());
+                }
+
+                if(contact.getReason().contains("BOUNCE"))
+                {
+                    CommonUtilCache.getBouncedEmailCache().get(reason).add(contact.getEmail());
+                }
+                if("INVALID_MX_RECORDS".equalsIgnoreCase(contact.getReason()))
+                {       
+                    CommonUtilCache.getBlacklistedContactEmails().add(contact.getEmail());
+                }
+            }
+
+            LOGGER.info("Populated Bounced Email Cache and Set successfully.. Number of blacklist due to Invalid MX records : "+CommonUtilCache.getBlacklistedContactEmails().size());
+            LOGGER.info("Number of bounce categories in Bounced Email Cache : "+CommonUtilCache.getBouncedEmailCache().size());
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Failed to populate BouncedEmailCache / Set of Blacklisted Contacts, reason : [" + ExceptionUtil.getErrorRootCause(e) + "]");
         }
     }
 }

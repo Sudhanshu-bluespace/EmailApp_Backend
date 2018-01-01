@@ -3,27 +3,30 @@
  */
 package com.bluespacetech.server.analytics.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bluespacetech.contact.entity.BlockedContacts;
+import com.bluespacetech.notifications.email.entity.EmailReadReceiptTracker;
 import com.bluespacetech.notifications.email.entity.JobExecutionEntity;
-import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
 import com.bluespacetech.notifications.email.repository.JobExecutionRepository;
+import com.bluespacetech.notifications.email.repository.ReadReceiptTrackerRepository;
 import com.bluespacetech.server.analytics.repository.AnalyticsRepositoryCustom;
 import com.bluespacetech.server.analytics.repository.CampaignWisePerformanceStatsDTO;
 import com.bluespacetech.server.analytics.repository.CompanyWiseRegistrationDTO;
 import com.bluespacetech.server.analytics.repository.GroupWiseUnsubscriptionStatsDTO;
+import com.bluespacetech.server.analytics.repository.ReadReceiptDTO;
 import com.bluespacetech.server.analytics.repository.RecentUnsubscribesDTO;
 import com.bluespacetech.server.analytics.repository.RecentlyUnsubscribedCountDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseChartDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseDTO;
 import com.bluespacetech.server.analytics.resources.JobStatusResource;
+import com.bluespacetech.server.analytics.util.JobIdStatusComparator;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AnalyticsServiceImpl.
  *
@@ -40,6 +43,10 @@ public class AnalyticsServiceImpl implements AnalyticsService
     /** The job execution repository. */
     @Autowired
     private JobExecutionRepository jobExecutionRepository;
+
+    /** The read receipt repository. */
+    @Autowired
+    private ReadReceiptTrackerRepository readReceiptRepository;
 
     /*
      * (non-Javadoc)
@@ -100,9 +107,9 @@ public class AnalyticsServiceImpl implements AnalyticsService
      * @see com.bluespacetech.server.analytics.service.AnalyticsService#getRecentUnsubscribes(int)
      */
     @Override
-    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOfDays,boolean isAdmin)
+    public List<RecentUnsubscribesDTO> getRecentUnsubscribes(int numberOfDays, boolean isAdmin)
     {
-        return analyticsRepository.getRecentUnsubscribes(numberOfDays,isAdmin);
+        return analyticsRepository.getRecentUnsubscribes(numberOfDays, isAdmin);
     }
 
     /*
@@ -110,9 +117,9 @@ public class AnalyticsServiceImpl implements AnalyticsService
      * @see com.bluespacetech.server.analytics.service.AnalyticsService#getRecentUnsuscribedCount(int)
      */
     @Override
-    public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age,boolean isAdmin)
+    public List<RecentlyUnsubscribedCountDTO> getRecentUnsuscribedCount(int age, boolean isAdmin)
     {
-        return analyticsRepository.getRecentlyUnsubscribedCount(age,isAdmin);
+        return analyticsRepository.getRecentlyUnsubscribedCount(age, isAdmin);
     }
 
     /*
@@ -120,10 +127,10 @@ public class AnalyticsServiceImpl implements AnalyticsService
      * @see com.bluespacetech.server.analytics.service.AnalyticsService#getJobStatusData(java.lang.String)
      */
     @Override
-    public List<JobStatusResource> getJobStatusData(String userName,boolean isAdmin)
+    public List<JobStatusResource> getJobStatusData(String userName, boolean isAdmin)
     {
         List<JobExecutionEntity> list = null;
-        if(isAdmin)
+        if (isAdmin)
         {
             list = jobExecutionRepository.findAll();
         }
@@ -131,6 +138,8 @@ public class AnalyticsServiceImpl implements AnalyticsService
         {
             list = jobExecutionRepository.findBySenderOrderByCreationDateDesc(userName);
         }
+        
+        Collections.sort(list, new JobIdStatusComparator());
         List<JobStatusResource> resourceList = new ArrayList<>();
         if (list != null)
         {
@@ -144,7 +153,8 @@ public class AnalyticsServiceImpl implements AnalyticsService
                 res.setEmailCount(ent.getEmailCount());
                 res.setSender(ent.getSender());
                 res.setStatus(ent.getStatus());
-                res.setComments(ent.getComments()==null||ent.getComments().trim().isEmpty()?"-":ent.getComments());
+                res.setComments(
+                        ent.getComments() == null || ent.getComments().trim().isEmpty() ? "-" : ent.getComments());
                 resourceList.add(res);
             }
         }
@@ -158,7 +168,8 @@ public class AnalyticsServiceImpl implements AnalyticsService
     @Override
     public List<JobStatusResource> getJobStatusDataByStatus(String userName, String status)
     {
-        List<JobExecutionEntity> list = jobExecutionRepository.findBySenderAndStatusIgnoreCaseOrderByCreationDateDesc(userName, status);
+        List<JobExecutionEntity> list = jobExecutionRepository
+                .findBySenderAndStatusIgnoreCaseOrderByCreationDateDesc(userName, status);
         List<JobStatusResource> resourceList = new ArrayList<>();
         if (list != null)
         {
@@ -177,17 +188,50 @@ public class AnalyticsServiceImpl implements AnalyticsService
         }
         return resourceList;
     }
-    
+
+    /*
+     * (non-Javadoc)
+     * @see com.bluespacetech.server.analytics.service.AnalyticsService#persistToDB(com.bluespacetech.notifications.email.entity.JobExecutionEntity)
+     */
     @Override
     public JobExecutionEntity persistToDB(JobExecutionEntity endpoint)
     {
         return jobExecutionRepository.save(endpoint);
     }
-    
+
+    /*
+     * (non-Javadoc)
+     * @see com.bluespacetech.server.analytics.service.AnalyticsService#getJobStatusByBatchIdAndRequestId(java.lang.String, java.lang.String)
+     */
     @Override
-    public JobExecutionEntity getJobStatusByBatchIdAndRequestId(String requestId,String batchId)
+    public JobExecutionEntity getJobStatusByBatchIdAndRequestId(String requestId, String batchId)
     {
         return jobExecutionRepository.findByRequestIdAndBatchIdIgnoreCase(requestId, batchId);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.bluespacetech.server.analytics.service.AnalyticsService#getReadReceiptInfo(java.lang.Long)
+     */
+    @Override
+    public List<ReadReceiptDTO> getReadReceiptInfo(Long emailId)
+    {
+        List<EmailReadReceiptTracker> recordList = readReceiptRepository.findByEmailId(emailId);
+        List<ReadReceiptDTO> dtoList = new ArrayList<>();
+        for(EmailReadReceiptTracker record : recordList)
+        {
+            ReadReceiptDTO dto = new ReadReceiptDTO();
+            dto.setContactId(record.getContactId());
+            dto.setContactEmail(record.getContactEmail());
+            dto.setGroupId(record.getGroupId());
+            dto.setEmailId(record.getEmailId());
+            dto.setLastReadTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(record.getLastUpdatedDate()));
+            dto.setReadCount(record.getReadCount());
+            dto.setReadReceiptId(record.getId());
+            dtoList.add(dto);
+        }
+        
+        return dtoList;
     }
 
 }

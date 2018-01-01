@@ -7,8 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.JobParameter;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.bluespacetech.common.util.CommonUtilCache;
 import com.bluespacetech.notifications.email.entity.JobExecutionEntity;
 import com.bluespacetech.notifications.email.repository.JobExecutionRepository;

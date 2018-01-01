@@ -22,8 +22,4 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     List<Contact> findByFirstNameLikeOrLastNameLike(final String firstName,final String lastName);
 
     List<Contact> findByEmailLike(final String email);
-    
-    Contact findByEmailIgnoreCase(final String email);
-    
-    List<Contact> findByCreatedUser(final String username);
 }

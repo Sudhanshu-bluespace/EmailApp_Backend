@@ -35,6 +35,7 @@ import com.bluespacetech.security.repository.UserAccountRepository;
 import com.bluespacetech.server.analytics.repository.CampaignWisePerformanceStatsDTO;
 import com.bluespacetech.server.analytics.repository.CompanyWiseRegistrationDTO;
 import com.bluespacetech.server.analytics.repository.GroupWiseUnsubscriptionStatsDTO;
+import com.bluespacetech.server.analytics.repository.ReadReceiptDTO;
 import com.bluespacetech.server.analytics.repository.RecentUnsubscribesDTO;
 import com.bluespacetech.server.analytics.repository.RecentlyUnsubscribedCountDTO;
 import com.bluespacetech.server.analytics.repository.RepositoryResponseChartDTO;
@@ -146,6 +147,19 @@ public class AnayticsController
     {
         List<CompanyWiseRegistrationDTO> response = analyticsService.getCompanyWiseRegistrationStats();
         LOGGER.debug("Company Wise Registration JSON : " + response);
+        return response;
+    }
+    
+    /**
+     * Gets the company wise registration stats.
+     *
+     * @return the company wise registration stats
+     */
+    @RequestMapping(value = "/getReadReceiptInfo", method = RequestMethod.POST)
+    public List<ReadReceiptDTO> getReadReceiptInfo(@RequestParam("emailId") String emailId)
+    {
+        List<ReadReceiptDTO> response = analyticsService.getReadReceiptInfo(Long.parseLong(emailId));
+        LOGGER.debug("Read Receipts for Email id " + emailId + " JSON : " + response);
         return response;
     }
 

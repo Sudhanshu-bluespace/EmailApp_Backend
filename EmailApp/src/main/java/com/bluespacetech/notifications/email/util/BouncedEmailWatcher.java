@@ -41,7 +41,7 @@ public class BouncedEmailWatcher
     @Qualifier("watchBouncedEmail")
     private Job job;
     
-    @Scheduled(fixedDelay = 240000)
+    @Scheduled(fixedDelay = 120000)
     public void run()
     {
        LOGGER.info("Executing email tracker job with Tracker config : "+trackerConfig);

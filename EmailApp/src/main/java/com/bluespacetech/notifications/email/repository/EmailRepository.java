@@ -15,7 +15,5 @@ import com.bluespacetech.notifications.email.entity.Email;
  * @author pradeep created date 24-Aug-2016
  */
 @Repository
-public interface EmailRepository extends JpaRepository<Email, Long>
-{
-    Email findById(final Long id );
+public interface EmailRepository extends JpaRepository<Email, Long> {
 }

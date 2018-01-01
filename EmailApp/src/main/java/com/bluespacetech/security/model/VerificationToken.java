@@ -39,12 +39,7 @@ public class VerificationToken {
     {
     	this.token = token;
     	this.user = user;
-    	this.expiryDate = calculateExpiryDate(EXPIRATION);
-    }
-    
-    public VerificationToken()
-    {
-    	
+    	calculateExpiryDate(EXPIRATION);
     }
 
 	public Long getId() {

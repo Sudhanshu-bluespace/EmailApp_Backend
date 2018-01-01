@@ -9,8 +9,6 @@ import java.util.List;
 import com.bluespacetech.contactgroup.entity.ContactGroup;
 import com.bluespacetech.contactgroup.entity.ContactGroupPK;
 import com.bluespacetech.core.exceptions.BusinessException;
-import com.bluespacetech.core.exceptions.ContactAlreadySubscribedException;
-import com.bluespacetech.core.exceptions.ContactAlreadyUnsubscribedException;
 
 /**
  * Class for ContactGroupService
@@ -29,8 +27,6 @@ public interface ContactGroupService {
 
 	ContactGroup updateContactGroup(final ContactGroup contactGroup) throws BusinessException;
 
-	ContactGroup unsubscribeContactGroup(final Long contactId, final Long groupId) throws BusinessException,ContactAlreadyUnsubscribedException;
-	int fullUnsubscribeContactGroup(final Long contactId, final Long groupId,String createdUser) throws BusinessException,ContactAlreadyUnsubscribedException;
-	int subscribeContactGroup(final Long contactId, final Long groupId,String createdUser) throws BusinessException,ContactAlreadyUnsubscribedException, ContactAlreadySubscribedException;
+	ContactGroup unsubscribeContactGroup(final Long contactId, final Long groupId) throws BusinessException;
 
 }

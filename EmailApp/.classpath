@@ -23,7 +23,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="C:/Users/sudhanshu/Downloads/wysiwyg-editor-java-sdk-master/wysiwyg-editor-java-sdk-master/Lib/wysiwyg-editor-java-sdk.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

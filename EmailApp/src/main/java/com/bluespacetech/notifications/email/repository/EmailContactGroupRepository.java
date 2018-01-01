@@ -18,5 +18,4 @@ import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 public interface EmailContactGroupRepository extends JpaRepository<EmailContactGroup, Long> {
 	EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(final Long contactId, final Long groupId,
 			final Long randomNumber);
-	EmailContactGroup findByEmailIdAndContactIdAndGroupId(final Long emailId,final Long contactId,final Long groupId);
 }

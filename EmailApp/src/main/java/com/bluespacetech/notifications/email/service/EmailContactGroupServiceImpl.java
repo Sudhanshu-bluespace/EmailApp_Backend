@@ -20,105 +20,52 @@ import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 import com.bluespacetech.notifications.email.repository.EmailContactGroupRepository;
 
 /**
- * class for EmailContactGroupService.
+ * class for EmailContactGroupService
  *
  * @author pradeep created date 25-June-2015
- * @author Sudhanshu Tripathy
  */
 @Service
 @Transactional(rollbackFor = { Exception.class, RuntimeException.class, BusinessException.class,
-        ApplicationException.class })
-// @PreAuthorize("hasAuthority('EXCLUDE_ALL')")
-public class EmailContactGroupServiceImpl implements EmailContactGroupService
-{
+		ApplicationException.class })
+@PreAuthorize("hasAuthority('EXCLUDE_ALL')")
+public class EmailContactGroupServiceImpl implements EmailContactGroupService {
 
-    /** The email contact group repository. */
-    @Autowired
-    private EmailContactGroupRepository emailContactGroupRepository;
+	@Autowired
+	private EmailContactGroupRepository emailContactGroupRepository;
 
-    /*
-     * (non-Javadoc)
-     * @see com.bluespacetech.notifications.email.service.EmailContactGroupService# createEmailContactGroup(com.bluespacetech.notifications.email.entity. EmailContactGroup)
-     */
-    @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-    public EmailContactGroup createEmailContactGroup(final EmailContactGroup emailContactGroup) throws BusinessException
-    {
-        final EmailContactGroup newEmailContactGroup = emailContactGroupRepository.save(emailContactGroup);
-        return newEmailContactGroup;
-    }
+	@Override
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+	public EmailContactGroup createEmailContactGroup(final EmailContactGroup emailContactGroup)
+			throws BusinessException {
+		final EmailContactGroup newEmailContactGroup = emailContactGroupRepository.save(emailContactGroup);
+		return newEmailContactGroup;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see com.bluespacetech.notifications.email.service.EmailContactGroupService# createEmailContactGroups(java.util.List)
-     */
-    @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-    public List<EmailContactGroup> createEmailContactGroups(final List<EmailContactGroup> emailContactGroups)
-            throws BusinessException
-    {
-        final List<EmailContactGroup> result = emailContactGroupRepository.save(emailContactGroups);
-        return result;
-    }
+	@Override
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+	public List<EmailContactGroup> createEmailContactGroups(final List<EmailContactGroup> emailContactGroups)
+			throws BusinessException {
+		final List<EmailContactGroup> result = emailContactGroupRepository.save(emailContactGroups);
+		return result;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see com.bluespacetech.notifications.email.service.EmailContactGroupService# findAll()
-     */
-    @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-    public List<EmailContactGroup> findAll()
-    {
-        return emailContactGroupRepository.findAll();
-    }
+	@Override
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+	public List<EmailContactGroup> findAll() {
+		return emailContactGroupRepository.findAll();
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see com.bluespacetech.notifications.email.service.EmailContactGroupService# findByContactIdAndGroupIdAndRandomNumber(java.lang.Long, java.lang.Long, java.lang.Long)
-     */
-    @Override
-    // @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-    public EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(Long contactId, Long groupId, Long randomNumber)
-    {
-        return emailContactGroupRepository.findByContactIdAndGroupIdAndRandomNumber(contactId, groupId, randomNumber);
-    }
+	@Override
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+	public EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(Long contactId, Long groupId, Long randomNumber) {
+		return emailContactGroupRepository.findByContactIdAndGroupIdAndRandomNumber(contactId, groupId, randomNumber);
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see com.bluespacetech.notifications.email.service.EmailContactGroupService# updateEmailContactGroup(com.bluespacetech.notifications.email.entity. EmailContactGroup)
-     */
-    @Override
-    // @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-    public EmailContactGroup updateEmailContactGroup(EmailContactGroup emailContactGroup) throws BusinessException
-    {
-        final EmailContactGroup newEmailContactGroup = emailContactGroupRepository.save(emailContactGroup);
-        return newEmailContactGroup;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see com.bluespacetech.notifications.email.service.EmailContactGroupService# deleteEmailContactGroup(java.util.List)
-     */
-    @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
-    public void deleteEmailContactGroup(final List<EmailContactGroup> emailContactGroups) throws BusinessException
-    {
-        emailContactGroupRepository.delete(emailContactGroups);
-    }
-
-    @Override
-    public String findByEmailIdAndContactIdAndGroupId(Long emailId, Long contactId, Long groupId)
-    {
-        EmailContactGroup ecg = emailContactGroupRepository.findByEmailIdAndContactIdAndGroupId(emailId, contactId,
-                groupId);
-        if (ecg != null)
-        {
-            return ecg.getCreatedUser();
-        }
-        else
-        {
-            return null;
-        }
-    }
+	@Override
+	@PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or hasAuthority('ACCESS_SEND_EMAIL')")
+	public EmailContactGroup updateEmailContactGroup(EmailContactGroup emailContactGroup) throws BusinessException {
+		final EmailContactGroup newEmailContactGroup = emailContactGroupRepository.save(emailContactGroup);
+		return newEmailContactGroup;
+	}
 
 }

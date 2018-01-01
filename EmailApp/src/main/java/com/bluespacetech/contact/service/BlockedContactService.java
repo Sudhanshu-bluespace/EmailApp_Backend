@@ -18,9 +18,11 @@ public interface BlockedContactService
      * @param reason the reason
      * @return the list
      */
-    public BlockedContacts findBlockedContactByEmailAndReason(final String email, final String reason);
+    public List<BlockedContacts> findBlockedContactByEmailAndReason(final String email, final String reason);
     
     public List<BlockedContacts> findByEmail(final String email);
+    
+    public List<BlockedContacts> findAll();
 
     /**
      * Adds the blocked contact.
@@ -28,4 +30,6 @@ public interface BlockedContactService
      * @param blockedContact the blocked contact
      */
     public void addBlockedContact(final BlockedContacts blockedContact);
+    
+    public void remove(final BlockedContacts blockedContact);
 }

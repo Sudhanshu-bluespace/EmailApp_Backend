@@ -10,7 +10,6 @@ package com.bluespacetech.group.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.bluespacetech.group.entity.Group;
@@ -24,10 +23,5 @@ import com.bluespacetech.group.entity.Group;
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
     List<Group> findByNameLike(final String name);
-    
-    @Query("select g from Group g where upper(g.name)=?1")
-    Group findByName(final String name);
-    
-    List<Group> findByCreatedUser(final String createdUser);
     
 }

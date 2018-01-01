@@ -98,11 +98,4 @@ public class GroupServiceImpl implements GroupService {
 		return groupRepositoryCustom.findGroupsBySearchCriteria(groupSearchCriteria);
 	}
 
-    @Override
-    @PreAuthorize("hasAuthority('ACC_TYPE_SUPER_ADMIN') or (hasAuthority('ACCESS_GROUPS'))")
-    public List<Group> findByCreatedUser(String username)
-    {
-        return groupRepository.findByCreatedUser(username);
-    }
-
 }

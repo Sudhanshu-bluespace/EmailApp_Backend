@@ -7,6 +7,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.item.ItemProcessor;
+import org.xbill.DNS.MXRecord;
+
 import com.bluespacetech.common.util.CommonUtilCache;
 import com.bluespacetech.contact.entity.BlockedContacts;
 import com.bluespacetech.contact.entity.Contact;
@@ -92,8 +94,8 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
         }
         else if (!validatedDomains.contains(email.split("@")[1]))
         {
-            List<String> mxRecords = EmailMXRecordDNSValidator.validateMxRecord(email.trim());
-            if (mxRecords == null || mxRecords.isEmpty())
+            String mxRecord = EmailMXRecordDNSValidator.validateMxRecord(email.trim());
+            if (mxRecord == null || mxRecord.trim().isEmpty())
             {
                 LOGGER.warn("No MX records found for email " + email + ", Potential candidate for blacklist");
                 addEmailToBlockedList(email, contactDTO, "INVALID_MX_RECORDS");
@@ -105,6 +107,23 @@ public class ContactItemProcessor implements ItemProcessor<ContactUploadDTO, Con
                 validatedDomains.add(email.split("@")[1]);
                 LOGGER.debug("Validated domain " + email.split("@")[1]
                         + " for MX reords successfully. Added to local cache");
+                
+                /*List<BlockedContacts> contact = blockedContactService.findBlockedContactByEmailAndReason(email, "INVALID_MX_RECORDS");
+                if(contact!=null && !contact.isEmpty())
+                {
+                    for (BlockedContacts c : contact)
+                    {
+                        if ("INVALID_MX_RECORDS".equalsIgnoreCase(c.getReason()))
+                        {
+
+                            blockedContactService.remove(c);
+                            CommonUtilCache.getFailedValidationContacts()
+                                    .remove(uploader + "," + email + ",INVALID_MX_RECORDS");
+                            LOGGER.info("Removed re-vlidated contact [" + uploader + "," + email
+                                    + ",INVALID_MX_RECORDS] successfully from blacklist");
+                        }
+                    }
+                }*/
             }
         }
 

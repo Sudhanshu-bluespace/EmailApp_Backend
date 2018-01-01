@@ -151,7 +151,7 @@ public class BlockedContacts extends BaseEntity implements Serializable
     @Override
     public String toString()
     {
-        return "BlockedContacts [firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", reason="
+        return "BlockedContacts [id="+getId()+", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", reason="
                 + reason + ", responseCode=" + responseCode + "]";
     }
 

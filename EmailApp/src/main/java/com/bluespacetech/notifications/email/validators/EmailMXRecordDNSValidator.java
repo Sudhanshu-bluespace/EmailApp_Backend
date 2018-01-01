@@ -2,6 +2,7 @@ package com.bluespacetech.notifications.email.validators;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -10,9 +11,22 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.InitialDirContext;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.MXRecord;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.TextParseException;
+import org.xbill.DNS.Type;
 
+import com.bluespacetech.common.util.ExceptionUtil;
+
+import static org.xbill.DNS.Lookup.HOST_NOT_FOUND;
+import static org.xbill.DNS.Lookup.SUCCESSFUL;
+import static org.xbill.DNS.Lookup.TRY_AGAIN;
+import static org.xbill.DNS.Lookup.TYPE_NOT_FOUND;
+import static org.xbill.DNS.Lookup.UNRECOVERABLE;
 
 /**
  * The Class EmailMXRecordDNSValidator.
@@ -23,6 +37,8 @@ public class EmailMXRecordDNSValidator
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LogManager.getLogger(EmailMXRecordDNSValidator.class);
     
+    private static boolean initConnectionTimeout = false;
+    
     
 
     /**
@@ -31,25 +47,147 @@ public class EmailMXRecordDNSValidator
      * @param email the email
      * @return the list
      */
+    
 
-    public static List<String> validateMxRecord(String email)
+    public static String validateMxRecord(String email)
     {
         String[] split = email.split("@");
-        String hostname = split[1];
-        List<String> list = new ArrayList<>();
+        String hostname = null;
+        if (split.length == 1)
+        {
+            hostname = email;
+        }
+        else
+        {
+            hostname = split[1];
+        }
+        String res = null;
+        MXRecord mxRecord = null;
+        String[] response = null;
+        /*
+         * try { // print the sorted mail exhchange servers for (String mailHost : lookupMailHosts(hostname)) { LOGGER.debug("Host for " + hostname + " : " + mailHost); list.add(mailHost); } } catch
+         * (NamingException e) { LOGGER.error("ERROR: Failed to get DNS records for '" + hostname + "', reason: ["+e.getMessage()+"]"); }
+         */
+
         try
-        { // print the sorted mail exhchange servers
-            for (String mailHost : lookupMailHosts(hostname))
+        {
+            mxRecord = digOptimalMxRecords(hostname);
+            if(mxRecord == null)
             {
-                LOGGER.debug("Host for " + hostname + " : " + mailHost);
-                list.add(mailHost);
+                if (initConnectionTimeout)
+                {
+                    response = lookupMailHosts(hostname);
+                    if (response != null)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("\"Response : {\"");
+                        for (String r : response)
+                        {
+                            sb.append("\"host:\"" + r + "\"");
+                        }
+                        sb.append("}\"");
+                        res = sb.toString();
+                    }
+                }
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.append("\"Response : {\"");
+                sb.append("\"dClass:\""+mxRecord.getDClass()+"\",");
+                sb.append("\"priority:\""+mxRecord.getPriority()+"\",");
+                sb.append("\"RrsetType:\""+mxRecord.getRRsetType()+"\",");
+                sb.append("\"TTL:\""+mxRecord.getTTL()+"\",");
+                sb.append("\"Type:\""+mxRecord.getType()+"\"");
+                sb.append("}\"");
+                res = sb.toString();
             }
         }
-        catch (NamingException e)
+        catch (TextParseException | NamingException e)
         {
-            LOGGER.error("ERROR: Failed to get DNS records for '" + hostname + "', reason: ["+e.getMessage()+"]");
+            LOGGER.error("Failed to scan MX records, reason : "+ExceptionUtil.getErrorRootCause(e));
         }
 
+        initConnectionTimeout = false;
+        return res;
+    }
+    
+    /**
+     * Dig optimal mx records.
+     *
+     * @param domainName the domain name
+     * @return the MX record
+     * @throws TextParseException the text parse exception
+     */
+    public static MXRecord digOptimalMxRecords(String domainName) throws TextParseException
+    {
+        List<MXRecord> records = digMxRecords(domainName);
+        if (!records.isEmpty())
+        {
+            Collections.sort(records, new Comparator<MXRecord>() {
+                @Override
+                public int compare(MXRecord o1, MXRecord o2)
+                {
+                    return o2.getPriority() - o1.getPriority();
+                }
+            });
+            return records.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * Dig mx records.
+     *
+     * @param domainName the domain name
+     * @return the list
+     * @throws TextParseException the text parse exception
+     */
+    public static List<MXRecord> digMxRecords(String domainName) throws TextParseException
+    {
+        LOGGER.info("Validating mX recors for domain : "+domainName);
+        List<MXRecord> list = new ArrayList<>();
+        Lookup mxLookupper = new Lookup(domainName, Type.MX);
+        mxLookupper.run();
+
+        if (mxLookupper.getResult() == SUCCESSFUL)
+        {
+            Record[] answers = mxLookupper.getAnswers();
+            for (Record record : answers)
+            {
+                list.add((MXRecord) record);
+            }
+        }
+        else
+        {
+            switch (mxLookupper.getResult())
+            {
+                case HOST_NOT_FOUND:
+                {
+                    LOGGER.error("MX Record Validation Failed - [HOST_NOT_FOUND]");
+                    initConnectionTimeout = false;
+                    break;
+                }
+                case TYPE_NOT_FOUND:
+                {
+                    LOGGER.error("MX Record Validation Failed - [TYPE_NOT_FOUND]");
+                    initConnectionTimeout = false;
+                    break;
+                }
+                case TRY_AGAIN:
+                {
+                    LOGGER.error("MX Record Initial Validation Failed due to time out - [TRY_AGAIN]");
+                    initConnectionTimeout = true;
+                    break;
+                }
+                case UNRECOVERABLE:
+                {
+                    LOGGER.error("MX Record Validation Failed - [UNRECOVERABLE]");
+                    initConnectionTimeout = false;
+                    break;
+                }                
+            }
+        }
         return list;
     }
 

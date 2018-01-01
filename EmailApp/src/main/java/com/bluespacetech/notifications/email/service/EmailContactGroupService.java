@@ -13,78 +13,22 @@ import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
 
 /**
- * class for EmailContactGroupService.
+ * class for EmailContactGroupService
  *
  * @author pradeep created date 25-June-2015
  */
-public interface EmailContactGroupService
-{
+public interface EmailContactGroupService {
 
-    /**
-     * Creates the email contact group.
-     *
-     * @param emailContactGroup
-     *            the email contact group
-     * @return the email contact group
-     * @throws BusinessException
-     *             the business exception
-     */
-    EmailContactGroup createEmailContactGroup(final EmailContactGroup emailContactGroup) throws BusinessException;
+	EmailContactGroup createEmailContactGroup(final EmailContactGroup emailContactGroup) throws BusinessException;
 
-    /**
-     * Delete email contact group.
-     *
-     * @param emailContactGroups
-     *            the email contact groups
-     * @throws BusinessException
-     *             the business exception
-     */
-    void deleteEmailContactGroup(final List<EmailContactGroup> emailContactGroups) throws BusinessException;
+	List<EmailContactGroup> createEmailContactGroups(final List<EmailContactGroup> emailContactGroups)
+			throws BusinessException;
 
-    /**
-     * Creates the email contact groups.
-     *
-     * @param emailContactGroups
-     *            the email contact groups
-     * @return the list
-     * @throws BusinessException
-     *             the business exception
-     */
-    List<EmailContactGroup> createEmailContactGroups(final List<EmailContactGroup> emailContactGroups)
-            throws BusinessException;
+	List<EmailContactGroup> findAll();
 
-    /**
-     * Find all.
-     *
-     * @return the list
-     */
-    List<EmailContactGroup> findAll();
+	EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(final Long contactId, final Long groupId,
+			final Long randomNumber);
 
-    /**
-     * Find by contact id and group id and random number.
-     *
-     * @param contactId
-     *            the contact id
-     * @param groupId
-     *            the group id
-     * @param randomNumber
-     *            the random number
-     * @return the email contact group
-     */
-    EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(final Long contactId, final Long groupId,
-            final Long randomNumber);
-    
-    String findByEmailIdAndContactIdAndGroupId(final Long emailIs,final Long contactId,final Long groupId);
-
-    /**
-     * Update email contact group.
-     *
-     * @param emailContactGroup
-     *            the email contact group
-     * @return the email contact group
-     * @throws BusinessException
-     *             the business exception
-     */
-    EmailContactGroup updateEmailContactGroup(final EmailContactGroup emailContactGroup) throws BusinessException;
+	EmailContactGroup updateEmailContactGroup(final EmailContactGroup emailContactGroup) throws BusinessException;
 
 }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +21,7 @@ import com.bluespacetech.security.constants.UserAccountTypeConstant;
 import com.bluespacetech.security.resources.UIModuleRolesResource;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/uiUserAuthorities")
 public class UIUserAuthorityController extends AbstractBaseController {
 
@@ -32,7 +34,6 @@ public class UIUserAuthorityController extends AbstractBaseController {
 	public ResponseEntity<UIModuleRolesResource> getUserUIUserAuthorities(@RequestBody final UIModuleRolesResource uiUserRole) {
 
 		final List<String> uiUserRoles = new ArrayList<String>();
-		System.out.println("inside authority controller");
 
 		if(ViewUtil.getAuthentication()!=null && uiUserRole!=null && uiUserRole.getModuleNames()!=null&& uiUserRole.getModuleNames().size()>0) {
 			if(UserAccountTypeConstant.ACC_TYPE_SUPER_ADMIN.equals(ViewUtil.getUserAccountType())){

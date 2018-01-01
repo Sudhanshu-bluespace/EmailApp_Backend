@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bluespacetech.contact.entity.BlockedContacts;
-import com.bluespacetech.contact.fileupload.batch.ContactItemProcessor;
 import com.bluespacetech.contact.repository.BlockedContactRepository;
 import com.bluespacetech.core.exceptions.ApplicationException;
 import com.bluespacetech.core.exceptions.BusinessException;
@@ -31,15 +30,27 @@ public class BlockedContactServiceImpl implements BlockedContactService
     }
 
     @Override
-    public BlockedContacts findBlockedContactByEmailAndReason(final String email,final String reason)
+    public List<BlockedContacts> findBlockedContactByEmailAndReason(final String email,final String reason)
     {
         LOGGER.debug("Searching for "+email+" in blocked contacts repository");
-        return blockedContactRepository.findByEmailAndReasonAllIgnoreCase(email,reason);
+        return blockedContactRepository.findByEmailIgnoreCase(email);
+    }
+    
+    @Override
+    public List<BlockedContacts> findAll()
+    {
+        return blockedContactRepository.findAll();
     }
     
     @Override
     public List<BlockedContacts> findByEmail(final String email)
     {
         return blockedContactRepository.findByEmailIgnoreCase(email);
+    }
+    
+    @Override
+    public void remove(final BlockedContacts blockedContact)
+    {
+        blockedContactRepository.delete(blockedContact);
     }
 }

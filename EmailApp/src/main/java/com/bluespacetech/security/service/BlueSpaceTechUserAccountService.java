@@ -1,7 +1,6 @@
 package com.bluespacetech.security.service;
 
 import java.util.List;
-import java.util.Map;
 
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.security.model.UserAccount;
@@ -17,7 +16,7 @@ public interface BlueSpaceTechUserAccountService {
 
 	List<UserAccount> getUserAccountByIds(final List<Long> userAccountIds);
 
-	Map<UserAccount,String> createUserAccount(final UserAccount userAccount)
+	UserAccount createUserAccount(final UserAccount userAccount)
 			throws BusinessException;
 
 	UserAccount updateUserAccount(final UserAccount userAccount)

@@ -24,66 +24,44 @@ import javax.persistence.Table;
 
 import com.bluespacetech.core.model.BaseEntity;
 
-/**
- * The Class AccessControl.
- */
 @Entity
 @Table(name = "ACCESS_CONTROL")
-public class AccessControl extends BaseEntity implements Serializable
-{
+public class AccessControl extends BaseEntity implements Serializable {
 
-    /**
-     * Universal serial version id for this class.
-     */
-    private static final long serialVersionUID = -927045001321641282L;
+	/**
+	 * Universal serial version id for this class.
+	 */
+	private static final long serialVersionUID = -927045001321641282L;
 
-    /** The user account. */
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-    @JoinColumn(name = "USER_ACCOUNT_ID", nullable = false)
-    private UserAccount userAccount;
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST,
+			CascadeType.MERGE, CascadeType.REFRESH })
+	@JoinColumn(name = "USER_ACCOUNT_ID", nullable = false)
+	private UserAccount userAccount;
 
-    /** The branch id. */
-    @Column(name = "BRANCH_ID", nullable = false)
-    private Long branchId;
+	@Column(name = "BRANCH_ID", nullable = false)
+	private Long branchId;
 
-    /**
-     * Sets the user account.
-     *
-     * @param userAccount the new user account
-     */
-    public void setUserAccount(final UserAccount userAccount)
-    {
-        this.userAccount = userAccount;
-    }
+	public void setUserAccount(final UserAccount userAccount) {
+		this.userAccount = userAccount;
+	}
 
-    /**
-     * Gets the user account.
-     *
-     * @return the user account
-     */
-    public UserAccount getUserAccount()
-    {
-        return this.userAccount;
-    }
+	public UserAccount getUserAccount() {
+		return this.userAccount;
+	}
 
-    /**
-     * Gets the branch id.
-     *
-     * @return the branchId
-     */
-    public Long getBranchId()
-    {
-        return branchId;
-    }
+	/**
+	 * @return the branchId
+	 */
+	public Long getBranchId() {
+		return branchId;
+	}
 
-    /**
-     * Sets the branch id.
-     *
-     * @param branchId the branchId to set
-     */
-    public void setBranchId(final Long branchId)
-    {
-        this.branchId = branchId;
-    }
+	/**
+	 * @param branchId
+	 *            the branchId to set
+	 */
+	public void setBranchId(final Long branchId) {
+		this.branchId = branchId;
+	}
 
 }

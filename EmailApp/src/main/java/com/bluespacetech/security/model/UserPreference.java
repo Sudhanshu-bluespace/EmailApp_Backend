@@ -23,85 +23,65 @@ import com.bluespacetech.core.model.BaseEntity;
  */
 @Entity
 @Table(name = "USER_PREFERENCE")
-public class UserPreference extends BaseEntity
-{
+public class UserPreference extends BaseEntity {
 
-    /**
-     * Universal serial version number.
-     */
-    private static final long serialVersionUID = 6630017830597146593L;
+	/**
+	 * Universal serial version number.
+	 */
+	private static final long serialVersionUID = 6630017830597146593L;
 
-    /** The user account. */
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ACCOUNT_ID", nullable = false)
-    private UserAccount userAccount;
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "USER_ACCOUNT_ID", nullable = false)
+	private UserAccount userAccount;
 
-    /** The branch id. */
-    @Column(name = "DEFAULT_BRANCH_ID")
-    private Long branchId;
+	@Column(name = "DEFAULT_BRANCH_ID")
+	private Long branchId;
 
-    /** The decrease percentage ind. */
-    @Column(name = "DEC_PERCENTAGE_IND")
-    private boolean decreasePercentageInd;
+	@Column(name = "DEC_PERCENTAGE_IND")
+	private boolean decreasePercentageInd;
 
-    /**
-     * Gets the user account.
-     *
-     * @return the userAccount
-     */
-    public UserAccount getUserAccount()
-    {
-        return userAccount;
-    }
+	/**
+	 * @return the userAccount
+	 */
+	public UserAccount getUserAccount() {
+		return userAccount;
+	}
 
-    /**
-     * Sets the user account.
-     *
-     * @param userAccount the userAccount to set
-     */
-    public void setUserAccount(final UserAccount userAccount)
-    {
-        this.userAccount = userAccount;
-    }
+	/**
+	 * @param userAccount
+	 *            the userAccount to set
+	 */
+	public void setUserAccount(final UserAccount userAccount) {
+		this.userAccount = userAccount;
+	}
 
-    /**
-     * Gets the branch id.
-     *
-     * @return the branchId
-     */
-    public Long getBranchId()
-    {
-        return branchId;
-    }
+	/**
+	 * @return the branchId
+	 */
+	public Long getBranchId() {
+		return branchId;
+	}
 
-    /**
-     * Sets the branch id.
-     *
-     * @param branchId the branchId to set
-     */
-    public void setBranchId(final Long branchId)
-    {
-        this.branchId = branchId;
-    }
+	/**
+	 * @param branchId
+	 *            the branchId to set
+	 */
+	public void setBranchId(final Long branchId) {
+		this.branchId = branchId;
+	}
 
-    /**
-     * Checks if is decrease percentage ind.
-     *
-     * @return the decreasePercentageInd
-     */
-    public boolean isDecreasePercentageInd()
-    {
-        return decreasePercentageInd;
-    }
+	/**
+	 * @return the decreasePercentageInd
+	 */
+	public boolean isDecreasePercentageInd() {
+		return decreasePercentageInd;
+	}
 
-    /**
-     * Sets the decrease percentage ind.
-     *
-     * @param decreasePercentageInd the decreasePercentageInd to set
-     */
-    public void setDecreasePercentageInd(final boolean decreasePercentageInd)
-    {
-        this.decreasePercentageInd = decreasePercentageInd;
-    }
+	/**
+	 * @param decreasePercentageInd the decreasePercentageInd to set
+	 */
+	public void setDecreasePercentageInd(final boolean decreasePercentageInd) {
+		this.decreasePercentageInd = decreasePercentageInd;
+	}
 
 }

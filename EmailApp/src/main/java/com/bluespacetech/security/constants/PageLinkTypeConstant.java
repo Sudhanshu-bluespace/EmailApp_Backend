@@ -9,49 +9,24 @@ package com.bluespacetech.security.constants;
 
 import com.bluespacetech.core.constants.Labeled;
 
-/**
- * The Enum PageLinkTypeConstant.
- */
-public enum PageLinkTypeConstant implements Labeled
-{
+public enum PageLinkTypeConstant implements Labeled {
+	LINK("link"), TOGGLE("toggle");
 
-    /** The link. */
-    LINK("link"),
-    /** The toggle. */
-    TOGGLE("toggle");
+	private String label;
 
-    /** The label. */
-    private String label;
+	PageLinkTypeConstant(final String label) {
+		this.label = label;
+	}
 
-    /**
-     * Instantiates a new page link type constant.
-     *
-     * @param label the label
-     */
-    PageLinkTypeConstant(final String label)
-    {
-        this.label = label;
-    }
+	@Override
+	public String getLabel() {
+		return label;
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see com.bluespacetech.core.constants.Labeled#getLabel()
-     */
-    @Override
-    public String getLabel()
-    {
-        return label;
-    }
+	@Override
+	public void setLabel(final String label) {
+		this.label = label;
 
-    /*
-     * (non-Javadoc)
-     * @see com.bluespacetech.core.constants.Labeled#setLabel(java.lang.String)
-     */
-    @Override
-    public void setLabel(final String label)
-    {
-        this.label = label;
-
-    }
+	}
 
 }

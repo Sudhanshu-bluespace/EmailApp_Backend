@@ -1,12 +1,18 @@
+/*
+ * 
+ */
 package com.bluespacetech.notifications.email.executionqueue;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,7 +42,7 @@ import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 @Component
 public class Consumer implements Callable<String>
 {
-    
+
     /** The contact group email job. */
     private Job contactGroupEmailJob;
 
@@ -45,7 +51,7 @@ public class Consumer implements Callable<String>
 
     /** The blocking queue. */
     private JobProcessingPriorityBlockingQueue blockingQueue;
-    
+
     /** The job launcher. */
     private JobLauncher jobLauncher;
 
@@ -101,18 +107,50 @@ public class Consumer implements Callable<String>
     private void consume() throws InterruptedException, JobExecutionAlreadyRunningException, JobRestartException,
             JobInstanceAlreadyCompleteException, JobParametersInvalidException
     {
+        List<EmailContactGroupVO> alreadyBlockedEmails = new ArrayList<>();
         while (true)
         {
             EmailJobEndpoint endpoint = blockingQueue.take();
             LOGGER.info("[Consumer] - endPoint: " + endpoint);
             LOGGER.info("Current Queue Head: " + blockingQueue.peek());
 
+            Long campaignId = 0L;
+
             final Map<String, JobParameter> jobParametersMap = new HashMap<String, JobParameter>();
             String request_batch_id = endpoint.getRequestId() + "|" + endpoint.getBatchId();
 
-            synchronized(this)
+            Iterator<EmailContactGroupVO> iterator = endpoint.getEmailContactGroupList().iterator();
+            while (iterator.hasNext())
             {
-                persistJobExecutionToDB(endpoint.getBatchId(), endpoint.getRequestId(), "PROCESSING", null,"");
+                EmailContactGroupVO vo = iterator.next();
+
+                if (campaignId == 0L)
+                {
+                    campaignId = vo.getEmailId();
+                }
+                
+                for(Map.Entry<String, List<String>> entry : CommonUtilCache.getBouncedEmailCache().entrySet())
+                {
+                    if (entry.getValue().contains(vo.getContactEmail()))
+                    {
+                        LOGGER.info("Contact " + vo.getContactEmail()
+                                + " is already blacklisted and will not be sent for further processing..");
+                        iterator.remove();
+                        if (!alreadyBlockedEmails.contains(vo.getContactEmail()))
+                        {
+                            alreadyBlockedEmails.add(vo);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            LOGGER.info("Finsihed filtering blacklisted contacts from the job queue.." + alreadyBlockedEmails.size()
+                    + " contacts were filtered");
+
+            synchronized (this)
+            {
+                persistJobExecutionToDB(endpoint.getBatchId(), endpoint.getRequestId(), "PROCESSING", null, "");
             }
 
             if (!CommonUtilCache.getBatchIdToEmailListMap().containsKey(request_batch_id))
@@ -128,26 +166,37 @@ public class Consumer implements Callable<String>
             JobExecution execution = jobLauncher.run(contactGroupEmailJob, new JobParameters(jobParametersMap));
             LOGGER.info("Job Complete notification for campaign : " + endpoint.getCampaignName() + " | Job Id - "
                     + execution.getJobId() + " | Status - " + execution.getExitStatus());
-            
+
             String errors = "";
-            if("FAILED".equalsIgnoreCase(execution.getExitStatus().getExitCode())&&CommonUtilCache.getRequestIdVsErrorMap().containsKey(request_batch_id))
+            if ("FAILED".equalsIgnoreCase(execution.getExitStatus().getExitCode())
+                    || CommonUtilCache.getRequestIdVsErrorMap().containsKey(request_batch_id))
             {
                 errors = CommonUtilCache.getRequestIdVsErrorMap().get(request_batch_id);
-                LOGGER.info("Errors retrieved from Cache for "+request_batch_id+" : "+errors);
+                LOGGER.info("Errors retrieved from Cache for " + request_batch_id + " : " + errors);
                 CommonUtilCache.getRequestIdVsErrorMap().remove(request_batch_id);
             }
 
-            synchronized(this)
+            synchronized (this)
             {
-                LOGGER.info("Persisting job cmompletion records for campaign : "+endpoint.getCampaignName()+", job ID : "+execution.getJobId()+", batch : "+endpoint.getBatchId()+" to Database from synchronized context");
+                LOGGER.info("Persisting job cmompletion records for campaign : " + endpoint.getCampaignName()
+                        + ", job ID : " + execution.getJobId() + ", batch : " + endpoint.getBatchId()
+                        + " to Database from synchronized context");
                 persistJobExecutionToDB(endpoint.getRequestId(), endpoint.getBatchId(),
-                    execution.getExitStatus().getExitCode(), execution.getJobId(),errors);
-                generateReport(endpoint,execution.getExitStatus().getExitCode(),execution.getJobId(),errors);
+                        execution.getExitStatus().getExitCode(), execution.getJobId(), errors);
+                generateReport(endpoint, alreadyBlockedEmails, execution.getExitStatus().getExitCode(),
+                        execution.getJobId(), errors);
             }
-            
-            if(blockingQueue.isEmpty())
+
+            if (blockingQueue.isEmpty())
             {
                 LOGGER.info("Queue is empty.. Consumer has finished processing all Jobs..");
+                if (CommonUtilCache.getAlreadySelectedEmailsForCampaignMap().containsKey(campaignId))
+                {
+                    Set<String> currentMapping = CommonUtilCache.getAlreadySelectedEmailsForCampaignMap()
+                            .remove(campaignId);
+                    LOGGER.info(
+                            "Cleared already existing cached Email Id Map with " + currentMapping.size() + " emails..");
+                }
                 break;
             }
         }
@@ -160,8 +209,9 @@ public class Consumer implements Callable<String>
      * @param batchId the batch id
      * @param exitCode the exit code
      * @param jobId the job id
+     * @param comments the comments
      */
-    private void persistJobExecutionToDB(String requestId, String batchId, String exitCode, Long jobId,String comments)
+    private void persistJobExecutionToDB(String requestId, String batchId, String exitCode, Long jobId, String comments)
     {
         LOGGER.debug("Updating Job status on completion");
         JobExecutionEntity entity = jobExecutionRepository.findByRequestIdAndBatchIdIgnoreCase(requestId, batchId);
@@ -177,49 +227,63 @@ public class Consumer implements Callable<String>
         {
             CommonUtilCache.getBatchIdToEmailListMap().remove(requestId + "|" + batchId);
             LOGGER.info("Cleared entry of the processed batch " + requestId + "|" + batchId + " from cache..");
-            
-            if(CommonUtilCache.getBatchIdToEmailJobEndpointMap().containsKey(requestId+"|"+batchId))
+
+            if (CommonUtilCache.getBatchIdToEmailJobEndpointMap().containsKey(requestId + "|" + batchId))
             {
                 CommonUtilCache.getBatchIdToEmailJobEndpointMap().remove(requestId + "|" + batchId);
             }
         }
     }
-    
+
     /**
      * Generate report.
      *
      * @param endpoint the endpoint
      * @param status the status
      * @param jobId the job id
+     * @param comments the comments
      */
-    private void generateReport(EmailJobEndpoint endpoint, String status, Long jobId,String comments)
+    private void generateReport(EmailJobEndpoint endpoint, List<EmailContactGroupVO> alreadyBlockedEmails,
+            String status, Long jobId, String comments)
     {
         try
         {
             StringBuilder builder = new StringBuilder();
-            if(Files.exists(endpoint.getReportsFilePath()))
+            if (Files.exists(endpoint.getReportsFilePath()))
             {
                 List<EmailContactGroupVO> list = endpoint.getEmailContactGroupList();
-                for(EmailContactGroupVO vo : list)
+                for (EmailContactGroupVO vo : list)
                 {
-                    builder.append(jobId)
-                    .append(",")
-                    .append(endpoint.getBatchId())
-                    .append(",")
-                    .append(endpoint.getRequestId())
-                    .append(",")
-                    .append(vo.getContactEmail())
-                    .append(",")
-                    .append(vo.getContactFirstName()==null||vo.getContactFirstName().trim().isEmpty()?"-":vo.getContactFirstName())
-                    .append(",")
-                    .append(vo.getContactLastName()==null||vo.getContactLastName().trim().isEmpty()?"-":vo.getContactLastName())
-                    .append(",")
-                    .append(status)
-                    .append(",")
-                    .append(comments==null||comments.trim().isEmpty()?"-":comments);
+                    String newStatus = getOverriddenStatus(vo.getContactEmail(), status);
+                    if (newStatus.equalsIgnoreCase("BLOCKED"))
+                    {
+                        comments = "Blacklisted Contact";
+                    }
+                    builder.append(jobId).append(",").append(endpoint.getBatchId()).append(",")
+                            .append(endpoint.getRequestId()).append(",").append(vo.getContactEmail()).append(",")
+                            .append(vo.getContactFirstName() == null || vo.getContactFirstName().trim().isEmpty() ? "-"
+                                    : vo.getContactFirstName())
+                            .append(",")
+                            .append(vo.getContactLastName() == null || vo.getContactLastName().trim().isEmpty() ? "-"
+                                    : vo.getContactLastName())
+                            .append(",").append(newStatus).append(",")
+                            .append(comments == null || comments.trim().isEmpty() ? "Delivery Attempted" : comments);
                     builder.append(System.lineSeparator());
                 }
-                Files.write(endpoint.getReportsFilePath(), builder.toString().getBytes(),StandardOpenOption.APPEND);
+
+                for (EmailContactGroupVO vo : alreadyBlockedEmails)
+                {
+                    builder.append(jobId).append(",").append(endpoint.getBatchId()).append(",")
+                            .append(endpoint.getRequestId()).append(",").append(vo.getContactEmail()).append(",")
+                            .append(vo.getContactFirstName() == null || vo.getContactFirstName().trim().isEmpty() ? "-"
+                                    : vo.getContactFirstName())
+                            .append(",")
+                            .append(vo.getContactLastName() == null || vo.getContactLastName().trim().isEmpty() ? "-"
+                                    : vo.getContactLastName())
+                            .append(",").append("BLOCKED").append(",").append("Already Blacklisted");
+                    builder.append(System.lineSeparator());
+                }
+                Files.write(endpoint.getReportsFilePath(), builder.toString().getBytes(), StandardOpenOption.APPEND);
             }
             else
             {
@@ -228,9 +292,33 @@ public class Consumer implements Callable<String>
         }
         catch (IOException ex)
         {
-            LOGGER.error("Failed to write data into report, reason : "+ex.getMessage());
+            LOGGER.error("Failed to write data into report, reason : " + ex.getMessage());
         }
 
+    }
+
+    /**
+     * Gets the overridden status.
+     *
+     * @param email the email
+     * @param jobStatus the job status
+     * @return the overridden status
+     */
+    private String getOverriddenStatus(String email, String jobStatus)
+    {
+        String status = jobStatus;
+        synchronized (this)
+        {
+            for (Map.Entry<String, List<String>> entry : CommonUtilCache.getBouncedEmailCache().entrySet())
+            {
+                if (entry.getValue().contains(email))
+                {
+                    status = "BLOCKED";
+                    break;
+                }
+            }
+        }
+        return status;
     }
 
     /**
@@ -238,7 +326,8 @@ public class Consumer implements Callable<String>
      *
      * @return the string
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

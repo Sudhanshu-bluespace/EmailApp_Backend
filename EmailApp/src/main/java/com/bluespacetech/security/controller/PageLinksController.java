@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import com.bluespacetech.security.service.PageLinksService;
 
 @RestController
 @RequestMapping("/pageLinks")
+@CrossOrigin
 public class PageLinksController extends AbstractBaseController {
 
 	@Autowired
@@ -27,7 +29,6 @@ public class PageLinksController extends AbstractBaseController {
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<PageLinkResource>> getPageLinksAllowedForUser() {
 
-	        //System.out.println("In PageLinks controller");
 		final Set<PageLinkConstant> pageLinks = pageLinksService.getPageLinksAllowedForUser();
 		final List<PageLinkResource> branchResources = new PageLinkResourceAssembler()
 				.toResources(pageLinks);

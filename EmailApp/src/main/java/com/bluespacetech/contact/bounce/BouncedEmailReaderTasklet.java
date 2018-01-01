@@ -26,7 +26,7 @@ public class BouncedEmailReaderTasklet implements Tasklet
     @Override
     public RepeatStatus execute(StepContribution arg0, ChunkContext chunkContext) throws Exception
     {
-        LOGGER.info("Executing job to scan bunced emails");
+        LOGGER.info("Executing job to scan bounced emails");
         
         String host = chunkContext.getStepContext().getStepExecution().getJobParameters().getString("host");
         String storeType = chunkContext.getStepContext().getStepExecution().getJobParameters().getString("storeType");
@@ -35,7 +35,9 @@ public class BouncedEmailReaderTasklet implements Tasklet
         String user = chunkContext.getStepContext().getStepExecution().getJobParameters().getString("username");
         String password = chunkContext.getStepContext().getStepExecution().getJobParameters().getString("password");
         String startTlsEnabled = chunkContext.getStepContext().getStepExecution().getJobParameters().getString("starttlsEnabled");
-        new MailChecker(contactRepository,blockedContactService).check(host, storeType, user, password,port,storeProtocol,startTlsEnabled);
+        int numberOfSuccessfulBlacklistings = new MailChecker(contactRepository,blockedContactService).check(host, storeType, user, password,port,storeProtocol,startTlsEnabled);
+        
+        LOGGER.info("Completed Bounced Email scan job.. Processed "+numberOfSuccessfulBlacklistings+" new blacklists in current run");
         return RepeatStatus.FINISHED;
     }
 }

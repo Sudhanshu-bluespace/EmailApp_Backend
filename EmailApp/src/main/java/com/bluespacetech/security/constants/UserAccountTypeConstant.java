@@ -49,13 +49,13 @@ public enum UserAccountTypeConstant {
 
 
 	public static UserAccountTypeConstant[] getUserAccountTypesForNewUser(){
-		final UserAccountTypeConstant[] userAccountTypesForNewUser = new UserAccountTypeConstant[3];
+		final UserAccountTypeConstant[] userAccountTypesForNewUser = new UserAccountTypeConstant[2];
 		userAccountTypesForNewUser[0] = UserAccountTypeConstant.ACC_TYPE_ADMIN;
 		userAccountTypesForNewUser[1] = UserAccountTypeConstant.ACC_TYPE_EMPLOYEE;
-		//userAccountTypesForNewUser[5] = UserAccountTypeConstant.ACC_TYPE_TEACHER
+		//userAccountTypesForNewUser[5] = UserAccountTypeConstant.ACC_TYPE_TEACHER;
 		//userAccountTypesForNewUser[2] = UserAccountTypeConstant.ACC_TYPE_STUDENT;
 		//userAccountTypesForNewUser[3] = UserAccountTypeConstant.ACC_TYPE_PARENT;
-		userAccountTypesForNewUser[2] = UserAccountTypeConstant.ACC_TYPE_USER;
+		//userAccountTypesForNewUser[4] = UserAccountTypeConstant.ACC_TYPE_USER;
 
 		return userAccountTypesForNewUser;
 	}

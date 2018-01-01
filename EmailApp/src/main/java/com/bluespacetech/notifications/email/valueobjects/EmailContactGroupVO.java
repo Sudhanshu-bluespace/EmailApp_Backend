@@ -168,15 +168,4 @@ public class EmailContactGroupVO implements Serializable {
 	public void setFromAddress(String fromAddress) {
 		this.fromAddress = fromAddress;
 	}
-
-    @Override
-    public String toString()
-    {
-        return "EmailContactGroupVO [emailId=" + emailId + ", contactId=" + contactId + ", groupId=" + groupId
-                + ", message=" + message + ", contactEmail=" + contactEmail + ", contactFirstName=" + contactFirstName
-                + ", contactLastName=" + contactLastName + ", subject=" + subject + ", fromAddress=" + fromAddress
-                + "]";
-    }
-	
-	
 }
