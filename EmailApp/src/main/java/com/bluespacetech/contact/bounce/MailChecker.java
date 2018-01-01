@@ -266,7 +266,7 @@ public class MailChecker
      */
     private void setDeleteFlagOnMessage(Message message) throws MessagingException
     {
-        //message.setFlag(Flags.Flag.DELETED, true);
+        message.setFlag(Flags.Flag.DELETED, true);
     }
 
     /**
