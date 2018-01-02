@@ -1,10 +1,9 @@
 package com.bluespacetech.security.service;
 
+import com.bluespacetech.security.constants.PageLinkConstant;
 import java.util.Set;
 
-import com.bluespacetech.security.constants.PageLinkConstant;
-
-public interface PageLinksService  {
-
-	public Set<PageLinkConstant> getPageLinksAllowedForUser();
+public abstract interface PageLinksService
+{
+  public abstract Set<PageLinkConstant> getPageLinksAllowedForUser();
 }

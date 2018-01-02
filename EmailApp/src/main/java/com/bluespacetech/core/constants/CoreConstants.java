@@ -1,7 +1,6 @@
 package com.bluespacetech.core.constants;
 
-public interface CoreConstants {
-
-    String ANONYMOUS_USER = "anonymous";
-
+public abstract interface CoreConstants
+{
+  public static final String ANONYMOUS_USER = "anonymous";
 }

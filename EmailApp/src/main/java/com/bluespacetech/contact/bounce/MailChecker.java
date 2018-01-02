@@ -1,5 +1,12 @@
 package com.bluespacetech.contact.bounce;
 
+import com.bluespacetech.common.util.CommonUtilCache;
+import com.bluespacetech.common.util.ExceptionUtil;
+import com.bluespacetech.contact.entity.BlockedContacts;
+import com.bluespacetech.contact.entity.Contact;
+import com.bluespacetech.contact.fileupload.batch.EmailListener;
+import com.bluespacetech.contact.repository.ContactRepository;
+import com.bluespacetech.contact.service.BlockedContactService;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +18,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -22,14 +28,7 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.bluespacetech.common.util.CommonUtilCache;
-import com.bluespacetech.common.util.ExceptionUtil;
-import com.bluespacetech.contact.entity.BlockedContacts;
-import com.bluespacetech.contact.entity.Contact;
-import com.bluespacetech.contact.fileupload.batch.EmailListener;
-import com.bluespacetech.contact.repository.ContactRepository;
-import com.bluespacetech.contact.service.BlockedContactService;
-
+// TODO: Auto-generated Javadoc
 /**
  * The Class MailChecker.
  */
@@ -39,7 +38,7 @@ public class MailChecker
     /** The contact repository. */
     private ContactRepository contactRepository;
 
-    /** The blocked contacts repository. */
+    /** The blocked contact service. */
     private BlockedContactService blockedContactService;
 
     /** The Constant LOGGER. */
@@ -80,7 +79,6 @@ public class MailChecker
             Pattern pattern = Pattern.compile(emailRegex);
             Pattern patternWrap = Pattern.compile(emailRegexWrap);
 
-            // create properties field
             Properties properties = new Properties();
 
             properties.put("mail.pop3.host", host);
@@ -92,91 +90,69 @@ public class MailChecker
             properties.put("mail.pop3.connectiontimeout", "10000");
 
             properties.put("mail.store.protocol", storeProtocol);
-            ;
+
             Session emailSession = Session.getDefaultInstance(properties);
 
-            // create the POP3 store object and connect with the pop server
             Store store = emailSession.getStore("pop3");
 
             store.connect(host, user, password);
 
             LOGGER.info("Successfully Connected to " + host + ", Reading INBOX...");
 
-            // create the folder object and open it
             Folder emailFolder = store.getFolder("INBOX");
             emailFolder.addMessageChangedListener(new EmailListener());
-            emailFolder.open(Folder.READ_WRITE);
-
-            //Flags seen = new Flags(Flags.Flag.SEEN);
-            //FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
-
-            // retrieve the messages from the folder in an array and print it
+            emailFolder.open(2);
 
             Message[] messages = emailFolder.getMessages();
-
             if (messages == null)
             {
                 LOGGER.info("No new messages fetched during current run.. Nothing to scan..");
                 return 0;
             }
-
-            LOGGER.info("Number of messages to scan: "+messages.length);
-            // Sort messages from recent to oldest
-            /*
-             * Arrays.sort(messages, (m1, m2) -> { try { if(m1.getSentDate() == null || m2.getSentDate()==null) { LOGGER.debug("One of the two emails used for comparison has Sent Date as null..");
-             * LOGGER.debug("Message : [subject:"+m1.getSubject()+",sent:"+m1.getSentDate()); LOGGER.debug("Message : [subject:"+m2.getSubject()+",sent:"+m2.getSentDate()); return 0; } else { return
-             * m2.getSentDate().compareTo(m1.getSentDate()); } } catch (MessagingException e) { throw new RuntimeException(e); } });
-             */
-
-            // LOGGER.debug("Sorted INBOX succesfully.. Starting to scan emails for new bounces..");
-
-            // Message[] messages = emailFolder.getMessages();
+            LOGGER.info("Number of messages to scan: " + messages.length);
 
             SmtpScanner scanner = SmtpScanner.getInstance();
-            for (int i = 0, n = messages.length; i < n; i++)
+            int i = 0;
+            for (int n = messages.length; i < n; i++)
             {
                 String body = null;
                 String subject = messages[i].getSubject();
-                // String from = InternetAddress.toString(messages[i].getFrom());
-
                 if (subject == null)
                 {
                     LOGGER.info("Ignoring message with NULL subject... " + messages[i].toString());
-                    continue;
                 }
-
-                if (subject != null && subject.toLowerCase().equalsIgnoreCase("successful mail delivery report"))
+                else if ((subject != null)
+                        && (subject.toLowerCase().equalsIgnoreCase("successful mail delivery report")))
                 {
                     LOGGER.debug("Delivery Status Notification (Success), Skip Scan for Bounce..");
                     setDeleteFlagOnMessage(messages[i]);
-                    continue;
                 }
-
-                if (messages[i].isMimeType("text/plain"))
+                else if (messages[i].isMimeType("text/plain"))
                 {
                     body = messages[i].getContent().toString();
-                    LOGGER.debug("[ Subject="+messages[i].getSubject()+"] Body is a plain text message.. Scanning for hard bounce error codes..");
-                    
+                    LOGGER.debug("[ Subject=" + messages[i].getSubject()
+                            + "] Body is a plain text message.. Scanning for hard bounce error codes..");
+
                     String res = scanner.scanBody(body);
-                    if (res != null && (res.toUpperCase().contains("BOUNCE") || res.toUpperCase().contains("|5.")))
+                    if ((res != null)
+                            && ((res.toUpperCase().contains("BOUNCE")) || (res.toUpperCase().contains("|5."))))
                     {
-                        LOGGER.info("Bounce detected "+res+" | email "+messages[i].getSubject()+",recipients: "+messages[i].getAllRecipients());
+                        LOGGER.info("Bounce detected " + res + " | email " + messages[i].getSubject() + ",recipients: "
+                                + messages[i].getAllRecipients());
                         if (matchBodyPart(patternWrap, pattern, body, res))
                         {
                             numberOfSuccessfulBlackListings++;
                         }
-
                         setDeleteFlagOnMessage(messages[i]);
                         LOGGER.debug("Sent email [subject= " + messages[i].getSubject() + "] for deletion..");
                     }
                     else
                     {
-                        LOGGER.debug("No Hard bounce detected for email subject[ : " + messages[i].getSubject()+"]");
+                        LOGGER.debug("No Hard bounce detected for email subject[ : " + messages[i].getSubject() + "]");
                     }
                 }
                 else if (messages[i].isMimeType("multipart/*"))
                 {
-
                     MimeMultipart mimeMultipart = (MimeMultipart) messages[i].getContent();
                     int count = mimeMultipart.getCount();
                     LOGGER.debug("Multipart mixed mode detected.. iterating through all types and scanning..");
@@ -185,51 +161,54 @@ public class MailChecker
                         Part bodyPart = mimeMultipart.getBodyPart(m);
                         LOGGER.debug("[" + m + "] Part Disposition Type : " + bodyPart.getDisposition());
                         LOGGER.debug("[" + m + "] Part Content Type : " + bodyPart.getContentType());
-
                         if ("message/delivery-status".equalsIgnoreCase(bodyPart.getContentType()))
                         {
                             body = dumpPart(bodyPart);
-                            //LOGGER.debug(body);
+
                             String res = scanner.scanBody(body);
-                            LOGGER.debug("Scan Response: "+res);
-                            if (res != null && (res.toUpperCase().contains("BOUNCE") || res.toUpperCase().contains("|5.")))
+                            LOGGER.debug("Scan Response: " + res);
+                            if ((res != null)
+                                    && ((res.toUpperCase().contains("BOUNCE")) || (res.toUpperCase().contains("|5."))))
                             {
-                                LOGGER.info("Bounce detected "+res+" | email "+messages[i].getSubject()+",recipients: "+messages[i].getAllRecipients());
+                                LOGGER.info("Bounce detected " + res + " | email " + messages[i].getSubject()
+                                        + ",recipients: " + messages[i].getAllRecipients());
                                 if (matchBodyPart(patternWrap, pattern, body, res))
                                 {
                                     numberOfSuccessfulBlackListings++;
                                 }
-                                
                                 setDeleteFlagOnMessage(messages[i]);
                                 LOGGER.debug("Sent email [subject= " + messages[i].getSubject() + "] for deletion..");
                             }
                             else
                             {
-                                LOGGER.debug("No Hard bounce detected for email subject[ : " + messages[i].getSubject()+" ]");
+                                LOGGER.debug("No Hard bounce detected for email subject[ : " + messages[i].getSubject()
+                                        + " ]");
                             }
                         }
-                        else if ("text/rfc822-headers".equalsIgnoreCase(bodyPart.getContentType())
-                                || "text/rfc822".equalsIgnoreCase(bodyPart.getContentType()))
+                        else if (("text/rfc822-headers".equalsIgnoreCase(bodyPart.getContentType()))
+                                || ("text/rfc822".equalsIgnoreCase(bodyPart.getContentType())))
                         {
                             LOGGER.info("Skipping header info processing...");
                         }
                         else
                         {
                             String res = scanner.scanBody(body);
-                            if (res != null && (res.toUpperCase().contains("BOUNCE") || res.toUpperCase().contains("|5.")))
+                            if ((res != null)
+                                    && ((res.toUpperCase().contains("BOUNCE")) || (res.toUpperCase().contains("|5."))))
                             {
-                                LOGGER.info("Bounce detected "+res+" | email "+messages[i].getSubject()+",recipients: "+messages[i].getAllRecipients());
+                                LOGGER.info("Bounce detected " + res + " | email " + messages[i].getSubject()
+                                        + ",recipients: " + messages[i].getAllRecipients());
                                 if (matchBodyPart(patternWrap, pattern, body, res))
                                 {
                                     numberOfSuccessfulBlackListings++;
                                 }
-                                
                                 setDeleteFlagOnMessage(messages[i]);
                                 LOGGER.debug("Sent email [subject= " + messages[i].getSubject() + "] for deletion..");
                             }
                             else
                             {
-                                LOGGER.info("Unsupported content type : " + bodyPart.getContentType() + " | Bounce error Scan Resonse: "+res);
+                                LOGGER.info("Unsupported content type : " + bodyPart.getContentType()
+                                        + " | Bounce error Scan Resonse: " + res);
                             }
                         }
                     }
@@ -240,8 +219,6 @@ public class MailChecker
                     LOGGER.warn(messages[i] + " not supported for processing");
                 }
             }
-
-            // close the store and folder objects
             emailFolder.close(true);
             store.close();
         }
@@ -252,12 +229,10 @@ public class MailChecker
         catch (Exception e)
         {
             LOGGER.error("Scanning of bounced emails Failed, reason : [" + ExceptionUtil.getErrorRootCause(e) + "]");
-            //e.printStackTrace();
         }
-
         return numberOfSuccessfulBlackListings;
     }
-    
+
     /**
      * Sets the delete flag on message.
      *
@@ -266,7 +241,7 @@ public class MailChecker
      */
     private void setDeleteFlagOnMessage(Message message) throws MessagingException
     {
-        message.setFlag(Flags.Flag.DELETED, true);
+        //message.setFlag(Flags.Flag.DELETED, true);
     }
 
     /**
@@ -282,7 +257,6 @@ public class MailChecker
     {
         Matcher wrap = patternWrap.matcher(body);
         boolean isBlacklistingProcessed = false;
-
         if (wrap.find())
         {
             String scanString = wrap.group();
@@ -300,21 +274,17 @@ public class MailChecker
                     reason = response[0];
                     resCode = response[1];
                 }
-
                 LOGGER.debug("Split result : " + reason + " | " + resCode);
-
                 if (!CommonUtilCache.getBouncedEmailCache().containsKey(reason))
                 {
                     CommonUtilCache.getBouncedEmailCache().put(reason, new ArrayList<>());
                 }
-
-                if (!CommonUtilCache.getBouncedEmailCache().get(reason).contains(email))
+                if (!( CommonUtilCache.getBouncedEmailCache().get(reason)).contains(email))
                 {
-                    List<Contact> contacts = contactRepository.findByEmailIgnoreCase(email);
-
-                    if (contacts != null && !contacts.isEmpty())
+                    List<Contact> contacts = this.contactRepository.findByEmailIgnoreCase(email);
+                    if ((contacts != null) && (!contacts.isEmpty()))
                     {
-                        Contact contact = contacts.get(0);
+                        Contact contact = (Contact) contacts.get(0);
                         LOGGER.debug("Contact retrieved from DB. Adding it to Blocked list");
                         BlockedContacts blocked = new BlockedContacts();
                         blocked.setEmail(email);
@@ -324,19 +294,19 @@ public class MailChecker
                         blocked.setLastName(contact.getLastName());
                         blocked.setResponseCode(resCode);
 
-                        List<BlockedContacts> blockedEmails = blockedContactService
+                        List<BlockedContacts> blockedEmails = this.blockedContactService
                                 .findBlockedContactByEmailAndReason(email, reason);
-                        if (blockedEmails == null || blockedEmails.isEmpty())
+                        if ((blockedEmails == null) || (blockedEmails.isEmpty()))
                         {
                             LOGGER.info("Processing Blacklisting of Email : " + contact + "");
-                            blockedContactService.addBlockedContact(blocked);
+                            this.blockedContactService.addBlockedContact(blocked);
                             if (CommonUtilCache.getBouncedEmailCache().containsKey(reason))
                             {
                                 CommonUtilCache.getBouncedEmailCache().get(reason).add(email);
                             }
-
                             LOGGER.info("Email : " + contact
                                     + " blacklisted and added to Bounced Email cache successfully");
+
                             isBlacklistingProcessed = true;
                         }
                         else
@@ -351,7 +321,6 @@ public class MailChecker
                 }
             }
         }
-
         return isBlacklistingProcessed;
     }
 
@@ -364,10 +333,7 @@ public class MailChecker
      */
     private static String dumpPart(Part p) throws Exception
     {
-
         InputStream is = p.getInputStream();
-        // If "is" is not already buffered, wrap a BufferedInputStream
-        // around it.
         if (!(is instanceof BufferedInputStream))
         {
             is = new BufferedInputStream(is);
@@ -383,13 +349,10 @@ public class MailChecker
      */
     private static String getStringFromInputStream(InputStream is)
     {
-        BufferedReader br = null;
         StringBuilder sb = new StringBuilder();
-        String line;
-
-        try
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is));)
         {
-            br = new BufferedReader(new InputStreamReader(is));
+            String line;
             while ((line = br.readLine()) != null)
             {
                 sb.append(line);
@@ -398,31 +361,9 @@ public class MailChecker
         }
         catch (IOException e)
         {
-            e.printStackTrace();
-        }
-        finally
-        {
-            if (br != null)
-            {
-                try
-                {
-                    br.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
+            LOGGER.error(
+                    "Failed to parse String from input stream, reason: [ " + ExceptionUtil.getErrorRootCause(e) + " ]");
         }
         return sb.toString();
     }
-
-    /*
-     * public static void main(String[] args) { String emailRegex = "^Final\\-Recipient:\\s+[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+"; String emailRegex2 = "Final-Recipient.*+"; Pattern pattern
-     * = Pattern.compile(emailRegex2); String body = "X-PowerMTA-VirtualMTA: vmta1" + "Received-From-MTA: dns;ip-172-31-11-8.us-west-2.compute.internal (35.163.189.155)" +
-     * "Arrival-Date: Thu, 29 Jun 2017 12:00:46 -0400" + "Original-Recipient: rfc822;bounces@hireswing.net" + "Final-Recipient: rfc822;sudhanshu_8_41@gmail.com" + "Action: failed" +
-     * "Status: 5.1.1 (bad destination mailbox address)" + "Remote-MTA: dns;gmail-smtp-in.l.google.com (74.125.28.26)" +
-     * "Diagnostic-Code: smtp;550 5.1.1 The email account that you tried to reach does not exist. Please try double-checking the recipient's email address for typos or unnecessary spaces. Learn more at https://support.google.com/mail/?p=NoSuchUser e26si4398979plj.541 - gsmtp"
-     * + "X-PowerMTA-BounceCategory: bad-mailbox"; Matcher match = pattern.matcher(body); if (match.find()) { System.out.println("match : " + match.group()); } }
-     */
 }

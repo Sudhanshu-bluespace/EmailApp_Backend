@@ -1,7 +1,3 @@
 package com.bluespacetech.notifications.email.executionqueue;
 
-public class ExecutionQueueHandler
-{
-    
-
-}
+public class ExecutionQueueHandler {}

@@ -1,24 +1,19 @@
-/**
- * 
- */
 package com.bluespacetech.core.repository;
 
+import com.bluespacetech.core.model.Country;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.bluespacetech.core.model.Country;
-
-/**
- * @author sudhanshu
- *
- */
 @Repository
-public interface CountryRepository extends JpaRepository<Country,Long>
+public abstract interface CountryRepository
+  extends JpaRepository<Country, Long>
 {
-    public List<Country> findAll();
-    public Country findById(Long id);
-    public Country findByShortNameIgnoreCase(String name);
-    public Country findByFullNameIgnoreCase(String name);
+  public abstract List<Country> findAll();
+  
+  public abstract Country findById(Long paramLong);
+  
+  public abstract Country findByShortNameIgnoreCase(String paramString);
+  
+  public abstract Country findByFullNameIgnoreCase(String paramString);
 }

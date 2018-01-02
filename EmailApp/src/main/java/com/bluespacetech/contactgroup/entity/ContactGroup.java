@@ -1,90 +1,239 @@
 package com.bluespacetech.contactgroup.entity;
 
+import com.bluespacetech.contact.entity.Contact;
+import com.bluespacetech.group.entity.Group;
 import java.io.Serializable;
-
+import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.bluespacetech.contact.entity.Contact;
-import com.bluespacetech.group.entity.Group;
-
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ContactGroup.
+ */
 @Entity
 @Table(name = "CONTACT_GROUP")
-public class ContactGroup implements Serializable {
+public class ContactGroup implements Serializable
+{
 
-	private static final long serialVersionUID = 8104121333570891530L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 8104121333570891530L;
 
-	@EmbeddedId
-	private ContactGroupPK contactGroupPK = new ContactGroupPK();
+    /** The contact group PK. */
+    @EmbeddedId
+    private ContactGroupPK contactGroupPK = new ContactGroupPK();
 
-	@Column(name = "ISACTIVE")
-	private boolean isActive = true;
+    /** The is active. */
+    @Column(name = "ISACTIVE")
+    private boolean isActive = true;
 
-	@Column(name = "UNSUBSCRIBED")
-	private boolean unSubscribed = false;
-	
-	public ContactGroupPK getContactGroupPK() {
-		return contactGroupPK;
-	}
+    /** The un subscribed. */
+    @Column(name = "UNSUBSCRIBED")
+    private boolean unSubscribed = false;
 
-	public void setContactGroupPK(ContactGroupPK contactGroupPK) {
-		this.contactGroupPK = contactGroupPK;
-	}
+    /** The unsubscribed date. */
+    @Column(name = "UNSUBSCRIBED_DATE", nullable = true)
+    private Timestamp unsubscribedDate;
 
-	public boolean isActive() {
-		return isActive;
-	}
+    /**
+     * Gets the unsubscribed date.
+     *
+     * @return the unsubscribed date
+     */
+    public Timestamp getUnsubscribedDate()
+    {
+        return this.unsubscribedDate;
+    }
 
-	public void setActive(boolean isActive) {
-		this.isActive = isActive;
-	}
+    /**
+     * Sets the unsubscribed date.
+     *
+     * @param unsubscribedDate the new unsubscribed date
+     */
+    public void setUnsubscribedDate(Timestamp unsubscribedDate)
+    {
+        this.unsubscribedDate = unsubscribedDate;
+    }
 
-	public boolean isUnSubscribed() {
-		return unSubscribed;
-	}
+    /**
+     * Gets the contact group PK.
+     *
+     * @return the contact group PK
+     */
+    public ContactGroupPK getContactGroupPK()
+    {
+        return this.contactGroupPK;
+    }
 
-	public void setUnSubscribed(boolean unSubscribed) {
-		this.unSubscribed = unSubscribed;
-	}
+    /**
+     * Sets the contact group PK.
+     *
+     * @param contactGroupPK the new contact group PK
+     */
+    public void setContactGroupPK(ContactGroupPK contactGroupPK)
+    {
+        this.contactGroupPK = contactGroupPK;
+    }
 
-	@Transient
-	public Contact getContact() {
-		return this.getContactGroupPK().getContact();
-	}
+    /**
+     * Checks if is active.
+     *
+     * @return true, if is active
+     */
+    public boolean isActive()
+    {
+        return this.isActive;
+    }
 
-	public void setContact(Contact contact) {
-		this.getContactGroupPK().setContact(contact);
-	}
+    /**
+     * Sets the active.
+     *
+     * @param isActive the new active
+     */
+    public void setActive(boolean isActive)
+    {
+        this.isActive = isActive;
+    }
 
-	@Transient
-	public Group getGroup() {
-		return this.getContactGroupPK().getGroup();
-	}
+    /**
+     * Checks if is un subscribed.
+     *
+     * @return true, if is un subscribed
+     */
+    public boolean isUnSubscribed()
+    {
+        return this.unSubscribed;
+    }
 
-	public void setGroup(Group group) {
-		this.getContactGroupPK().setGroup(group);
-	}
-	
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+    /**
+     * Sets the un subscribed.
+     *
+     * @param unSubscribed the new un subscribed
+     */
+    public void setUnSubscribed(boolean unSubscribed)
+    {
+        this.unSubscribed = unSubscribed;
+    }
 
-		ContactGroup that = (ContactGroup) o;
+    /**
+     * Gets the contact.
+     *
+     * @return the contact
+     */
+    @Transient
+    public Contact getContact()
+    {
+        return getContactGroupPK().getContact();
+    }
 
-		if (getContactGroupPK() != null ? !getContactGroupPK().equals(that.getContactGroupPK())
-				: that.getContactGroupPK() != null)
-			return false;
+    /**
+     * Sets the contact.
+     *
+     * @param contact the new contact
+     */
+    public void setContact(Contact contact)
+    {
+        getContactGroupPK().setContact(contact);
+    }
 
-		return true;
-	}
+    /**
+     * Gets the group.
+     *
+     * @return the group
+     */
+    @Transient
+    public Group getGroup()
+    {
+        return getContactGroupPK().getGroup();
+    }
 
-	public int hashCode() {
-		return (getContactGroupPK() != null ? getContactGroupPK().hashCode() : 0);
-	}
+    /**
+     * Sets the group.
+     *
+     * @param group the new group
+     */
+    public void setGroup(Group group)
+    {
+        getContactGroupPK().setGroup(group);
+    }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode()
+    {
+        int prime = 31;
+        int result = 1;
+        result = 31 * result + (this.contactGroupPK == null ? 0 : this.contactGroupPK.hashCode());
+        result = 31 * result + (this.isActive ? 1231 : 1237);
+        result = 31 * result + (this.unSubscribed ? 1231 : 1237);
+        result = 31 * result + (this.unsubscribedDate == null ? 0 : this.unsubscribedDate.hashCode());
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        ContactGroup other = (ContactGroup) obj;
+        if (this.contactGroupPK == null)
+        {
+            if (other.contactGroupPK != null)
+            {
+                return false;
+            }
+        }
+        else if (!this.contactGroupPK.equals(other.contactGroupPK))
+        {
+            return false;
+        }
+        if (this.isActive != other.isActive)
+        {
+            return false;
+        }
+        if (this.unSubscribed != other.unSubscribed)
+        {
+            return false;
+        }
+        if (this.unsubscribedDate == null)
+        {
+            if (other.unsubscribedDate != null)
+            {
+                return false;
+            }
+        }
+        else if (!this.unsubscribedDate.equals(other.unsubscribedDate))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Pre persist.
+     */
+    @PrePersist
+    public void prePersist()
+    {
+        this.unsubscribedDate = null;
+    }
 }

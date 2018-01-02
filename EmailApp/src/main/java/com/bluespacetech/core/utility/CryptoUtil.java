@@ -8,7 +8,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -17,70 +16,47 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
-public class CryptoUtil {
-	Cipher ecipher;
-	Cipher dcipher;
-	// 8-byte Salt
-	byte[] salt = { (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32, (byte) 0x56, (byte) 0x35, (byte) 0xE3,
-			(byte) 0x03 };
-	// Iteration count
-	int iterationCount = 19;
-
-	public CryptoUtil() {
-
-	}
-
-	/**
-	 * 
-	 * @param secretKey
-	 *            Key used to encrypt data
-	 * @param plainText
-	 *            Text input to be encrypted
-	 * @return Returns encrypted text
-	 * 
-	 */
-	public String encrypt(String secretKey, String plainText) throws NoSuchAlgorithmException, InvalidKeySpecException,
-	NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,
-	UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException {
-		// Key generation for enc and desc
-		final KeySpec keySpec = new PBEKeySpec(secretKey.toCharArray(), salt, iterationCount);
-		final SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-		// Prepare the parameter to the ciphers
-		final AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
-
-		// Enc process
-		ecipher = Cipher.getInstance(key.getAlgorithm());
-		ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
-		final String charSet = "UTF-8";
-		final byte[] in = plainText.getBytes(charSet);
-		final byte[] out = ecipher.doFinal(in);
-		final String encStr = new sun.misc.BASE64Encoder().encode(out);
-		return encStr;
-	}
-
-	/**
-	 * @param secretKey
-	 *            Key used to decrypt data
-	 * @param encryptedText
-	 *            encrypted text input to decrypt
-	 * @return Returns plain text after decryption
-	 */
-	public String decrypt(String secretKey, String encryptedText) throws NoSuchAlgorithmException,
-	InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,
-	UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, IOException {
-		// Key generation for enc and desc
-		final KeySpec keySpec = new PBEKeySpec(secretKey.toCharArray(), salt, iterationCount);
-		final SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-		// Prepare the parameter to the ciphers
-		final AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
-		// Decryption process; same key will be used for decr
-		dcipher = Cipher.getInstance(key.getAlgorithm());
-		dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
-		final byte[] enc = new sun.misc.BASE64Decoder().decodeBuffer(encryptedText);
-		final byte[] utf8 = dcipher.doFinal(enc);
-		final String charSet = "UTF-8";
-		final String plainStr = new String(utf8, charSet);
-		return plainStr;
-	}
+public class CryptoUtil
+{
+  Cipher ecipher;
+  Cipher dcipher;
+  byte[] salt = { -87, -101, -56, 50, 86, 53, -29, 3 };
+  int iterationCount = 19;
+  
+  public String encrypt(String secretKey, String plainText)
+    throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException
+  {
+    KeySpec keySpec = new PBEKeySpec(secretKey.toCharArray(), this.salt, this.iterationCount);
+    SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
+    
+    AlgorithmParameterSpec paramSpec = new PBEParameterSpec(this.salt, this.iterationCount);
+    
+    this.ecipher = Cipher.getInstance(key.getAlgorithm());
+    this.ecipher.init(1, key, paramSpec);
+    String charSet = "UTF-8";
+    byte[] in = plainText.getBytes("UTF-8");
+    byte[] out = this.ecipher.doFinal(in);
+    String encStr = new BASE64Encoder().encode(out);
+    return encStr;
+  }
+  
+  public String decrypt(String secretKey, String encryptedText)
+    throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, IOException
+  {
+    KeySpec keySpec = new PBEKeySpec(secretKey.toCharArray(), this.salt, this.iterationCount);
+    SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
+    
+    AlgorithmParameterSpec paramSpec = new PBEParameterSpec(this.salt, this.iterationCount);
+    
+    this.dcipher = Cipher.getInstance(key.getAlgorithm());
+    this.dcipher.init(2, key, paramSpec);
+    byte[] enc = new BASE64Decoder().decodeBuffer(encryptedText);
+    byte[] utf8 = this.dcipher.doFinal(enc);
+    String charSet = "UTF-8";
+    String plainStr = new String(utf8, "UTF-8");
+    return plainStr;
+  }
 }

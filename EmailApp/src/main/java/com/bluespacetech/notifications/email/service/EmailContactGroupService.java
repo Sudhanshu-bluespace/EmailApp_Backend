@@ -1,34 +1,26 @@
-/**
- * This document is a part of the source code and related artifacts for
- * bluespacetech.
- * www.bluespacetech.com
- * Copyright © 2016 bluespacetech
- *
- */
 package com.bluespacetech.notifications.email.service;
-
-import java.util.List;
 
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.notifications.email.entity.EmailContactGroup;
+import java.util.List;
 
-/**
- * class for EmailContactGroupService
- *
- * @author pradeep created date 25-June-2015
- */
-public interface EmailContactGroupService {
-
-	EmailContactGroup createEmailContactGroup(final EmailContactGroup emailContactGroup) throws BusinessException;
-
-	List<EmailContactGroup> createEmailContactGroups(final List<EmailContactGroup> emailContactGroups)
-			throws BusinessException;
-
-	List<EmailContactGroup> findAll();
-
-	EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(final Long contactId, final Long groupId,
-			final Long randomNumber);
-
-	EmailContactGroup updateEmailContactGroup(final EmailContactGroup emailContactGroup) throws BusinessException;
-
+public abstract interface EmailContactGroupService
+{
+  public abstract EmailContactGroup createEmailContactGroup(EmailContactGroup paramEmailContactGroup)
+    throws BusinessException;
+  
+  public abstract void deleteEmailContactGroup(List<EmailContactGroup> paramList)
+    throws BusinessException;
+  
+  public abstract List<EmailContactGroup> createEmailContactGroups(List<EmailContactGroup> paramList)
+    throws BusinessException;
+  
+  public abstract List<EmailContactGroup> findAll();
+  
+  public abstract EmailContactGroup findByContactIdAndGroupIdAndRandomNumber(Long paramLong1, Long paramLong2, String paramString);
+  
+  public abstract String findByEmailIdAndContactIdAndGroupId(Long paramLong1, Long paramLong2, Long paramLong3);
+  
+  public abstract EmailContactGroup updateEmailContactGroup(EmailContactGroup paramEmailContactGroup)
+    throws BusinessException;
 }

@@ -1,33 +1,31 @@
 package com.bluespacetech.security.service;
 
-import java.util.List;
-
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.security.model.UserAccount;
 import com.bluespacetech.security.searchcriterias.UserAccountSearchCriteria;
+import java.util.List;
+import java.util.Map;
 
-public interface BlueSpaceTechUserAccountService {
-
-	UserAccount findUserAccountByUsername(final String username);
-
-	List<UserAccount> getAllUserAccounts();
-
-	UserAccount getUserAccountById(final Long userAccountId);
-
-	List<UserAccount> getUserAccountByIds(final List<Long> userAccountIds);
-
-	UserAccount createUserAccount(final UserAccount userAccount)
-			throws BusinessException;
-
-	UserAccount updateUserAccount(final UserAccount userAccount)
-			throws BusinessException;
-
-	void deleteUserAccount(final Long userAccountId) ;
-
-	List<UserAccount> findUserAccountsBySearchCriteria(final UserAccountSearchCriteria userAccountSearchCriteria);
-
-
-	void changePasswordUserAccount(final String oldPassword,final String newPassword,final String confirmPassword)
-			throws BusinessException;
-
+public abstract interface BlueSpaceTechUserAccountService
+{
+  public abstract UserAccount findUserAccountByUsername(String paramString);
+  
+  public abstract List<UserAccount> getAllUserAccounts();
+  
+  public abstract UserAccount getUserAccountById(Long paramLong);
+  
+  public abstract List<UserAccount> getUserAccountByIds(List<Long> paramList);
+  
+  public abstract Map<UserAccount, String> createUserAccount(UserAccount paramUserAccount)
+    throws BusinessException;
+  
+  public abstract UserAccount updateUserAccount(UserAccount paramUserAccount)
+    throws BusinessException;
+  
+  public abstract void deleteUserAccount(Long paramLong);
+  
+  public abstract List<UserAccount> findUserAccountsBySearchCriteria(UserAccountSearchCriteria paramUserAccountSearchCriteria);
+  
+  public abstract void changePasswordUserAccount(String paramString1, String paramString2, String paramString3)
+    throws BusinessException;
 }

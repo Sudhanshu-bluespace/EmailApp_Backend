@@ -4,114 +4,68 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-/**
- * The Class MailTemplateConfiguration.
- * @author Sudhanshu Tripathy
- */
 @Configuration
-@PropertySource("file:/opt/packages/Oracle/BluespaceMailer/config/mail_template.properties")
+@PropertySource({"file:/opt/packages/Oracle/BluespaceMailer/config/mail_template.properties"})
 public class MailTemplateConfiguration
 {
-
-    /** The footer light text. */
-    @Value("${footer.light-text}")
-    private String footerLightText;
-
-    /** The footer dark text. */
-    @Value("${footer.dark-text}")
-    private String footerDarkText;
-
-    /** The mail super admins. */
-    @Value("${mail.superadmins}")
-    private String mailSuperAdmins;
-    
-    @Value("${mail.ignoreList}")
-    private String ignoreList;
-    
-    @Value("${mail.prohibited_content}")
-    private String prohibitedContent;
-    
-    
-
-    public String getProhibitedContent()
-    {
-        return prohibitedContent;
-    }
-
-    public String getIgnoreList()
-    {
-        return ignoreList;
-    }
-
-    public void setIgnoreList(String ignoreList)
-    {
-        this.ignoreList = ignoreList;
-    }
-
-    /**
-     * Gets the footer light text.
-     *
-     * @return the footer light text
-     */
-    public String getFooterLightText()
-    {
-        return footerLightText;
-    }
-
-    /**
-     * Sets the footer light text.
-     *
-     * @param footerLightText the new footer light text
-     */
-    public void setFooterLightText(String footerLightText)
-    {
-        this.footerLightText = footerLightText;
-    }
-
-    /**
-     * Gets the footer dark text.
-     *
-     * @return the footer dark text
-     */
-    public String getFooterDarkText()
-    {
-        return footerDarkText;
-    }
-
-    /**
-     * Sets the footer dark text.
-     *
-     * @param footerDarkText the new footer dark text
-     */
-    public void setFooterDarkText(String footerDarkText)
-    {
-        this.footerDarkText = footerDarkText;
-    }
-
-    /**
-     * Gets the mail super admins.
-     *
-     * @return the mail super admins
-     */
-    public String getMailSuperAdmins()
-    {
-        return mailSuperAdmins;
-    }
-
-    /**
-     * Sets the mail super admins.
-     *
-     * @param mailSuperAdmins the new mail super admins
-     */
-    public void setMailSuperAdmins(String mailSuperAdmins)
-    {
-        this.mailSuperAdmins = mailSuperAdmins;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "MailTemplateConfiguration [footerLightText=" + footerLightText + ", footerDarkText=" + footerDarkText
-                + ", mailSuperAdmins=" + mailSuperAdmins + ", ignoreList=" + ignoreList + "]";
-    }
+  @Value("${footer.light-text}")
+  private String footerLightText;
+  @Value("${footer.dark-text}")
+  private String footerDarkText;
+  @Value("${mail.superadmins}")
+  private String mailSuperAdmins;
+  @Value("${mail.ignoreList}")
+  private String ignoreList;
+  @Value("${mail.prohibited_content}")
+  private String prohibitedContent;
+  
+  public String getProhibitedContent()
+  {
+    return this.prohibitedContent;
+  }
+  
+  public String getIgnoreList()
+  {
+    return this.ignoreList;
+  }
+  
+  public void setIgnoreList(String ignoreList)
+  {
+    this.ignoreList = ignoreList;
+  }
+  
+  public String getFooterLightText()
+  {
+    return this.footerLightText;
+  }
+  
+  public void setFooterLightText(String footerLightText)
+  {
+    this.footerLightText = footerLightText;
+  }
+  
+  public String getFooterDarkText()
+  {
+    return this.footerDarkText;
+  }
+  
+  public void setFooterDarkText(String footerDarkText)
+  {
+    this.footerDarkText = footerDarkText;
+  }
+  
+  public String getMailSuperAdmins()
+  {
+    return this.mailSuperAdmins;
+  }
+  
+  public void setMailSuperAdmins(String mailSuperAdmins)
+  {
+    this.mailSuperAdmins = mailSuperAdmins;
+  }
+  
+  public String toString()
+  {
+    return "MailTemplateConfiguration [footerLightText=" + this.footerLightText + ", footerDarkText=" + this.footerDarkText + ", mailSuperAdmins=" + this.mailSuperAdmins + ", ignoreList=" + this.ignoreList + "]";
+  }
 }

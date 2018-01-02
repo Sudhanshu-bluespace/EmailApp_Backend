@@ -1,15 +1,16 @@
 package com.bluespacetech.security.repository;
 
+import com.bluespacetech.security.model.UserAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.bluespacetech.security.model.UserAccount;
-
-
 @Repository
-public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
-
-	UserAccount findUserAccountByUsername(final String username);
-	
-
+public abstract interface UserAccountRepository
+  extends JpaRepository<UserAccount, Long>
+{
+  public abstract UserAccount findUserAccountByUsername(String paramString);
+  
+  public abstract UserAccount findUserAccountByEmail(String paramString);
+  
+  public abstract UserAccount findUserAccountById(long paramLong);
 }

@@ -1,32 +1,31 @@
 package com.bluespacetech.security.service;
 
-import java.util.List;
-
 import com.bluespacetech.core.exceptions.BusinessException;
 import com.bluespacetech.security.model.UserGroup;
 import com.bluespacetech.security.searchcriterias.UserGroupSearchCriteria;
+import java.util.List;
 
-public interface UserGroupService {
-
-	UserGroup findUserGroupByGroupName(final String groupName);
-
-	List<UserGroup> findByGroupNameLike(final String groupName);
-
-	List<UserGroup> findByDescriptionLike(final String description);
-
-	List<UserGroup> getAllUserGroups();
-
-	UserGroup getUserGroupById(final Long userGroupId);
-
-	List<UserGroup> getUserGroupByIds(final List<Long> userGroupIds);
-
-	UserGroup createUserGroup(final UserGroup userGroup)
-			throws BusinessException;
-
-	UserGroup updateUserGroup(final UserGroup userGroup)
-			throws BusinessException;
-
-	void deleteUserGroup(final Long userGroupId) ;
-
-	List<UserGroup> findUserGroupsBySearchCriteria(final UserGroupSearchCriteria sectionSearchCriteria);
+public abstract interface UserGroupService
+{
+  public abstract UserGroup findUserGroupByGroupName(String paramString);
+  
+  public abstract List<UserGroup> findByGroupNameLike(String paramString);
+  
+  public abstract List<UserGroup> findByDescriptionLike(String paramString);
+  
+  public abstract List<UserGroup> getAllUserGroups();
+  
+  public abstract UserGroup getUserGroupById(Long paramLong);
+  
+  public abstract List<UserGroup> getUserGroupByIds(List<Long> paramList);
+  
+  public abstract UserGroup createUserGroup(UserGroup paramUserGroup)
+    throws BusinessException;
+  
+  public abstract UserGroup updateUserGroup(UserGroup paramUserGroup)
+    throws BusinessException;
+  
+  public abstract void deleteUserGroup(Long paramLong);
+  
+  public abstract List<UserGroup> findUserGroupsBySearchCriteria(UserGroupSearchCriteria paramUserGroupSearchCriteria);
 }

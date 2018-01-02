@@ -1,32 +1,33 @@
-/**
- * This document is a part of the source code and related artifacts for bluespacetech. www.bluespacetech.com
- * Copyright © 2016 bluespacetech
- */
 package com.bluespacetech.contactgroup.service;
-
-import java.util.List;
 
 import com.bluespacetech.contactgroup.entity.ContactGroup;
 import com.bluespacetech.contactgroup.entity.ContactGroupPK;
 import com.bluespacetech.core.exceptions.BusinessException;
+import com.bluespacetech.core.exceptions.ContactAlreadySubscribedException;
+import com.bluespacetech.core.exceptions.ContactAlreadyUnsubscribedException;
+import java.util.List;
 
-/**
- * Class for ContactGroupService
- *
- * @author Sandeep created date 25-June-2015
- */
-public interface ContactGroupService {
-
-	ContactGroup getContactGroupById(final ContactGroupPK contactGroupPK);
-
-	ContactGroup createContactGroup(final ContactGroup contactGroup) throws BusinessException;
-
-	void deleteContactGroup(final ContactGroupPK contactGroupPK) throws BusinessException;
-
-	List<ContactGroup> findAll();
-
-	ContactGroup updateContactGroup(final ContactGroup contactGroup) throws BusinessException;
-
-	ContactGroup unsubscribeContactGroup(final Long contactId, final Long groupId) throws BusinessException;
-
+public abstract interface ContactGroupService
+{
+  public abstract ContactGroup getContactGroupById(ContactGroupPK paramContactGroupPK);
+  
+  public abstract ContactGroup createContactGroup(ContactGroup paramContactGroup)
+    throws BusinessException;
+  
+  public abstract void deleteContactGroup(ContactGroupPK paramContactGroupPK)
+    throws BusinessException;
+  
+  public abstract List<ContactGroup> findAll();
+  
+  public abstract ContactGroup updateContactGroup(ContactGroup paramContactGroup)
+    throws BusinessException;
+  
+  public abstract ContactGroup unsubscribeContactGroup(Long paramLong1, Long paramLong2)
+    throws BusinessException, ContactAlreadyUnsubscribedException;
+  
+  public abstract int fullUnsubscribeContactGroup(Long paramLong1, Long paramLong2, String paramString)
+    throws BusinessException, ContactAlreadyUnsubscribedException;
+  
+  public abstract int subscribeContactGroup(Long paramLong1, Long paramLong2, String paramString)
+    throws BusinessException, ContactAlreadyUnsubscribedException, ContactAlreadySubscribedException;
 }

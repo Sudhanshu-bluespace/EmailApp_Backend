@@ -1,19 +1,13 @@
-/**
- * 
- */
 package com.bluespacetech.notifications.email.entity;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
  * The Class BlueSpaceMimeMessage.
- *
- * @author sudhanshu
  */
 public class BlueSpaceMimeMessage extends MimeMessage
 {
@@ -47,10 +41,9 @@ public class BlueSpaceMimeMessage extends MimeMessage
      * (non-Javadoc)
      * @see javax.mail.internet.MimeMessage#updateMessageID()
      */
-    @Override
     protected void updateMessageID() throws MessagingException
     {
-        this.setHeader("Message-ID", getGeneratedMessageId());
+        setHeader("Message-ID", getGeneratedMessageId());
         LOGGER.info("Message-ID Header updated, new value : " + getHeader("Message-ID")[0]);
     }
 
@@ -64,13 +57,13 @@ public class BlueSpaceMimeMessage extends MimeMessage
         StringBuilder sb = new StringBuilder("<");
         sb.append(System.currentTimeMillis());
         sb.append(".");
-        sb.append(campaignId);
+        sb.append(this.campaignId);
         sb.append(".");
-        sb.append(encryptedEmail);
+        sb.append(this.encryptedEmail);
         sb.append(".");
-        sb.append(contactId);
+        sb.append(this.contactId);
         sb.append("@");
-        sb.append(domainName);
+        sb.append(this.domainName);
         sb.append(">");
         return sb.toString();
     }
@@ -82,7 +75,7 @@ public class BlueSpaceMimeMessage extends MimeMessage
      */
     public String getDomainName()
     {
-        return domainName;
+        return this.domainName;
     }
 
     /**
@@ -102,7 +95,7 @@ public class BlueSpaceMimeMessage extends MimeMessage
      */
     public long getCampaignId()
     {
-        return campaignId;
+        return this.campaignId;
     }
 
     /**
@@ -122,7 +115,7 @@ public class BlueSpaceMimeMessage extends MimeMessage
      */
     public String getEncryptedEmail()
     {
-        return encryptedEmail;
+        return this.encryptedEmail;
     }
 
     /**
@@ -142,7 +135,7 @@ public class BlueSpaceMimeMessage extends MimeMessage
      */
     public long getContactId()
     {
-        return contactId;
+        return this.contactId;
     }
 
     /**

@@ -1,20 +1,9 @@
 package com.bluespacetech.security.repository;
 
+import com.bluespacetech.security.dao.PendingAccountApprovalsDTO;
 import java.util.List;
 
-import com.bluespacetech.security.dao.PendingAccountApprovalsDTO;
-
-/**
- * The Interface AccountApprovalRepositoryCustom.
- */
-public interface AccountApprovalRepositoryCustom
+public abstract interface AccountApprovalRepositoryCustom
 {
-
-    /**
-     * Gets the pending approvals.
-     *
-     * @param userName the user name
-     * @return the pending approvals
-     */
-    List<PendingAccountApprovalsDTO> getPendingApprovals(String userName);
+  public abstract List<PendingAccountApprovalsDTO> getPendingApprovals(String paramString);
 }

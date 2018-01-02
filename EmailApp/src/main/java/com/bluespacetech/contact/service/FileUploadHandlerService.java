@@ -1,6 +1,3 @@
 package com.bluespacetech.contact.service;
 
-public interface FileUploadHandlerService {
-
-
-}
+public abstract interface FileUploadHandlerService {}

@@ -134,10 +134,6 @@ final class SmtpScanner
                     // 2.x.x = OK message returned, MDN receipt.
                     return BOUNCE_TYPES.MDN_RECEIPT.toString()+"|"+token;
                 }
-                else
-                {
-                    logger.info("Unsupported scan token "+token);
-                }
             }
         }
         else if (pass == 2)
@@ -149,7 +145,7 @@ final class SmtpScanner
             { // repeat two times
                 String token = m.group(m.groupCount());
                 end = m.end(m.groupCount());
-                logger.debug("Pass 2: examineBody(): Numeric token found: " + token);
+                logger.info("examineBody(): Numeric token found: " + token);
                 if ((bounceType = searchRfc2821CodeTable(token)) != null)
                 {
                     // return bounceType;
@@ -171,12 +167,10 @@ final class SmtpScanner
                 }
                 else if (token.equals("422"))
                 {
-                    logger.info("Scanning for Mailbox Full ... token="+token);
                     // 422 = mailbox full, re-send may be successful
                     String r = matchRfcText(BOUNCE_TYPES.MAILBOX_FULL, token, body, end);
                     if(r!=null)
                     {
-                        logger.info("Response: "+r);
                         return r+"|"+token;
                     }
                 }
@@ -191,10 +185,6 @@ final class SmtpScanner
                 else if (token.startsWith("2"))
                 {
                     return BOUNCE_TYPES.MDN_RECEIPT.toString()+"|"+token;
-                }
-                else
-                {
-                    logger.info("Unsupported numeric token "+token);
                 }
             }
         }

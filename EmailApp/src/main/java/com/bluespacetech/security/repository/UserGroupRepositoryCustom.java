@@ -1,17 +1,10 @@
-
 package com.bluespacetech.security.repository;
-
-import java.util.List;
 
 import com.bluespacetech.security.model.UserGroup;
 import com.bluespacetech.security.searchcriterias.UserGroupSearchCriteria;
+import java.util.List;
 
-
-/**
- * @author pradeep created date 30-Jan-2015
- */
-public interface UserGroupRepositoryCustom {
-
-	List<UserGroup> findUserGroupsBySearchCriteria(final UserGroupSearchCriteria sectionSearchCriteria);
-
+public abstract interface UserGroupRepositoryCustom
+{
+  public abstract List<UserGroup> findUserGroupsBySearchCriteria(UserGroupSearchCriteria paramUserGroupSearchCriteria);
 }

@@ -1,38 +1,35 @@
-/**
- * This document is a part of the source code and related artifacts for
- * bluespacetech.
- * www.bluespacetech.com
- * Copyright © 2016 bluespacetech
- *
- */
 package com.bluespacetech.contact.service;
 
-import java.util.List;
-
+import com.bluespacetech.contact.entity.BlockedContacts;
 import com.bluespacetech.contact.entity.Contact;
 import com.bluespacetech.contact.searchcriteria.ContactSearchCriteria;
 import com.bluespacetech.core.exceptions.BusinessException;
+import java.util.List;
 
-/**
- * class for ContactService
- *
- * @author pradeep created date 25-June-2015
- */
-public interface ContactService {
-
-    Contact createContact(final Contact contact) throws BusinessException;
-
-    void deleteContact(final Long contactId) throws BusinessException;
-
-    List<Contact> findByFirstNameOrLastName(final String firstName,final String lastName);
-
-    List<Contact> findByEmail(final String email);
-
-    List<Contact> findAll();
-
-    Contact getContactById(final Long contactId);
-
-    Contact updateContact(final Contact contact) throws BusinessException;
-    
-    List<Contact> findBySearchCriteria(final ContactSearchCriteria contactSearchCriteria);
+public abstract interface ContactService
+{
+  public abstract Contact createContact(Contact paramContact)
+    throws BusinessException;
+  
+  public abstract void deleteContact(Long paramLong)
+    throws BusinessException;
+  
+  public abstract List<Contact> findByFirstNameOrLastName(String paramString1, String paramString2);
+  
+  public abstract List<Contact> findByEmail(String paramString);
+  
+  public abstract List<Contact> findAll();
+  
+  public abstract Contact getContactById(Long paramLong);
+  
+  public abstract Contact updateContact(Contact paramContact)
+    throws BusinessException;
+  
+  public abstract List<Contact> findBySearchCriteria(ContactSearchCriteria paramContactSearchCriteria);
+  
+  public abstract List<BlockedContacts> getBlockedContacts();
+  
+  public abstract List<Contact> findByCreatedUser(String paramString);
+  
+  public abstract Contact findById(Long paramLong);
 }

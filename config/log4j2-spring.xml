@@ -12,7 +12,47 @@
             </PatternLayout>
         </Console>
 		<RollingFile name="ApplicationRollingFile" fileName="${log-path}/BluespaceMailer.log"
-                 filePattern="logs/$${date:yyyy-MM}/BluespaceMailer-%d{yyyy-MM-dd-HH}-%i.log.gz">
+                 filePattern="/opt/packages/Oracle/BluespaceMailer/logs/$${date:yyyy-MM-dd}/BluespaceMailer-%d{yyyy-MM-dd-HH}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d %p %c{10} [%t] %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+		</RollingFile>
+		<RollingFile name="EmailQueueRollingFile" fileName="${log-path}/EmailExecutionQueue.log"
+                 filePattern="/opt/packages/Oracle/BluespaceMailer/logs/$${date:yyyy-MM-dd}/EmailExecutionQueue-%d{yyyy-MM-dd-HH}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d %p %c{10} [%t] %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+		</RollingFile>
+		<RollingFile name="EmailJobRollingFile" fileName="${log-path}/EmailJobNotifications.log"
+                 filePattern="/opt/packages/Oracle/BluespaceMailer/logs/$${date:yyyy-MM-dd}/EmailJobNotifications-%d{yyyy-MM-dd-HH}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d %p %c{10} [%t] %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+		</RollingFile>
+		<RollingFile name="FileUploadRollingFile" fileName="${log-path}/BulkContactUpload.log"
+                 filePattern="/opt/packages/Oracle/BluespaceMailer/logs/$${date:yyyy-MM-dd}/BulkContactUpload-%d{yyyy-MM-dd-HH}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d %p %c{10} [%t] %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+		</RollingFile>
+		<RollingFile name="BounceWatcherRollingFile" fileName="${log-path}/BounceWatcher.log"
+                 filePattern="/opt/packages/Oracle/BluespaceMailer/logs/$${date:yyyy-MM-dd}/BounceWatcher-%d{yyyy-MM-dd-HH}-%i.log.gz">
 			<PatternLayout>
 				<Pattern>%d %p %c{10} [%t] %m%n</Pattern>
 			</PatternLayout>
@@ -22,7 +62,7 @@
 			</Policies>
 		</RollingFile>
 		<RollingFile name="SpringRollingFile" fileName="${log-path}/Spring.log"
-                 filePattern="logs/$${date:yyyy-MM}/Spring-%d{yyyy-MM-dd-HH}-%i.log.gz">
+                 filePattern="/opt/packages/Oracle/BluespaceMailer/logs/$${date:yyyy-MM-dd}/Spring-%d{yyyy-MM-dd-HH}-%i.log.gz">
 			<PatternLayout>
 				<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
 			</PatternLayout>
@@ -32,7 +72,7 @@
 			</Policies>
 		</RollingFile>
 		<RollingFile name="HibernateRollingFile" fileName="${log-path}/Hibernate.log"
-                 filePattern="logs/$${date:yyyy-MM}/Hibernate-%d{yyyy-MM-dd-HH}-%i.log.gz">
+                 filePattern="/opt/packages/Oracle/BluespaceMailer/logs/$${date:yyyy-MM-dd}/Hibernate-%d{yyyy-MM-dd-HH}-%i.log.gz">
 			<PatternLayout>
 				<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
 			</PatternLayout>
@@ -43,19 +83,37 @@
 		</RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="org.springframework" level="info" additivity="false">
+        <Logger name="org.springframework.security" level="info" additivity="false">
             <AppenderRef ref="SpringRollingFile"/>
-            <AppenderRef ref="Console-Appender"/>
+			<AppenderRef ref="Console-Appender"/>
         </Logger>
-        <Logger name="org.hibernate" level="info" additivity="false">
+		<Logger name="com.bluespacetech.notifications.email.executionqueue" level="info" additivity="false">
+            <AppenderRef ref="EmailQueueRollingFile"/>
+        </Logger>
+		<Logger name="com.bluespacetech.contact.fileupload.batch" level="debug" additivity="false">
+			<AppenderRef ref="FileUploadRollingFile"/>
+		</Logger>
+		<Logger name="com.bluespacetech.contact.controller" level="info" additivity="false">
+			<AppenderRef ref="FileUploadRollingFile"/>
+			<AppenderRef ref="ApplicationRollingFile"/>
+		</Logger>
+		<Logger name="com.bluespacetech.contact.bounce" level="info" additivity="false">
+			<AppenderRef ref="BounceWatcherRollingFile"/>
+		</Logger>
+        <Logger name="org.hibernate.SQL" level="info" additivity="false">
             <AppenderRef ref="HibernateRollingFile"/>
-            <AppenderRef ref="Console-Appender"/>
+        </Logger>
+		<Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="info" additivity="false">
+            <AppenderRef ref="HibernateRollingFile"/>
         </Logger>
         <Logger name="com.bluespacetech" level="info" additivity="false">
             <AppenderRef ref="ApplicationRollingFile"/>
+        </Logger>
+		<Logger name="com.bluespacetech.notifications.email" level="info" additivity="false">
+            <AppenderRef ref="EmailJobRollingFile"/>
          </Logger>
         <Root level="error">
-            <AppenderRef ref="Console-Appender"/>
+            <AppenderRef ref="ApplicationRollingFile"/>
         </Root>
     </Loggers>
 </Configuration>

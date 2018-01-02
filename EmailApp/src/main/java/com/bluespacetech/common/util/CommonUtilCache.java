@@ -1,5 +1,8 @@
 package com.bluespacetech.common.util;
 
+import com.bluespacetech.group.entity.Group;
+import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
+import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,18 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.bluespacetech.group.entity.Group;
-import com.bluespacetech.notifications.email.executionqueue.EmailJobEndpoint;
-import com.bluespacetech.notifications.email.valueobjects.EmailContactGroupVO;
-
 /**
  * The Class CommonUtilCache.
  */
 public class CommonUtilCache
 {
-
-    /** The Constant LOGGER. */
-    // private static final Logger LOGGER = LogManager.getLogger(CommonUtilCache.class);
 
     /** The group name to group map. */
     private static Map<String, Group> groupNameToGroupMap = new HashMap<>();
@@ -33,7 +29,7 @@ public class CommonUtilCache
     /** The ignore list. */
     private static List<String> ignoreList = new ArrayList<>();
 
-    /** The ignore list. */
+    /** The prohibited content list. */
     private static List<String> prohibitedContentList = new ArrayList<>();
 
     /** The batch id to email list map. */
@@ -105,7 +101,6 @@ public class CommonUtilCache
         {
             bouncedEmailsCache.put("SOFT_BOUNCE", new ArrayList<>());
         }
-
         return bouncedEmailsCache;
     }
 
@@ -150,21 +145,12 @@ public class CommonUtilCache
     }
 
     /**
-     * Instantiates a new common util cache.
-     */
-    private CommonUtilCache()
-    {
-
-    }
-
-    /**
      * Gets the group name to group map.
      *
      * @return the group name to group map
      */
     public static Map<String, Group> getGroupNameToGroupMap()
     {
-        // LOGGER.debug("Returning groupNameToGroupMap");
         return groupNameToGroupMap;
     }
 
@@ -207,5 +193,4 @@ public class CommonUtilCache
     {
         return alreadySelectedEmailsForCampaignMap;
     }
-
 }
