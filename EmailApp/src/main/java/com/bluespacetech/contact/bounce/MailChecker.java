@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -28,7 +29,6 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MailChecker.
  */
@@ -241,7 +241,7 @@ public class MailChecker
      */
     private void setDeleteFlagOnMessage(Message message) throws MessagingException
     {
-        //message.setFlag(Flags.Flag.DELETED, true);
+        message.setFlag(Flags.Flag.DELETED, true);
     }
 
     /**
